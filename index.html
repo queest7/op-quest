@@ -3,22 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>OptionsDesk v2 — Scanner Combinatório</title>
-<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<title>Quest Options</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-:root{
-  --bg:#070810;--bg2:#0d0e1a;--bg3:#13142a;--bg4:#1a1b33;
-  --border:rgba(120,130,255,0.10);--border2:rgba(120,130,255,0.22);
-  --text:#dde0ff;--muted:#6b72a8;--faint:#3a3f6e;
-  --green:#4afa8a;--red:#ff5f7e;--yellow:#ffd97d;--blue:#6ec6ff;--purple:#c77dff;
-  --mono:'Space Mono',monospace;--sans:'DM Sans',sans-serif;
-  --r:8px;
-}
+:root{--bg:#070810;--bg2:#0d0e1a;--bg3:#13142a;--bg4:#1a1b33;--border:rgba(120,130,255,0.10);--border2:rgba(120,130,255,0.22);--text:#dde0ff;--muted:#6b72a8;--faint:#3a3f6e;--green:#4afa8a;--red:#ff5f7e;--yellow:#ffd97d;--blue:#6ec6ff;--purple:#c77dff;--mono:'Space Mono',monospace;--sans:'DM Sans',sans-serif;--r:8px;}
 *{box-sizing:border-box;margin:0;padding:0;}
 body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;overflow-x:hidden;font-size:14px;}
 body::after{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 80% 50% at 50% -20%,rgba(100,80,255,0.07),transparent);pointer-events:none;z-index:0;}
-
-/* HEADER */
 header{position:sticky;top:0;z-index:200;height:52px;background:rgba(7,8,16,0.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 20px;gap:16px;}
 .logo{font-family:var(--mono);font-size:13px;letter-spacing:.15em;color:var(--green);display:flex;align-items:center;gap:8px;}
 .logo-ring{width:9px;height:9px;border-radius:50%;background:var(--green);box-shadow:0 0 12px var(--green);animation:pulse 2s ease-in-out infinite;}
@@ -28,63 +19,38 @@ header{position:sticky;top:0;z-index:200;height:52px;background:rgba(7,8,16,0.92
 .h-mkt{font-size:10px;font-weight:600;letter-spacing:.07em;padding:3px 10px;border-radius:4px;}
 .mkt-open{background:rgba(74,250,138,0.10);color:var(--green);border:1px solid rgba(74,250,138,0.25);}
 .mkt-closed{background:rgba(255,95,126,0.10);color:var(--red);border:1px solid rgba(255,95,126,0.25);}
-#profit-status{font-size:10px;padding:3px 9px;border-radius:4px;border:1px solid var(--border);color:var(--muted);cursor:pointer;}
+#profit-status{font-size:10px;padding:3px 9px;border-radius:4px;border:1px solid var(--border);color:var(--muted);cursor:pointer;transition:.2s;}
 #profit-status.connected{border-color:rgba(74,250,138,0.3);color:var(--green);}
-
-/* LAYOUT */
+#profit-status.trying{border-color:rgba(255,217,125,0.3);color:var(--yellow);}
 .main{position:relative;z-index:1;display:grid;grid-template-columns:260px 1fr;min-height:calc(100vh - 52px);}
 .sidebar{border-right:1px solid var(--border);padding:16px 12px;display:flex;flex-direction:column;gap:10px;overflow-y:auto;}
 .content{padding:16px 20px 40px;overflow-y:auto;}
-
-/* SIDEBAR */
 .sl-label{font-size:10px;font-weight:600;letter-spacing:.1em;color:var(--muted);text-transform:uppercase;padding:0 6px;margin-bottom:4px;}
 .ticker-btn{width:100%;display:flex;align-items:center;justify-content:space-between;padding:8px 10px;border-radius:var(--r);border:1px solid var(--border);background:transparent;cursor:pointer;transition:all .15s;color:var(--text);}
 .ticker-btn:hover{background:var(--bg3);border-color:var(--border2);}
 .ticker-btn.active{background:rgba(78,100,255,0.12);border-color:rgba(78,100,255,0.4);color:#a0aaff;}
-.tb-left{display:flex;flex-direction:column;align-items:flex-start;gap:1px;}
-.tb-ticker{font-family:var(--mono);font-size:12px;font-weight:700;}
-.tb-name{font-size:10px;color:var(--muted);}
-.tb-right{display:flex;flex-direction:column;align-items:flex-end;gap:1px;}
-.tb-price{font-family:var(--mono);font-size:12px;}
-.tb-chg{font-size:10px;}
+.tb-left{display:flex;flex-direction:column;gap:1px;}.tb-ticker{font-family:var(--mono);font-size:12px;font-weight:700;}.tb-name{font-size:10px;color:var(--muted);}
+.tb-right{display:flex;flex-direction:column;align-items:flex-end;gap:1px;}.tb-price{font-family:var(--mono);font-size:12px;}.tb-chg{font-size:10px;}
 .up{color:var(--green);}.dn{color:var(--red);}
 .scan-btn{width:100%;padding:9px;border-radius:var(--r);border:1px solid rgba(74,250,138,0.3);background:rgba(74,250,138,0.07);color:var(--green);font-family:var(--sans);font-size:12px;font-weight:600;cursor:pointer;transition:all .15s;margin-top:4px;}
-.scan-btn:hover{background:rgba(74,250,138,0.14);}
-.scan-btn:disabled{opacity:.5;cursor:not-allowed;}
+.scan-btn:hover{background:rgba(74,250,138,0.14);}.scan-btn:disabled{opacity:.5;cursor:not-allowed;}
 .config-section{border-top:1px solid var(--border);padding-top:10px;margin-top:4px;}
 .config-row{display:flex;align-items:center;justify-content:space-between;padding:4px 2px;}
 .config-label{font-size:11px;color:var(--muted);}
 .config-input{font-family:var(--mono);font-size:11px;width:60px;background:var(--bg3);border:1px solid var(--border);border-radius:4px;color:var(--text);padding:3px 6px;text-align:right;}
-.profit-config{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:10px;font-size:11px;color:var(--muted);line-height:1.7;}
-.profit-config b{color:var(--blue);}
-.profit-url{font-family:var(--mono);font-size:10px;word-break:break-all;color:var(--yellow);margin-top:4px;}
-
-/* TOP STATS */
+.profit-cfg-box{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:10px;font-size:11px;color:var(--muted);line-height:1.7;}
+.profit-cfg-box b{color:var(--blue);}.profit-url{font-family:var(--mono);font-size:10px;word-break:break-all;color:var(--yellow);margin-top:4px;}
 .top-stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:18px;}
 .stat-c{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:12px 14px;}
 .stat-l{font-size:10px;font-weight:600;letter-spacing:.07em;color:var(--muted);text-transform:uppercase;margin-bottom:4px;}
-.stat-v{font-family:var(--mono);font-size:20px;font-weight:700;}
-.stat-s{font-size:10px;color:var(--muted);margin-top:2px;}
-
-/* SIGNAL RANKING — main view */
-.section-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
-.section-title{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);}
-
-/* BIG SIGNAL CARD */
-.sig-card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;margin-bottom:8px;overflow:hidden;cursor:pointer;transition:border-color .15s;}
+.stat-v{font-family:var(--mono);font-size:20px;font-weight:700;}.stat-s{font-size:10px;color:var(--muted);margin-top:2px;}
+.sig-card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;margin-bottom:8px;overflow:hidden;transition:border-color .15s;}
 .sig-card:hover{border-color:var(--border2);}
-.sig-card.rank1{border-left:3px solid var(--green);box-shadow:inset 0 0 40px rgba(74,250,138,0.03);}
-.sig-card.rank2{border-left:3px solid var(--yellow);}
-.sig-card.rank3{border-left:3px solid var(--blue);}
-.sig-card.rank-rest{border-left:3px solid var(--faint);}
-.sig-top{display:grid;grid-template-columns:auto auto auto auto 1fr auto;gap:12px;align-items:center;padding:12px 16px;}
+.sig-card.rank1{border-left:3px solid var(--green);}.sig-card.rank2{border-left:3px solid var(--yellow);}.sig-card.rank3{border-left:3px solid var(--blue);}.sig-card.rank-rest{border-left:3px solid var(--faint);}
+.sig-top{display:grid;grid-template-columns:auto auto auto auto 1fr auto;gap:12px;align-items:center;padding:12px 16px;cursor:pointer;}
 .sig-rank{font-family:var(--mono);font-size:22px;font-weight:700;color:var(--faint);min-width:28px;}
-.sig-rank.r1{color:var(--green);}
-.sig-rank.r2{color:var(--yellow);}
-.sig-rank.r3{color:var(--blue);}
-.sig-code{display:flex;flex-direction:column;gap:2px;}
-.sig-option-code{font-family:var(--mono);font-size:14px;font-weight:700;letter-spacing:.05em;}
-.sig-type-row{display:flex;gap:4px;}
+.sig-rank.r1{color:var(--green);}.sig-rank.r2{color:var(--yellow);}.sig-rank.r3{color:var(--blue);}
+.sig-code{display:flex;flex-direction:column;gap:2px;}.sig-option-code{font-family:var(--mono);font-size:14px;font-weight:700;letter-spacing:.05em;}.sig-type-row{display:flex;gap:4px;}
 .badge{font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.06em;padding:2px 7px;border-radius:3px;}
 .b-call{background:rgba(74,250,138,0.12);color:var(--green);border:1px solid rgba(74,250,138,0.25);}
 .b-put{background:rgba(255,95,126,0.12);color:var(--red);border:1px solid rgba(255,95,126,0.25);}
@@ -93,806 +59,584 @@ header{position:sticky;top:0;z-index:200;height:52px;background:rgba(7,8,16,0.92
 .b-hot{background:rgba(74,250,138,0.12);color:var(--green);border:1px solid rgba(74,250,138,0.3);}
 .b-warm{background:rgba(255,217,125,0.10);color:var(--yellow);border:1px solid rgba(255,217,125,0.25);}
 .b-cold{background:rgba(107,114,168,0.12);color:var(--muted);border:1px solid var(--border);}
-.sig-prices{display:flex;flex-direction:column;gap:2px;}
-.sig-label-sm{font-size:9px;color:var(--muted);font-weight:600;letter-spacing:.06em;text-transform:uppercase;}
-.sig-price-val{font-family:var(--mono);font-size:13px;}
-.sig-key-metrics{display:flex;gap:20px;}
-.km{display:flex;flex-direction:column;gap:2px;}
-.km-label{font-size:9px;color:var(--muted);font-weight:600;letter-spacing:.06em;text-transform:uppercase;}
-.km-val{font-family:var(--mono);font-size:13px;font-weight:700;}
-.sig-score-wrap{display:flex;flex-direction:column;align-items:flex-end;gap:4px;}
-.sig-score-num{font-family:var(--mono);font-size:22px;font-weight:700;}
-.sig-score-label{font-size:9px;color:var(--muted);}
-.score-bar{display:flex;gap:2px;align-items:flex-end;}
-.sb{width:4px;border-radius:2px;background:var(--bg4);}
-.sb.on{background:var(--green);}
-
-/* SIG DETAIL EXPAND */
+.b-live{background:rgba(74,250,138,0.12);color:var(--green);border:1px solid rgba(74,250,138,0.3);}
+.sig-prices{display:flex;flex-direction:column;gap:2px;}.sig-label-sm{font-size:9px;color:var(--muted);font-weight:600;letter-spacing:.06em;text-transform:uppercase;}.sig-price-val{font-family:var(--mono);font-size:13px;}
+.sig-key-metrics{display:flex;gap:20px;}.km{display:flex;flex-direction:column;gap:2px;}.km-label{font-size:9px;color:var(--muted);font-weight:600;letter-spacing:.06em;text-transform:uppercase;}.km-val{font-family:var(--mono);font-size:13px;font-weight:700;}
+.sig-score-wrap{display:flex;flex-direction:column;align-items:flex-end;gap:4px;}.sig-score-num{font-family:var(--mono);font-size:22px;font-weight:700;}.sig-score-label{font-size:9px;color:var(--muted);}
+.score-bar{display:flex;gap:2px;align-items:flex-end;}.sb{width:4px;border-radius:2px;background:var(--bg4);}.sb.on{background:var(--green);}
 .sig-detail{display:none;border-top:1px solid var(--border);background:var(--bg3);padding:14px 16px;}
 .sig-detail.open{display:block;}
 .detail-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;}
 .detail-block{display:flex;flex-direction:column;gap:8px;}
 .detail-title{font-size:10px;font-weight:600;letter-spacing:.08em;color:var(--muted);text-transform:uppercase;border-bottom:1px solid var(--border);padding-bottom:5px;}
-.detail-row{display:flex;justify-content:space-between;font-size:12px;}
-.dr-label{color:var(--muted);}
-.dr-val{font-family:var(--mono);}
-.payoff-mini{display:flex;gap:2px;align-items:flex-end;height:40px;margin-top:4px;}
-.pb-bar{width:14px;border-radius:2px 2px 0 0;min-height:2px;}
-.pb-neg{background:var(--red);}
-.pb-pos{background:var(--green);}
-.pb-hot{background:var(--yellow);}
-.combo-score-explain{font-size:11px;color:var(--muted);line-height:1.8;margin-top:8px;}
-.combo-score-explain b{color:var(--text);}
-
-/* HIST TABLE */
+.detail-row{display:flex;justify-content:space-between;font-size:12px;}.dr-label{color:var(--muted);}.dr-val{font-family:var(--mono);}
+.chain-wrap{overflow-x:auto;}
+.chain-table{width:100%;border-collapse:collapse;font-size:11px;}
+.chain-table th{text-align:right;padding:5px 8px;font-size:9px;letter-spacing:.07em;color:var(--muted);border-bottom:1px solid var(--border);font-weight:600;text-transform:uppercase;white-space:nowrap;}
+.chain-table th.center{text-align:center;}.chain-table th.left{text-align:left;}
+.chain-table td{padding:5px 8px;border-bottom:1px solid rgba(120,130,255,0.05);font-family:var(--mono);font-size:11px;text-align:right;white-space:nowrap;}
+.chain-table td.center{text-align:center;}.chain-table td.left{text-align:left;}
+.chain-table tr:hover td{background:rgba(120,130,255,0.04);}
+.chain-table tr.atm td{background:rgba(74,250,138,0.04);}
+.chain-table tr.atm td.strike-col{color:var(--green);font-weight:700;}
+.sweet-delta{color:var(--yellow)!important;}
+.chain-put-side{color:var(--muted);}
+.chain-filter-bar{display:flex;gap:8px;align-items:center;margin-bottom:12px;flex-wrap:wrap;}
+.chain-filter-btn{font-size:11px;padding:4px 10px;border-radius:4px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;transition:.15s;}
+.chain-filter-btn:hover,.chain-filter-btn.on{background:rgba(78,100,255,0.12);border-color:var(--border2);color:var(--text);}
+.chain-source-badge{font-family:var(--mono);font-size:9px;padding:2px 7px;border-radius:3px;background:rgba(74,250,138,0.08);color:var(--green);border:1px solid rgba(74,250,138,0.2);}
+.chain-source-badge.sim{background:rgba(255,217,125,0.08);color:var(--yellow);border-color:rgba(255,217,125,0.2);}
 .hist-table{width:100%;border-collapse:collapse;font-size:11px;margin-top:6px;}
 .hist-table th{text-align:left;padding:5px 8px;font-size:9px;letter-spacing:.08em;color:var(--muted);border-bottom:1px solid var(--border);font-weight:600;text-transform:uppercase;}
-.hist-table td{padding:6px 8px;border-bottom:1px solid var(--border);font-family:var(--mono);}
-.hist-table tr:last-child td{border-bottom:none;}
+.hist-table td{padding:6px 8px;border-bottom:1px solid rgba(120,130,255,0.05);font-family:var(--mono);}
 .hist-table tr.highlight-row td{background:rgba(74,250,138,0.05);}
 .prob-pill{display:inline-block;font-size:10px;padding:1px 6px;border-radius:3px;font-weight:700;}
-.pp-high{background:rgba(74,250,138,0.15);color:var(--green);}
-.pp-mid{background:rgba(255,217,125,0.12);color:var(--yellow);}
-.pp-low{background:rgba(255,95,126,0.12);color:var(--red);}
-
-/* ALERTS */
+.pp-high{background:rgba(74,250,138,0.15);color:var(--green);}.pp-mid{background:rgba(255,217,125,0.12);color:var(--yellow);}.pp-low{background:rgba(255,95,126,0.12);color:var(--red);}
+.tabs{display:flex;gap:2px;border-bottom:1px solid var(--border);margin-bottom:16px;}
+.tab{font-size:12px;font-weight:500;padding:7px 14px;border:none;background:none;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .15s;}
+.tab:hover{color:var(--text);}.tab.on{color:var(--green);border-bottom-color:var(--green);}
+.tp{display:none;}.tp.on{display:block;}
+.section-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.section-title{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);}
+.subtabs{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap;}
+.subtab{font-size:11px;padding:5px 12px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;transition:.15s;}
+.subtab:hover,.subtab.on{background:rgba(78,100,255,0.12);border-color:var(--border2);color:var(--text);}
+.intra-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px;}
+.intra-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:12px 14px;}
+.intra-num{font-family:var(--mono);font-size:22px;font-weight:700;margin-bottom:2px;}.intra-label{font-size:10px;color:var(--muted);}
+.chart-area{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px;}
 .alert-stack{position:fixed;bottom:20px;right:20px;z-index:400;display:flex;flex-direction:column;gap:6px;width:320px;}
 .a-toast{background:var(--bg2);border:1px solid var(--border2);border-left:3px solid var(--green);border-radius:10px;padding:12px 14px;animation:slideup .25s ease;box-shadow:0 8px 32px rgba(0,0,0,.6);position:relative;}
 .a-toast.warn{border-left-color:var(--yellow);}
 @keyframes slideup{from{transform:translateY(30px);opacity:0}to{transform:translateY(0);opacity:1}}
-.a-title{font-size:12px;font-weight:600;margin-bottom:2px;}
-.a-body{font-size:11px;color:var(--muted);}
-.a-close{position:absolute;top:8px;right:10px;background:none;border:none;color:var(--muted);font-size:15px;cursor:pointer;}
-
-/* MODAL */
-.modal-wrap{position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:500;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s;}
-.modal-wrap.open{opacity:1;pointer-events:all;}
-.modal-box{background:var(--bg2);border:1px solid var(--border2);border-radius:14px;width:720px;max-width:96vw;max-height:88vh;overflow-y:auto;padding:24px;position:relative;}
-.modal-close{position:absolute;top:14px;right:16px;background:none;border:none;color:var(--muted);font-size:18px;cursor:pointer;}
-
-/* SPINNER */
+.a-title{font-size:12px;font-weight:600;margin-bottom:2px;}.a-body{font-size:11px;color:var(--muted);}.a-close{position:absolute;top:8px;right:10px;background:none;border:none;color:var(--muted);font-size:15px;cursor:pointer;}
 .spin{display:inline-block;width:14px;height:14px;border:2px solid var(--border);border-top-color:var(--green);border-radius:50%;animation:spinner .6s linear infinite;vertical-align:middle;}
 @keyframes spinner{to{transform:rotate(360deg)}}
 .loading-overlay{display:flex;align-items:center;justify-content:center;padding:40px;gap:10px;color:var(--muted);font-size:13px;}
-
-/* TABS */
-.tabs{display:flex;gap:2px;border-bottom:1px solid var(--border);margin-bottom:16px;}
-.tab{font-size:12px;font-weight:500;padding:7px 14px;border:none;background:none;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .15s;}
-.tab:hover{color:var(--text);}
-.tab.on{color:var(--green);border-bottom-color:var(--green);}
-.tp{display:none;}.tp.on{display:block;}
-
-/* TOOLTIPS */
 [data-tip]{position:relative;cursor:help;}
 [data-tip]:hover::after{content:attr(data-tip);position:absolute;bottom:120%;left:50%;transform:translateX(-50%);background:var(--bg4);border:1px solid var(--border2);padding:5px 10px;border-radius:6px;font-size:11px;white-space:nowrap;z-index:99;color:var(--text);}
 </style>
 </head>
 <body>
-
 <header>
-  <div class="logo"><div class="logo-ring"></div>OPTIONS DESK</div>
+  <div class="logo"><div class="logo-ring"></div>QUEST OPTIONS</div>
   <div class="h-sep"></div>
-  <div id="profit-status" class="h-badge" onclick="toggleProfitConfig()" title="Clique para configurar conexão Profit Pro">⬡ Profit: desconectado</div>
+  <div id="profit-status" class="h-badge trying" onclick="toggleProfitConfig()" title="Clique p/ configurar">Profit: conectando...</div>
   <div id="clock" class="h-badge">--:--:--</div>
   <div id="mkt-badge" class="h-mkt mkt-closed">FECHADO</div>
 </header>
-
 <div class="main">
 <aside class="sidebar">
   <div class="sl-label">Watchlist</div>
   <div id="ticker-list"></div>
-
   <div class="config-section">
     <div class="sl-label">Parâmetros</div>
-    <div class="config-row">
-      <span class="config-label" data-tip="% mínimo de alta esperada na opção">Gain alvo mín</span>
-      <input class="config-input" id="cfg-gain-min" type="number" value="30">
-    </div>
-    <div class="config-row">
-      <span class="config-label" data-tip="% máximo de alta esperada na opção">Gain alvo máx</span>
-      <input class="config-input" id="cfg-gain-max" type="number" value="60">
-    </div>
-    <div class="config-row">
-      <span class="config-label" data-tip="Prob. histórica mínima para exibir sinal">Prob. mín D+1</span>
-      <input class="config-input" id="cfg-prob-min" type="number" value="52">
-    </div>
-    <div class="config-row">
-      <span class="config-label" data-tip="N mínimo de amostras históricas">Amostras mín</span>
-      <input class="config-input" id="cfg-samples" type="number" value="8">
-    </div>
-    <div class="config-row">
-      <span class="config-label" data-tip="Intervalo de re-scan em segundos">Re-scan (seg)</span>
-      <input class="config-input" id="cfg-interval" type="number" value="60">
-    </div>
+    <div class="config-row"><span class="config-label" data-tip="% minimo de ganho">Gain alvo min</span><input class="config-input" id="cfg-gain-min" type="number" value="30"></div>
+    <div class="config-row"><span class="config-label">Gain alvo max</span><input class="config-input" id="cfg-gain-max" type="number" value="60"></div>
+    <div class="config-row"><span class="config-label">Prob. min D+1</span><input class="config-input" id="cfg-prob-min" type="number" value="52"></div>
+    <div class="config-row"><span class="config-label">Amostras min</span><input class="config-input" id="cfg-samples" type="number" value="8"></div>
+    <div class="config-row"><span class="config-label">Re-scan (seg)</span><input class="config-input" id="cfg-interval" type="number" value="60"></div>
   </div>
-
-  <button class="scan-btn" id="scan-btn" onclick="fullScan()">↻ Escanear tudo</button>
-
+  <button class="scan-btn" id="scan-btn" onclick="fullScan()">Escanear tudo</button>
   <div id="profit-config-panel" style="display:none;" class="config-section">
-    <div class="sl-label">Profit Pro — API local</div>
-    <div class="profit-config">
-      Para dados ao vivo, rode este script na sua máquina com o Profit aberto:
-      <div class="profit-url">python profit_bridge.py</div>
-      <b>Porta padrão:</b> localhost:8765<br>
-      O dashboard buscará automaticamente os preços via WebSocket.
-    </div>
-    <div class="config-row" style="margin-top:6px;">
-      <span class="config-label">URL WS</span>
-      <input class="config-input" id="cfg-ws-url" type="text" value="ws://localhost:8765" style="width:140px;">
-    </div>
-    <button class="scan-btn" onclick="connectProfit()" style="margin-top:6px;">Conectar</button>
+    <div class="sl-label">Profit Pro</div>
+    <div class="profit-cfg-box">Com o Profit aberto:<div class="profit-url">python profit_bridge.py</div><b>Porta:</b> localhost:8765</div>
+    <div class="config-row" style="margin-top:6px;"><span class="config-label">URL WS</span><input class="config-input" id="cfg-ws-url" type="text" value="ws://localhost:8765" style="width:140px;"></div>
+    <button class="scan-btn" onclick="connectProfit(true)" style="margin-top:6px;">Reconectar</button>
   </div>
 </aside>
-
 <main class="content">
-
   <div class="top-stats">
     <div class="stat-c"><div class="stat-l">Sinais</div><div class="stat-v" id="st-signals">0</div><div class="stat-s">oportunidades</div></div>
-    <div class="stat-c"><div class="stat-l">Melhor score</div><div class="stat-v" id="st-best">—</div><div class="stat-s" id="st-best-sub">aguardando scan</div></div>
-    <div class="stat-c"><div class="stat-l">IV médio</div><div class="stat-v" id="st-iv">—</div><div class="stat-s">volatilidade implícita</div></div>
-    <div class="stat-c"><div class="stat-l">Melhor prob.</div><div class="stat-v" id="st-prob">—</div><div class="stat-s">D+1 histórico</div></div>
-    <div class="stat-c"><div class="stat-l">Último scan</div><div class="stat-v" id="st-scan">—</div><div class="stat-s" id="st-src">—</div></div>
+    <div class="stat-c"><div class="stat-l">Melhor score</div><div class="stat-v" id="st-best">--</div><div class="stat-s" id="st-best-sub">aguardando scan</div></div>
+    <div class="stat-c"><div class="stat-l">IV medio</div><div class="stat-v" id="st-iv">--</div><div class="stat-s">volatilidade implicita</div></div>
+    <div class="stat-c"><div class="stat-l">Melhor prob.</div><div class="stat-v" id="st-prob">--</div><div class="stat-s">D+1 historico</div></div>
+    <div class="stat-c"><div class="stat-l">Ultimo scan</div><div class="stat-v" id="st-scan">--</div><div class="stat-s" id="st-src">--</div></div>
   </div>
-
   <div class="tabs">
-    <button class="tab on" onclick="switchTab('ranking',this)">Ranking Combinatório</button>
-    <button class="tab" onclick="switchTab('chain',this)">Cadeia de Opções</button>
-    <button class="tab" onclick="switchTab('hist',this)">Histórico por Gap</button>
+    <button class="tab on" onclick="switchTab('ranking',this)">Ranking</button>
+    <button class="tab" onclick="switchTab('chain',this)">Cadeia de Opcoes</button>
+    <button class="tab" onclick="switchTab('hist',this)">Historico</button>
     <button class="tab" onclick="switchTab('howto',this)">Como funciona</button>
   </div>
-
   <div id="tp-ranking" class="tp on">
     <div class="section-head">
-      <span class="section-title">Top oportunidades — score combinatório</span>
-      <span id="rank-ticker-label" style="font-size:11px;color:var(--muted);">Selecione uma ação</span>
+      <span class="section-title">Top oportunidades -- score combinatorio</span>
+      <span id="rank-ticker-label" style="font-size:11px;color:var(--muted);">Selecione uma acao</span>
     </div>
-    <div id="ranking-list"><div class="loading-overlay"><div class="spin"></div>Clique em "Escanear tudo" para iniciar</div></div>
+    <div id="ranking-list"><div class="loading-overlay"><div class="spin"></div>Carregando...</div></div>
   </div>
-
   <div id="tp-chain" class="tp">
-    <div id="chain-area"><div class="loading-overlay">Selecione uma ação e escaneie</div></div>
+    <div class="section-head">
+      <span class="section-title">Cadeia de Opcoes</span>
+      <span id="chain-source" class="chain-source-badge sim">brapi + BS</span>
+    </div>
+    <div class="chain-filter-bar">
+      <button class="chain-filter-btn on" onclick="filterChain('all',this)">Todas</button>
+      <button class="chain-filter-btn" onclick="filterChain('call',this)">So CALL</button>
+      <button class="chain-filter-btn" onclick="filterChain('put',this)">So PUT</button>
+      <button class="chain-filter-btn" onclick="filterChain('sweet',this)">Sweet Spot (delta 0.25-0.45)</button>
+      <button class="chain-filter-btn" onclick="filterChain('7d',this)">7 dias</button>
+      <button class="chain-filter-btn" onclick="filterChain('21d',this)">21 dias</button>
+      <span id="chain-load-status" style="font-size:11px;color:var(--muted);margin-left:auto;"></span>
+    </div>
+    <div id="chain-area"><div class="loading-overlay">Selecione um ativo e escaneie</div></div>
   </div>
-
   <div id="tp-hist" class="tp">
-    <div id="hist-area"><div class="loading-overlay">Selecione uma ação e escaneie</div></div>
+    <div class="subtabs">
+      <button class="subtab on" onclick="switchSubtab('gaps',this)">Analise de Gaps</button>
+      <button class="subtab" onclick="switchSubtab('daily',this)">Variacao Diaria</button>
+      <button class="subtab" onclick="switchSubtab('intra',this)">Padroes Intraday</button>
+      <button class="subtab" onclick="switchSubtab('streaks',this)">Sequencias</button>
+    </div>
+    <div id="hist-gaps"><div class="loading-overlay">Selecione um ativo e escaneie</div></div>
+    <div id="hist-daily" style="display:none;"></div>
+    <div id="hist-intra" style="display:none;"></div>
+    <div id="hist-streaks" style="display:none;"></div>
   </div>
-
   <div id="tp-howto" class="tp">
     <div style="max-width:720px;line-height:1.85;font-size:13px;color:var(--muted);">
-      <div style="font-size:18px;font-weight:600;color:var(--text);margin-bottom:16px;">Como o Score Combinatório funciona</div>
-      <p style="margin-bottom:12px;">O dashboard combina <b style="color:var(--text)">três camadas de análise</b> para rankear cada opção:</p>
-      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:16px 20px;margin-bottom:14px;">
-        <div style="font-weight:600;color:var(--green);margin-bottom:8px;">1. Probabilidade histórica (base: planilha ESTATISTICAS)</div>
-        <p>Cada gap de abertura (+1%, -2%, etc.) tem um histórico de ~12 anos de comportamento. O sistema localiza o bucket de gap atual e usa a probabilidade de fechamento positivo em D+1, D+2 e D+3. Quanto maior a probabilidade E maior o número de amostras, maior o peso neste componente. <b style="color:var(--text)">Peso: 35 pts máx</b>.</p>
+      <div style="font-size:18px;font-weight:600;color:var(--text);margin-bottom:16px;">Como o Quest Options funciona</div>
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:16px 20px;margin-bottom:12px;">
+        <div style="font-weight:600;color:var(--green);margin-bottom:8px;">Cadeia de Opcoes -- dados reais</div>
+        <p>Com o profit_bridge.py rodando, o dashboard recebe a cadeia real do Profit via DDE: tickers reais, premios ao vivo, delta, theta, IV. Sem o bridge, usa brapi + Black-Scholes como fallback.</p>
       </div>
-      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:16px 20px;margin-bottom:14px;">
-        <div style="font-weight:600;color:var(--blue);margin-bottom:8px;">2. Estrutura da opção (Black-Scholes)</div>
-        <p>Para cada opção candidata, calcula: prêmio, delta real em R$, gamma, theta, vega, e o payoff esperado se o ativo mover conforme o histórico. O delta ideal para compra seco está entre 0.25-0.45 (opção OTM com boa alavancagem). IV próxima ou abaixo da HV indica prêmio razoável. <b style="color:var(--text)">Peso: 35 pts máx</b>.</p>
-      </div>
-      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:16px 20px;margin-bottom:14px;">
-        <div style="font-weight:600;color:var(--yellow);margin-bottom:8px;">3. Contexto de mercado</div>
-        <p>Horário (abertura 09:01-09:30 = peso extra), magnitude do gap vs. a distribuição histórica, e o retorno estimado na opção se o ativo se mover a favor nos próximos 1-3 dias. <b style="color:var(--text)">Peso: 30 pts máx</b>.</p>
-      </div>
-      <div style="background:var(--bg3);border:1px solid var(--border2);border-radius:10px;padding:16px 20px;margin-bottom:14px;">
-        <div style="font-weight:600;color:var(--purple);margin-bottom:8px;">Delta em R$ — o que significa</div>
-        <p>O Delta mostrado é em <b style="color:var(--text)">reais por real</b> do ativo, igual ao Profit. Exemplo: delta 0.35 significa que a opção valoriza R$ 0,35 para cada R$ 1,00 de alta no ativo. Para 100 opções, a sensibilidade é R$ 35 por R$ 1 de movimento.</p>
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:16px 20px;margin-bottom:12px;">
+        <div style="font-weight:600;color:var(--blue);margin-bottom:8px;">Historico -- 4 camadas de analise</div>
+        <p><b style="color:var(--text)">Gaps:</b> bucket de abertura + probabilidade historica D+1/D+2/D+3.<br>
+        <b style="color:var(--text)">Variacao diaria:</b> distribuicao completa dos ultimos 2 anos.<br>
+        <b style="color:var(--text)">Padroes intraday:</b> quantas vezes o ativo abriu em X% de gap e o que fez durante o dia.<br>
+        <b style="color:var(--text)">Sequencias:</b> probabilidade apos N dias consecutivos de alta/baixa.</p>
       </div>
       <div style="background:var(--bg3);border:1px solid var(--border2);border-radius:10px;padding:16px 20px;">
-        <div style="font-weight:600;color:var(--red);margin-bottom:8px;">Dados ao vivo via Profit Pro</div>
-        <p>Para preços em tempo real, rode o <b style="color:var(--text)">profit_bridge.py</b> na sua máquina com o Profit aberto. Ele cria um WebSocket local que o dashboard consulta. Para acesso público, use <b style="color:var(--text)">ngrok http 8765</b> e cole a URL no campo de configuração. Sem o bridge, o dashboard usa a API pública brapi.dev como fallback.</p>
-        <div style="background:var(--bg);border-radius:6px;padding:10px;margin-top:10px;font-family:var(--mono);font-size:11px;color:var(--yellow);">
-# Instalar dependências<br>
-pip install websockets requests<br><br>
-# Rodar o bridge<br>
-python profit_bridge.py<br><br>
-# Expor publicamente<br>
-ngrok http 8765
-        </div>
+        <div style="font-weight:600;color:var(--red);margin-bottom:6px;">Setup</div>
+        <div style="background:var(--bg);border-radius:6px;padding:10px;font-family:var(--mono);font-size:11px;color:var(--yellow);">pip install websockets pywin32<br>python profit_bridge.py</div>
       </div>
     </div>
   </div>
-
 </main>
 </div>
-
 <div class="alert-stack" id="alert-stack"></div>
-
-<div class="modal-wrap" id="modal-wrap" onclick="closeModalOutside(event)">
-  <div class="modal-box">
-    <button class="modal-close" onclick="closeModal()">×</button>
-    <div id="modal-body"></div>
-  </div>
-</div>
-
 <script>
-// ===================== CONFIG =====================
-const TICKERS = [
-  {t:'PETR4', name:'Petrobras', seriesPrefix:'PETR4', optPrefix:{call:'PETRA',put:'PETRP'}},
-  {t:'VALE3', name:'Vale',      seriesPrefix:'VALE3', optPrefix:{call:'VALEA',put:'VALEP'}},
-  {t:'B3SA3', name:'B3 S.A.',   seriesPrefix:'B3SA3', optPrefix:{call:'B3SAA',put:'B3SAP'}},
-  {t:'ITUB4', name:'Itaú',      seriesPrefix:'ITUB4', optPrefix:{call:'ITUBA',put:'ITUBP'}},
-  {t:'BBAS3', name:'Banco do Brasil', seriesPrefix:'BBAS3', optPrefix:{call:'BBASA',put:'BBASP'}},
-];
-// Letra do vencimento BOVESPA (jan=A ... dez=L para calls; jan=M ... dez=X para puts)
-const CALL_MONTHS = ['A','B','C','D','E','F','G','H','I','J','K','L'];
-const PUT_MONTHS  = ['M','N','O','P','Q','R','S','T','U','V','W','X'];
-
-const HV_BASE = {PETR4:.38, VALE3:.34, B3SA3:.30, ITUB4:.28, BBAS3:.30};
-// ESTATISTICAS — base histórica completa
-const GAP_STATS = {
+const TICKERS=[{t:'PETR4',name:'Petrobras'},{t:'VALE3',name:'Vale'},{t:'B3SA3',name:'B3 S.A.'},{t:'ITUB4',name:'Itau'},{t:'BBAS3',name:'Banco do Brasil'}];
+const BRAPI_TOKEN='xhruu5pNb1vYRh64XVzfbL';
+const HV_BASE={PETR4:.38,VALE3:.34,B3SA3:.30,ITUB4:.28,BBAS3:.30};
+const GAP_STATS={
   pos1:{label:'+1% a +2%',n:191,d1p:.492,d2p:.445,d3p:.602,dir:'CALL'},
-  pos2:{label:'+2% a +3%',n:36, d1p:.527,d2p:.666,d3p:.722,dir:'CALL'},
-  pos3:{label:'+3% a +4%',n:6,  d1p:.333,d2p:.666,d3p:.500,dir:'CALL'},
-  pos4:{label:'+4% a +5%',n:6,  d1p:.666,d2p:.833,d3p:.333,dir:'CALL'},
-  pos5:{label:'+5%+',     n:4,  d1p:.750,d2p:.750,d3p:.500,dir:'CALL'},
+  pos2:{label:'+2% a +3%',n:36,d1p:.527,d2p:.666,d3p:.722,dir:'CALL'},
+  pos3:{label:'+3% a +4%',n:6,d1p:.333,d2p:.666,d3p:.500,dir:'CALL'},
+  pos4:{label:'+4% a +5%',n:6,d1p:.666,d2p:.833,d3p:.333,dir:'CALL'},
+  pos5:{label:'+5%+',n:4,d1p:.750,d2p:.750,d3p:.500,dir:'CALL'},
   neg1:{label:'-1% a -2%',n:118,d1p:.584,d2p:.237,d3p:.500,dir:'PUT'},
-  neg2:{label:'-2% a -3%',n:19, d1p:.578,d2p:.157,d3p:.684,dir:'PUT'},
-  neg3:{label:'-3% a -4%',n:9,  d1p:.333,d2p:.222,d3p:.444,dir:'PUT'},
-  neg4:{label:'-4% a -5%',n:1,  d1p:.000,d2p:.000,d3p:1.00,dir:'PUT'},
-  neg5:{label:'-5%+',     n:7,  d1p:.143,d2p:.143,d3p:.286,dir:'PUT'},
-  flat:{label:'0% a ±1%', n:550,d1p:.510,d2p:.500,d3p:.500,dir:null},
+  neg2:{label:'-2% a -3%',n:19,d1p:.578,d2p:.157,d3p:.684,dir:'PUT'},
+  neg3:{label:'-3% a -4%',n:9,d1p:.333,d2p:.222,d3p:.444,dir:'PUT'},
+  neg4:{label:'-4% a -5%',n:1,d1p:.000,d2p:.000,d3p:1.00,dir:'PUT'},
+  neg5:{label:'-5%+',n:7,d1p:.143,d2p:.143,d3p:.286,dir:'PUT'},
+  flat:{label:'0% a +-1%',n:550,d1p:.510,d2p:.500,d3p:.500,dir:null},
 };
-// ===================== STATE =====================
-let stockData = {};
-let selectedTicker = null;
-let currentSignals = [];
-let scanTimer = null;
-let wsConn = null;
-let profitConnected = false;
-
-// ===================== BS =====================
-function Ncdf(x){
-  const a1=.254829592,a2=-.284496736,a3=1.421413741,a4=-1.453152027,a5=1.061405429,p=.3275911;
-  const s=x<0?-1:1; x=Math.abs(x)/Math.SQRT2;
-  const t=1/(1+p*x);
-  return .5*(1+s*(1-(((((a5*t+a4)*t+a3)*t+a2)*t+a1)*t)*Math.exp(-x*x)));
-}
+let stockData={},optionChains={},histData={},selectedTicker=null,chainFilter='all',scanTimer=null,wsConn=null,profitConnected=false,wsAttempts=0,wsReconnectTimer=null,prevCloseCache={};
+const WS_MAX=10;
+function Ncdf(x){const a1=.254829592,a2=-.284496736,a3=1.421413741,a4=-1.453152027,a5=1.061405429,p=.3275911;const s=x<0?-1:1;x=Math.abs(x)/Math.SQRT2;const t=1/(1+p*x);return .5*(1+s*(1-(((((a5*t+a4)*t+a3)*t+a2)*t+a1)*t)*Math.exp(-x*x)));}
 function Npdf(x){return Math.exp(-.5*x*x)/Math.sqrt(2*Math.PI);}
-
-function bs(S,K,T,r,sigma,type='call'){
+function bs(S,K,T,r,sigma,type){
   if(T<=0){const i=type==='call'?Math.max(S-K,0):Math.max(K-S,0);return{price:i,delta:0,gamma:0,theta:0,vega:0};}
-  const d1=(Math.log(S/K)+(r+.5*sigma*sigma)*T)/(sigma*Math.sqrt(T));
-  const d2=d1-sigma*Math.sqrt(T);
+  const d1=(Math.log(S/K)+(r+.5*sigma*sigma)*T)/(sigma*Math.sqrt(T)),d2=d1-sigma*Math.sqrt(T);
   let price,delta;
   if(type==='call'){price=S*Ncdf(d1)-K*Math.exp(-r*T)*Ncdf(d2);delta=Ncdf(d1);}
   else{price=K*Math.exp(-r*T)*Ncdf(-d2)-S*Ncdf(-d1);delta=Ncdf(d1)-1;}
   const gamma=Npdf(d1)/(S*sigma*Math.sqrt(T));
   const theta=(-(S*Npdf(d1)*sigma)/(2*Math.sqrt(T))-r*K*Math.exp(-r*T)*(type==='call'?Ncdf(d2):Ncdf(-d2)))/365;
   const vega=S*Npdf(d1)*Math.sqrt(T)/100;
-  // Delta em R$ = delta × prêmio / S ← NÃO, delta em R$ é delta puro (0.35 = R$0.35 / R$1 do ativo)
-  return{price:Math.max(price,.001),delta,deltaRS:delta,gamma,theta,vega,d1,d2};
+  return{price:Math.max(price,.001),delta,gamma,theta,vega};
 }
-
-// ISSO AQUI é a versão nova com brapi real:
-const BRAPI_TOKEN = 'xhruu5pNb1vYRh64XVzfbL'; // ← cola seu token aqui
-
-async function fetchRealOptions(ticker) {
-  const prefix = ticker.slice(0, 4);
-  const url = `https://brapi.dev/api/quote/list?search=${prefix}&token=${BRAPI_TOKEN}&limit=50`;
-  const res = await fetch(url);
-  const data = await res.json();
-  return (data.stocks || []).filter(s => s.stock.length > 5 && /^[A-Z]{4}[A-Z]\d/.test(s.stock));
-}
-
-// Função de fallback para não quebrar a tela atual
-function optionCode(prefix, type, K, expDays){
-  return prefix.slice(0,4) + (type==='call'?'A':'M') + Math.round(K); 
-}
-
-function optExpDate(expDays){
-  const d = new Date(Date.now() + expDays*86400000);
-  return d.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'});
-}
-
-// ===================== GAP CLASSIFY =====================
-function classifyGap(g){
-  if(g>=.05)return'pos5';if(g>=.04)return'pos4';if(g>=.03)return'pos3';
-  if(g>=.02)return'pos2';if(g>=.01)return'pos1';
-  if(g<=-.05)return'neg5';if(g<=-.04)return'neg4';if(g<=-.03)return'neg3';
-  if(g<=-.02)return'neg2';if(g<=-.01)return'neg1';
-  return'flat';
-}
-
-// ===================== COMBO SCORE =====================
-function comboScore(sig, gs){
-  let score = 0;
-  let breakdown = {};
-  // COMPONENTE 1: probabilidade histórica (35 pts)
-  if(gs && gs.n > 0){
-    const bestProb = Math.max(gs.d1p, gs.d2p, gs.d3p);
-    const probScore = (bestProb - 0.5) * 60; // 0 a ~30 pts
-    const sampleBonus = gs.n > 100 ?
-    5 : gs.n > 30 ? 3 : gs.n > 10 ? 1 : 0;
-    const probPts = Math.max(0, probScore + sampleBonus);
-    score += probPts;
-    breakdown.hist = probPts.toFixed(1);
-  } else {
-    breakdown.hist = 0;
-  }
-
-  // COMPONENTE 2: estrutura da opção (35 pts)
-  const delta = Math.abs(sig.bs.delta);
-  const deltaScore = delta >= .25 && delta <= .45 ?
-  14 : delta >= .15 && delta < .55 ? 8 : 2;
-  const ivRatio = sig.iv / sig.hv30;
-  const ivScore = ivRatio < 1.05 ? 12 : ivRatio < 1.2 ? 7 : ivRatio < 1.4 ?
-  3 : 0;
-  const gainPot = sig.gainPct;
-  const gainScore = gainPot >= .40 ? 9 : gainPot >= .25 ?
-  5 : gainPot >= .10 ? 2 : 0;
-  const optPts = deltaScore + ivScore + gainScore;
-  score += optPts;
-  breakdown.option = optPts.toFixed(1);
-
-  // COMPONENTE 3: contexto (30 pts)
-  const isOpen = marketIsOpen();
-  const hourBonus = isOpen && sig.expDays <= 7 ? 10 : isOpen ? 5 : 0;
-  const gapMagnitude = Math.abs(sig.gapPct);
-  const gapBonus = gapMagnitude >= .03 ? 8 : gapMagnitude >= .02 ? 5 : gapMagnitude >= .01 ?
-  3 : 0;
-  const expBonus = sig.expDays <= 7 ? 8 : sig.expDays <= 21 ? 5 : 2;
-  const ctxPts = hourBonus + gapBonus + expBonus;
-  score += ctxPts;
-  breakdown.ctx = ctxPts.toFixed(1);
-
-  breakdown.total = score.toFixed(0);
-  return { score: Math.round(score), breakdown };
-}
-
-// ===================== SIGNAL GEN =====================
-function generateSignals(stock){
-  const {ticker, price, iv, hv30, gapPct} = stock;
-  const gapKey = classifyGap(gapPct);
-  const gs = GAP_STATS[gapKey];
-  const r = 0.1375;
-  const tickerInfo = TICKERS.find(t=>t.t===ticker);
-  const signals = [];
-  const exps = [
-    {days:7,label:'7d',horizon:'day'},
-    {days:21,label:'21d',horizon:'swing'},
-    {days:42,label:'42d',horizon:'swing'},
-  ];
-  exps.forEach(exp=>{
-    const T = exp.days/365;
-    const sigma = iv || hv30;
-
-    // CALLS (gaps positivos ou neutros)
-    [1.03,1.05,1.07,1.09,1.12].forEach(mult=>{
-      const K = Math.round(price*mult*2)/2;
-      const res = bs(price,K,T,r,sigma,'call');
-      if(res.price < .03 || res.price > price*.25) return;
-      // Estimar ganho na opção se ativo subir conforme histórico
-      const moveSize = gs ? Math.max(gs.d1p-.5, 0)*2*.08 + .05 : .05;
-      const Sfuture = 
-      price*(1+moveSize);
-      const T2 = Math.max(T - exp.days*.4/365, .001);
-      const resFuture = bs(Sfuture,K,T2,r,sigma,'call');
-      const gainPct = (resFuture.price - res.price)/res.price;
-      if(gainPct < .10) return;
-      const gainMin = parseInt(document.getElementById('cfg-gain-min').value)||30;
-      const gainMax = parseInt(document.getElementById('cfg-gain-max').value)||60;
-      const code = optionCode(ticker, 'call', K, exp.days);
-      const {score, breakdown} = comboScore({bs:res,iv:sigma,hv30,gapPct,gainPct,expDays:exp.days,type:'call'}, gs);
-      signals.push({ticker,code,type:'call',K,T,expDays:exp.days,expLabel:exp.label,expDate:optExpDate(exp.days),horizon:exp.horizon,bs:res,iv:sigma,hv30,gapPct,gapKey,gainPct,score,breakdown,gs,price,r,sigma,mult});
+function thirdMonday(y,m){const d=new Date(y,m,1);const dow=d.getDay();const fm=dow<=1?1+(1-dow+7)%7:1+(8-dow);return new Date(y,m,fm+14);}
+const CALL_ML=[...'ABCDEFGHIJKL'],PUT_ML=[...'MNOPQRSTUVWX'];
+async function fetchOptionChainBrapi(ticker){
+  const prefix=ticker.slice(0,4);
+  try{
+    const r=await fetch(`https://brapi.dev/api/quote/list?search=${prefix}&token=${BRAPI_TOKEN}&limit=100`);
+    const d=await r.json();
+    const raw=(d.stocks||[]).filter(s=>{const sym=s.stock;return sym.length>5&&/^[A-Z]{4}[A-Z]\d/.test(sym);});
+    if(!raw.length)return buildBSChain(ticker);
+    const spot=stockData[ticker]?.price||0;
+    const sigma=stockData[ticker]?.iv||HV_BASE[ticker]||.35;
+    const r2=0.1375;
+    return raw.map(item=>{
+      const sym=item.stock,monthChar=sym[4],isCall=CALL_ML.includes(monthChar);
+      const mIdx=isCall?CALL_ML.indexOf(monthChar):PUT_ML.indexOf(monthChar);
+      const today=new Date();
+      const expYear=today.getMonth()>mIdx?today.getFullYear()+1:today.getFullYear();
+      const expDate=thirdMonday(expYear,mIdx);
+      const expDays=Math.max(1,Math.round((expDate-today)/86400000));
+      const T=expDays/365;
+      const price=item.close||item.regularMarketPrice||0;
+      const rawK=sym.slice(5);
+      let K=parseFloat(rawK);
+      if(K>1000)K=K/10;else if(K>100&&spot<50)K=K/10;
+      const greeks=spot>0&&K>0?bs(spot,K,T,r2,sigma,isCall?'call':'put'):{price,delta:0,gamma:0,theta:0,vega:0};
+      return{ticker:sym,optType:isCall?'call':'put',strike:K,price:price||greeks.price,delta:greeks.delta,gamma:greeks.gamma,theta:greeks.theta,vega:greeks.vega,iv:sigma,expDays,expDate:expDate.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'}),source:'brapi',bid:0,ask:0,change:(item.regularMarketChangePercent||0)/100};
     });
-
-    // PUTS (gaps negativos)
-    if(gapPct < -.01){
-      [.97,.95,.93,.91].forEach(mult=>{
-        const K = Math.round(price*mult*2)/2;
-        const res = bs(price,K,T,r,sigma,'put');
-        if(res.price < .03 || res.price > price*.20) return;
-        const moveSize = gs ? Math.max(gs.d1p-.5,0)*2*.06+.04 : .04;
-        const Sfuture = price*(1-moveSize);
-        const T2 = Math.max(T-exp.days*.4/365,.001);
-        const 
-        resFuture = bs(Sfuture,K,T2,r,sigma,'put');
-        const gainPct = (resFuture.price-res.price)/res.price;
-        if(gainPct < .10) return;
-        const code = optionCode(ticker,'put',K,exp.days);
-        const {score,breakdown} = comboScore({bs:res,iv:sigma,hv30,gapPct,gainPct,expDays:exp.days,type:'put'},gs);
-        signals.push({ticker,code,type:'put',K,T,expDays:exp.days,expLabel:exp.label,expDate:optExpDate(exp.days),horizon:exp.horizon,bs:res,iv:sigma,hv30,gapPct,gapKey,gainPct,score,breakdown,gs,price,r,sigma,mult});
+  }catch(e){return buildBSChain(ticker);}
+}
+function buildBSChain(ticker){
+  const spot=stockData[ticker]?.price||20,sigma=stockData[ticker]?.iv||HV_BASE[ticker]||.35,r=.1375;
+  const chain=[],exps=[{days:7,mi:new Date().getMonth()%12},{days:21,mi:(new Date().getMonth()+1)%12},{days:42,mi:(new Date().getMonth()+2)%12}];
+  const prefix=ticker.slice(0,4),low=Math.round(spot*.85*2)/2,high=Math.round(spot*1.15*2)/2;
+  exps.forEach(exp=>{
+    const T=exp.days/365,expDate=new Date(Date.now()+exp.days*86400000),expStr=expDate.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'});
+    for(let K=low;K<=high;K=Math.round((K+.5)*10)/10){
+      ['call','put'].forEach(type=>{
+        const ml=type==='call'?CALL_ML[exp.mi]:PUT_ML[exp.mi];
+        const kr=Math.round(K*2)/2,ks=kr%1===0?String(Math.round(kr)):String(Math.round(kr*10));
+        const g=bs(spot,K,T,r,sigma,type);
+        chain.push({ticker:`${prefix}${ml}${ks}`,optType:type,strike:K,price:g.price,delta:g.delta,gamma:g.gamma,theta:g.theta,vega:g.vega,iv:sigma,expDays:exp.days,expDate:expStr,source:'bs',bid:g.price*.95,ask:g.price*1.05,change:0});
       });
     }
   });
-
+  return chain.sort((a,b)=>a.strike-b.strike);
+}
+async function fetchHistory(ticker){
+  if(histData[ticker]?.length)return histData[ticker];
+  try{
+    const r=await fetch(`https://brapi.dev/api/quote/${ticker}?token=${BRAPI_TOKEN}&range=2y&interval=1d`);
+    const d=await r.json();
+    const prices=d.results?.[0]?.historicalDataPrice||[];
+    histData[ticker]=prices.map(p=>({date:new Date(p.date*1000),open:p.open,high:p.high,low:p.low,close:p.close})).filter(p=>p.open>0&&p.close>0);
+    return histData[ticker];
+  }catch(e){return[];}
+}
+function classifyGap(g){
+  if(g>=.05)return'pos5';if(g>=.04)return'pos4';if(g>=.03)return'pos3';if(g>=.02)return'pos2';if(g>=.01)return'pos1';
+  if(g<=-.05)return'neg5';if(g<=-.04)return'neg4';if(g<=-.03)return'neg3';if(g<=-.02)return'neg2';if(g<=-.01)return'neg1';
+  return'flat';
+}
+function comboScore(sig,gs){
+  let score=0,bd={};
+  if(gs&&gs.n>0){const bp=Math.max(gs.d1p,gs.d2p,gs.d3p),ps=(bp-.5)*60,sb=gs.n>100?5:gs.n>30?3:gs.n>10?1:0,pp=Math.max(0,ps+sb);score+=pp;bd.hist=pp.toFixed(1);}else bd.hist=0;
+  const da=Math.abs(sig.bs.delta),ds=da>=.25&&da<=.45?14:da>=.15&&da<.55?8:2;
+  const ir=sig.iv/sig.hv30,is=ir<1.05?12:ir<1.2?7:ir<1.4?3:0;
+  const gp=sig.gainPct,gs2=gp>=.40?9:gp>=.25?5:gp>=.10?2:0;
+  const op=ds+is+gs2;score+=op;bd.option=op.toFixed(1);
+  const io=marketIsOpen(),hb=io&&sig.expDays<=7?10:io?5:0,gm=Math.abs(sig.gapPct),gb=gm>=.03?8:gm>=.02?5:gm>=.01?3:0,eb=sig.expDays<=7?8:sig.expDays<=21?5:2,cp=hb+gb+eb;
+  score+=cp;bd.ctx=cp.toFixed(1);bd.total=score.toFixed(0);
+  return{score:Math.round(score),breakdown:bd};
+}
+function generateSignals(stock){
+  const{ticker,price,iv,hv30,gapPct}=stock,gapKey=classifyGap(gapPct),gs=GAP_STATS[gapKey],r=.1375,signals=[],chain=optionChains[ticker]||[];
+  if(chain.length>0){
+    chain.forEach(opt=>{
+      if(opt.price<=0.005)return;
+      const T=opt.expDays/365,sigma=opt.iv>1?opt.iv/100:(opt.iv>0?opt.iv:(iv||hv30));
+      const bsRes={price:opt.price,delta:opt.delta||0,gamma:opt.gamma||0,theta:opt.theta||0,vega:opt.vega||0};
+      const moveSize=gs?Math.max(gs.d1p-.5,0)*2*.08+.05:.05;
+      const Sf=opt.optType==='call'?price*(1+moveSize):price*(1-moveSize);
+      const T2=Math.max(T-opt.expDays*.4/365,.001);
+      const rf=bs(Sf,opt.strike,T2,r,sigma,opt.optType);
+      const gainPct=(rf.price-opt.price)/opt.price;
+      if(gainPct<.10)return;
+      const{score,breakdown}=comboScore({bs:bsRes,iv:sigma,hv30,gapPct,gainPct,expDays:opt.expDays,type:opt.optType},gs);
+      signals.push({ticker,code:opt.ticker,type:opt.optType,K:opt.strike,T,expDays:opt.expDays,expLabel:opt.expDays+'d',expDate:opt.expDate,horizon:opt.expDays<=7?'day':'swing',bs:bsRes,iv:sigma,hv30,gapPct,gapKey,gainPct,score,breakdown,gs,price,r,sigma,isLive:opt.source==='profit'});
+    });
+  }else{
+    const exps=[{days:7},{days:21},{days:42}];
+    exps.forEach(exp=>{
+      const T=exp.days/365,sigma=iv||hv30;
+      [1.03,1.05,1.07,1.09,1.12].forEach(mult=>{
+        const K=Math.round(price*mult*2)/2,res=bs(price,K,T,r,sigma,'call');
+        if(res.price<.03||res.price>price*.25)return;
+        const ms=gs?Math.max(gs.d1p-.5,0)*2*.08+.05:.05,Sf=price*(1+ms),T2=Math.max(T-exp.days*.4/365,.001),rf=bs(Sf,K,T2,r,sigma,'call'),gainPct=(rf.price-res.price)/res.price;
+        if(gainPct<.10)return;
+        const mi=new Date().getMonth(),ml=CALL_ML[mi],kr=Math.round(K*2)/2,ks=kr%1===0?String(Math.round(kr)):String(Math.round(kr*10));
+        const code=`${ticker.slice(0,4)}${ml}${ks}`,{score,breakdown}=comboScore({bs:res,iv:sigma,hv30,gapPct,gainPct,expDays:exp.days,type:'call'},gs);
+        signals.push({ticker,code,type:'call',K,T,expDays:exp.days,expLabel:exp.days+'d',expDate:new Date(Date.now()+exp.days*86400000).toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'}),horizon:exp.days<=7?'day':'swing',bs:res,iv:sigma,hv30,gapPct,gapKey,gainPct,score,breakdown,gs,price,r,sigma,isLive:false});
+      });
+    });
+  }
   return signals.sort((a,b)=>b.score-a.score);
 }
-
-// ===================== RENDER =====================
-const f = (n,d=2)=>n==null||isNaN(n)?'—':n.toLocaleString('pt-BR',{minimumFractionDigits:d,maximumFractionDigits:d});
-const fR = n=>'R$\u00a0'+f(n);
-const fp = (n,d=1)=>(n>=0?'+':'')+f(n*100,d)+'%';
-function probPill(p){
-  const pct = Math.round(p*100);
-  const cls = p>=.60?'pp-high':p>=.52?'pp-mid':'pp-low';
-  return `<span class="prob-pill ${cls}">${pct}%</span>`;
-}
-
+const f=(n,d=2)=>n==null||isNaN(n)?'--':n.toLocaleString('pt-BR',{minimumFractionDigits:d,maximumFractionDigits:d});
+const fR=n=>'R$ '+f(n);
+const fp=(n,d=1)=>(n>=0?'+':'')+f(n*100,d)+'%';
+function probPill(p){const pct=Math.round(p*100),cls=p>=.60?'pp-high':p>=.52?'pp-mid':'pp-low';return`<span class="prob-pill ${cls}">${pct}%</span>`;}
 function scoreColor(s){return s>=75?'var(--green)':s>=50?'var(--yellow)':'var(--muted)';}
-function scoreBars(s){
-  const n=Math.min(5,Math.round(s/20));
-  return `<div class="score-bar">${[1,2,3,4,5].map(i=>`<div class="sb${i<=n?' on':''}" style="height:${8+i*4}px"></div>`).join('')}</div>`;
-}
-function rankClass(i){return i===0?'rank1':i===1?'rank2':i===2?'rank3':'rank-rest';}
-
+function scoreBars(s){const n=Math.min(5,Math.round(s/20));return`<div class="score-bar">${[1,2,3,4,5].map(i=>`<div class="sb${i<=n?' on':''}" style="height:${8+i*4}px"></div>`).join('')}</div>`;}
 function renderRanking(signals){
-  const el = document.getElementById('ranking-list');
-  if(!signals.length){el.innerHTML='<div class="loading-overlay">Nenhum sinal gerado. Ajuste os filtros ou escaneie novamente.</div>';return;}
-  el.innerHTML = signals.slice(0,15).map((s,i)=>{
-    const rc = rankClass(i);
-    const rankNum = i+1;
-    const rankClass2 = i===0?'r1':i===1?'r2':i===2?'r3':'';
-    const typeBadge = s.type==='call'?'<span class="badge b-call">CALL</span>':'<span class="badge b-put">PUT</span>';
-    const horizBadge = s.horizon==='day'?'<span class="badge b-day">DAY</span>':'<span class="badge b-swing">SWING</span>';
-    const heatBadge = s.score>=75?'<span class="badge b-hot">HOT</span>':s.score>=50?'<span class="badge b-warm">WARM</span>':'<span class="badge b-cold">COLD</span>';
-    const gs = s.gs;
-    const probD1 = gs ? probPill(gs.d1p) : '—';
-    const probD2 = gs ? probPill(gs.d2p) : '—';
-    const probD3 = gs ? probPill(gs.d3p) : '—';
-    const gainPctFmt = f(s.gainPct*100,0)+'%';
-    // Delta em R$ conforme Profit: delta × 1 = R$ por R$1 do ativo
-    const deltaRS = f(Math.abs(s.bs.delta),2);
-    const ivPct = f(s.iv*100,1)+'%';
-    const hvPct = f(s.hv30*100,1)+'%';
-    const ivColor = s.iv > s.hv30*1.12 ? 'color:var(--red)' : s.iv < s.hv30*0.92 ? 'color:var(--green)' : '';
-    const premiumFmt = fR(s.bs.price);
-    const target30 = fR(s.bs.price*1.30);
-    const target60 = fR(s.bs.price*1.60);
-    const strikeFmt = fR(s.K);
-    const thetaFmt = f(Math.abs(s.bs.theta),4);
-    return `<div class="sig-card ${rc}" onclick="toggleSigDetail(${i})">
-      <div class="sig-top">
-        <div class="sig-rank ${rankClass2}">#${rankNum}</div>
-        <div class="sig-code">
-          <div class="sig-option-code">${s.code}</div>
-          <div class="sig-type-row">${typeBadge}${horizBadge}${heatBadge}</div>
+  const el=document.getElementById('ranking-list');
+  if(!signals.length){el.innerHTML='<div class="loading-overlay">Nenhum sinal. Ajuste parametros ou escaneie.</div>';return;}
+  el.innerHTML=signals.slice(0,15).map((s,i)=>{
+    const rc=i===0?'rank1':i===1?'rank2':i===2?'rank3':'rank-rest',rn=i===0?'r1':i===1?'r2':i===2?'r3':'';
+    const tb=s.type==='call'?'<span class="badge b-call">CALL</span>':'<span class="badge b-put">PUT</span>';
+    const hb=s.horizon==='day'?'<span class="badge b-day">DAY</span>':'<span class="badge b-swing">SWING</span>';
+    const ht=s.score>=75?'<span class="badge b-hot">HOT</span>':s.score>=50?'<span class="badge b-warm">WARM</span>':'<span class="badge b-cold">COLD</span>';
+    const live=s.isLive?'<span class="badge b-live">LIVE</span>':'';
+    const gs=s.gs,ic=s.iv>s.hv30*1.12?'color:var(--red)':s.iv<s.hv30*0.92?'color:var(--green)':'';
+    return`<div class="sig-card ${rc}"><div class="sig-top" onclick="toggleSigDetail(${i},event)">
+      <div class="sig-rank ${rn}">#${i+1}</div>
+      <div class="sig-code"><div class="sig-option-code">${s.code}</div><div class="sig-type-row">${tb}${hb}${ht}${live}</div></div>
+      <div class="sig-prices"><div class="sig-label-sm">Premio</div><div class="sig-price-val">${fR(s.bs.price)}</div><div class="sig-label-sm" style="margin-top:2px">Strike</div><div class="sig-price-val">${fR(s.K)}</div></div>
+      <div class="sig-key-metrics">
+        <div class="km"><div class="km-label">Delta</div><div class="km-val">${f(Math.abs(s.bs.delta),2)}</div></div>
+        <div class="km"><div class="km-label">Pot. ganho</div><div class="km-val" style="color:var(--green)">+${f(s.gainPct*100,0)}%</div></div>
+        <div class="km"><div class="km-label" data-tip="Prob historica D+1">Prob D+1</div><div class="km-val">${gs?Math.round(gs.d1p*100)+'%':'--'}</div></div>
+        <div class="km"><div class="km-label">IV / HV</div><div class="km-val" style="${ic}">${f(s.iv*100,1)}% / ${f(s.hv30*100,1)}%</div></div>
+        <div class="km"><div class="km-label">Venc.</div><div class="km-val">${s.expDate}</div></div>
+      </div>
+      <div class="sig-score-wrap"><div class="sig-score-num" style="color:${scoreColor(s.score)}">${s.score}</div>${scoreBars(s.score)}<div class="sig-score-label">score</div></div>
+    </div>
+    <div class="sig-detail" id="sig-detail-${i}">
+      <div class="detail-grid">
+        <div class="detail-block">
+          <div class="detail-title">Gregas ${s.isLive?'(Profit ao vivo)':'(Black-Scholes)'}</div>
+          <div class="detail-row"><span class="dr-label">Delta</span><span class="dr-val">${f(Math.abs(s.bs.delta),4)}</span></div>
+          <div class="detail-row"><span class="dr-label">Gamma</span><span class="dr-val">${f(s.bs.gamma,5)}</span></div>
+          <div class="detail-row"><span class="dr-label">Theta/dia</span><span class="dr-val" style="color:var(--red)">-${f(Math.abs(s.bs.theta),4)}</span></div>
+          <div class="detail-row"><span class="dr-label">Vega/1%IV</span><span class="dr-val">${f(s.bs.vega,4)}</span></div>
+          <div class="detail-row"><span class="dr-label">IV</span><span class="dr-val" style="${ic}">${f(s.iv*100,1)}%</span></div>
+          <div class="detail-row"><span class="dr-label">HV 30d</span><span class="dr-val">${f(s.hv30*100,1)}%</span></div>
         </div>
-        <div class="sig-prices">
-          <div class="sig-label-sm">Prêmio</div>
-          <div class="sig-price-val">${premiumFmt}</div>
-         
-          <div class="sig-label-sm" style="margin-top:2px">Strike</div>
-          <div class="sig-price-val">${strikeFmt}</div>
+        <div class="detail-block">
+          <div class="detail-title">Targets</div>
+          <div class="detail-row"><span class="dr-label">Entrada</span><span class="dr-val">${fR(s.bs.price)}</span></div>
+          <div class="detail-row"><span class="dr-label">Alvo +30%</span><span class="dr-val" style="color:var(--yellow)">${fR(s.bs.price*1.30)}</span></div>
+          <div class="detail-row"><span class="dr-label">Alvo +60%</span><span class="dr-val" style="color:var(--green)">${fR(s.bs.price*1.60)}</span></div>
+          <div class="detail-row"><span class="dr-label">Stop -50%</span><span class="dr-val" style="color:var(--red)">${fR(s.bs.price*0.50)}</span></div>
         </div>
-        <div class="sig-key-metrics">
-          <div class="km">
-            <div class="km-label">Delta (R$)</div>
-            <div class="km-val">${deltaRS}</div>
-          </div>
-          <div class="km">
-          
-            <div class="km-label">Pot. ganho</div>
-            <div class="km-val" style="color:var(--green)">+${gainPctFmt}</div>
-          </div>
-          <div class="km">
-            <div class="km-label" data-tip="Prob. histórica de o ativo fechar positivo D+1">Prob D+1</div>
-            <div class="km-val">${gs?Math.round(gs.d1p*100)+'%':'—'}</div>
-          </div>
-          <div class="km">
-     
-            <div class="km-label">IV / HV</div>
-            <div class="km-val" style="${ivColor}">${ivPct} / ${hvPct}</div>
-          </div>
-          <div class="km">
-            <div class="km-label">Venc.</div>
-            <div class="km-val">${s.expDate}</div>
-          </div>
-        </div>
-        <div class="sig-score-wrap">
-          <div class="sig-score-num" style="color:${scoreColor(s.score)}">${s.score}</div>
-          ${scoreBars(s.score)}
-          <div class="sig-score-label">score</div>
+        <div class="detail-block">
+          <div class="detail-title">Score</div>
+          <div class="detail-row"><span class="dr-label">Prob. hist.</span><span class="dr-val" style="color:var(--green)">${s.breakdown.hist} pts</span></div>
+          <div class="detail-row"><span class="dr-label">Estrutura opcao</span><span class="dr-val" style="color:var(--blue)">${s.breakdown.option} pts</span></div>
+          <div class="detail-row"><span class="dr-label">Contexto</span><span class="dr-val" style="color:var(--yellow)">${s.breakdown.ctx} pts</span></div>
+          <div class="detail-row"><span class="dr-label"><b>Total</b></span><span class="dr-val" style="color:${scoreColor(s.score)};font-weight:700">${s.score}</span></div>
+          ${gs?`<div style="margin-top:8px;font-size:10px;color:var(--muted)">Gap: ${GAP_STATS[s.gapKey].label} (${gs.n} amostras)<br>D+1: ${probPill(gs.d1p)} D+2: ${probPill(gs.d2p)} D+3: ${probPill(gs.d3p)}</div>`:''}
         </div>
       </div>
-      <div class="sig-detail" id="sig-detail-${i}">
-        <div class="detail-grid">
-          <div class="detail-block">
-            <div class="detail-title">Gregas (Black-Scholes)</div>
-           
-            <div class="detail-row"><span class="dr-label">Delta (R$/R$1 ativo)</span><span class="dr-val">${f(Math.abs(s.bs.delta),4)}</span></div>
-            <div class="detail-row"><span class="dr-label">Gamma</span><span class="dr-val">${f(s.bs.gamma,5)}</span></div>
-            <div class="detail-row"><span class="dr-label">Theta (R$/dia)</span><span class="dr-val" style="color:var(--red)">−${f(Math.abs(s.bs.theta),4)}</span></div>
-            <div class="detail-row"><span class="dr-label">Vega (R$/1% IV)</span><span class="dr-val">${f(s.bs.vega,4)}</span></div>
-            <div class="detail-row"><span class="dr-label">IV implícita</span><span class="dr-val" style="${ivColor}">${ivPct}</span></div>
-            <div class="detail-row"><span class="dr-label">HV histórica</span><span class="dr-val">${hvPct}</span></div>
-          </div>
-  
-          <div class="detail-block">
-            <div class="detail-title">Targets de saída</div>
-            <div class="detail-row"><span class="dr-label">Prêmio entrada</span><span class="dr-val">${premiumFmt}</span></div>
-            <div class="detail-row"><span class="dr-label">Alvo +30%</span><span class="dr-val" style="color:var(--yellow)">${target30}</span></div>
-            <div class="detail-row"><span class="dr-label">Alvo +60%</span><span class="dr-val" style="color:var(--green)">${fR(s.bs.price*1.60)}</span></div>
-            <div class="detail-row"><span class="dr-label">Stop sugerido −50%</span><span class="dr-val" style="color:var(--red)">${fR(s.bs.price*0.50)}</span></div>
-        
-            <div class="detail-row"><span class="dr-label">Theta/dia</span><span class="dr-val">−${thetaFmt} (perda tempo)</span></div>
-            <div class="detail-row"><span class="dr-label">Prazo</span><span class="dr-val">${s.expLabel} (${s.expDate})</span></div>
-          </div>
-          <div class="detail-block">
-            <div class="detail-title">Score combinatório</div>
-            <div class="detail-row"><span class="dr-label">Prob. histórica</span><span class="dr-val" style="color:var(--green)">${s.breakdown.hist} pts</span></div>
-            <div class="detail-row"><span class="dr-label">Estrutura opção</span><span class="dr-val" style="color:var(--blue)">${s.breakdown.option} pts</span></div>
-            <div class="detail-row"><span class="dr-label">Contexto mercado</span><span class="dr-val" style="color:var(--yellow)">${s.breakdown.ctx} pts</span></div>
-            <div class="detail-row"><span class="dr-label"><b>Total</b></span><span class="dr-val" style="color:${scoreColor(s.score)};font-weight:700">${s.score} pts</span></div>
-            ${gs?`<div style="margin-top:8px;font-size:10px;color:var(--muted)">
-              Gap: ${GAP_STATS[s.gapKey].label} (${gs.n} amostras)<br>
-              
-              D+1: ${probPill(gs.d1p)} D+2: ${probPill(gs.d2p)} D+3: ${probPill(gs.d3p)}
-            </div>`:''}
-          </div>
-        </div>
-        ${renderPayoffMini(s)}
-      </div>
-    </div>`;
+    </div></div>`;
   }).join('');
 }
-
-function renderPayoffMini(s){
-  const r=.1375;
-  const moves = [-.15,-.10,-.07,-.04,-.02,0,.02,.04,.07,.10,.15,.20];
-  const T2 = Math.max(s.T - s.expDays*.5/365, .001);
-  const bars = moves.map(m=>{
-    const Sf = s.price*(1+m);
-    const bf = bs(Sf,s.K,T2,r,s.sigma,s.type);
-    const g = (bf.price-s.bs.price)/s.bs.price;
-    const h = Math.min(60,Math.max(2,Math.abs(g)*80));
-    const cls = g > .25 ? 'pb-hot' : g > 0 ? 'pb-pos' : 'pb-neg';
-    return `<div class="pb-bar ${cls}" style="height:${h}px" title="${m>=0?'+':''}${(m*100).toFixed(0)}%: ${g>=0?'+':''}${(g*100).toFixed(0)}% na opção"></div>`;
+function toggleSigDetail(i,e){if(e)e.stopPropagation();const el=document.getElementById('sig-detail-'+i);if(el)el.classList.toggle('open');}
+function renderChain(ticker){
+  const chain=optionChains[ticker]||[],spot=stockData[ticker]?.price||0;
+  const src=chain.length>0?(chain[0].source==='profit'?'profit':chain[0].source==='brapi'?'brapi':'bs'):'bs';
+  const srcEl=document.getElementById('chain-source');
+  if(src==='profit'){srcEl.textContent='Profit - LIVE';srcEl.className='chain-source-badge';}
+  else if(src==='brapi'){srcEl.textContent='brapi.dev + BS';srcEl.className='chain-source-badge';}
+  else{srcEl.textContent='Black-Scholes';srcEl.className='chain-source-badge sim';}
+  let filtered=chain;
+  if(chainFilter==='call')filtered=chain.filter(o=>o.optType==='call');
+  if(chainFilter==='put')filtered=chain.filter(o=>o.optType==='put');
+  if(chainFilter==='sweet')filtered=chain.filter(o=>Math.abs(o.delta)>=.25&&Math.abs(o.delta)<=.45);
+  if(chainFilter==='7d')filtered=chain.filter(o=>o.expDays<=8);
+  if(chainFilter==='21d')filtered=chain.filter(o=>o.expDays>8&&o.expDays<=25);
+  if(!filtered.length){document.getElementById('chain-area').innerHTML='<div class="loading-overlay">Nenhuma opcao para este filtro.</div>';return;}
+  const strikes=[...new Set(filtered.map(o=>o.strike))].sort((a,b)=>a-b);
+  const callMap={},putMap={};
+  filtered.forEach(o=>{if(o.optType==='call')callMap[o.strike]=o;else putMap[o.strike]=o;});
+  const hasBoth=chainFilter==='all'||chainFilter==='sweet';
+  let html=`<div class="chain-wrap"><table class="chain-table"><thead><tr>`;
+  if(hasBoth||chainFilter==='call')html+=`<th class="left">Codigo</th><th>Ult</th><th>Bid</th><th>Ask</th><th data-tip="Delta">D</th><th data-tip="Theta">T</th><th>IV</th><th>Var%</th>`;
+  html+=`<th class="center">Strike</th>`;
+  if(hasBoth||chainFilter==='put')html+=`<th>Var%</th><th>IV</th><th data-tip="Theta">T</th><th data-tip="Delta">D</th><th>Bid</th><th>Ask</th><th>Ult</th><th class="left">Codigo</th>`;
+  html+=`</tr></thead><tbody>`;
+  strikes.forEach(k=>{
+    const call=callMap[k],put=putMap[k],isATM=spot>0&&Math.abs(k-spot)/spot<0.015;
+    html+=`<tr class="${isATM?'atm':''}">`;
+    if(hasBoth||chainFilter==='call'){
+      if(call){const dc=Math.abs(call.delta),dcc=dc>=.25&&dc<=.45?'sweet-delta':'',iv=call.iv>1?f(call.iv,1):f(call.iv*100,1);
+        html+=`<td class="left">${call.ticker}</td><td>${fR(call.price)}</td><td>${call.bid>0?fR(call.bid):'--'}</td><td>${call.ask>0?fR(call.ask):'--'}</td><td class="${dcc}">${f(dc,2)}</td><td style="color:var(--red)">-${f(Math.abs(call.theta),3)}</td><td>${iv}%</td><td class="${call.change>=0?'up':'dn'}">${call.change!==0?fp(call.change):'--'}</td>`;}
+      else html+=`<td colspan="8">--</td>`;
+    }
+    html+=`<td class="center strike-col">${fR(k)}</td>`;
+    if(hasBoth||chainFilter==='put'){
+      if(put){const dp=Math.abs(put.delta),dpc=dp>=.25&&dp<=.45?'sweet-delta':'',iv=put.iv>1?f(put.iv,1):f(put.iv*100,1);
+        html+=`<td class="chain-put-side ${put.change<0?'dn':'up'}">${put.change!==0?fp(put.change):'--'}</td><td class="chain-put-side">${iv}%</td><td class="chain-put-side" style="color:var(--red)">-${f(Math.abs(put.theta),3)}</td><td class="chain-put-side ${dpc}">${f(dp,2)}</td><td class="chain-put-side">${put.bid>0?fR(put.bid):'--'}</td><td class="chain-put-side">${put.ask>0?fR(put.ask):'--'}</td><td class="chain-put-side">${fR(put.price)}</td><td class="left chain-put-side">${put.ticker}</td>`;}
+      else html+=`<td colspan="8">--</td>`;
+    }
+    html+=`</tr>`;
   });
-  const labels = moves.filter((_,i)=>i%3===0).map(m=>`<span style="font-size:8px;color:var(--muted)">${m>=0?'+':''}${(m*100).toFixed(0)}%</span>`);
-  return `<div style="margin-top:12px;">
-    <div class="detail-title">Payoff — retorno na opção por movimento do ativo</div>
-    <div class="payoff-mini" style="margin-top:8px;align-items:flex-end;">${bars.join('')}</div>
-    <div style="display:flex;justify-content:space-between;margin-top:2px;">${labels.join('')}</div>
-    <div style="font-size:10px;color:var(--muted);margin-top:4px;">Barras amarelas = zona alvo 30-60% · T/2 decorrido</div>
-  </div>`;
-}
-
-function toggleSigDetail(i){
-  const el = document.getElementById('sig-detail-'+i);
-  if(!el) return;
-  el.classList.toggle('open');
-}
-
-function renderChain(stock){
-  const r=.1375; const sigma=stock.iv;
-  const exps=[7,21,42];
-  const mults=[.92,.94,.96,.98,1.0,1.02,1.04,1.06,1.08,1.10,1.12];
-  const tickerInfo = TICKERS.find(t=>t.t===stock.ticker)||{};
-  let html=`<div style="margin-bottom:12px;font-size:12px;color:var(--muted)">Ativo: <b style="color:var(--text)">${stock.ticker}</b> · Preço: <b style="color:var(--text)">${fR(stock.price)}</b> · IV: <b style="color:var(--text)">${f(sigma*100,1)}%</b></div>
-  <div style="overflow-x:auto;">
-  <table class="hist-table">
-    <thead><tr>
-      <th>Código</th><th>Strike</th>
-      ${exps.map(d=>`<th colspan="4" style="text-align:center;border-left:1px solid var(--border)">CALL ${d}d</th>`).join('')}
-    </tr>
-    <tr>
-      <th></th><th></th>
-      ${exps.map(()=>`<th style="border-left:1px solid var(--border)">Prêmio</th><th>Delta R$</th><th>Theta</th><th>IV</th>`).join('')}
-    </tr></thead><tbody>`;
-  mults.forEach(m=>{
-    const K=Math.round(stock.price*m*2)/2;
-    const isATM=Math.abs(m-1.0)<0.015;
-    const rowStyle=isATM?'background:rgba(74,250,138,0.04)':'';
-    const nearExpiry = exps[0];
-    const code = optionCode(stock.ticker,'call',K,nearExpiry);
-    html+=`<tr style="${rowStyle}">
-      <td style="font-family:var(--mono);font-size:11px;color:var(--blue)">${code}</td>
-      <td style="font-family:var(--mono);${isATM?'color:var(--green);font-weight:700':''}">${fR(K)}${isATM?' ◀':''}</td>`;
-    exps.forEach(days=>{
-      const T=days/365;
-      const res=bs(stock.price,K,T,r,sigma,'call');
-      const isSweet=res.delta>=.25&&res.delta<=.45;
-      const style=isSweet?'color:var(--yellow)':'';
-      html+=`<td style="font-family:var(--mono);font-size:11px;border-left:1px solid var(--border);${style}">${fR(res.price)}</td>
-        <td style="font-family:var(--mono);font-size:11px;${style}">${f(res.delta,3)}</td>
- 
-        <td style="font-family:var(--mono);font-size:11px;color:var(--red)">−${f(Math.abs(res.theta),4)}</td>
-        <td style="font-family:var(--mono);font-size:11px;">${f(sigma*100,0)}%</td>`;
-    });
-    html+='</tr>';
-  });
-  html+='</tbody></table></div>';
+  html+=`</tbody></table></div>`;
   document.getElementById('chain-area').innerHTML=html;
 }
-
-function renderHistPanel(stock){
-  const gapKey = classifyGap(stock.gapPct);
-  let html=`<div style="margin-bottom:14px;font-size:12px;color:var(--muted)">
-    ${stock.ticker} — Gap hoje: <b style="color:${stock.gapPct>=0?'var(--green)':'var(--red)'}">${fp(stock.gapPct)}</b>
-    ${gapKey&&gapKey!=='flat'?`→ bucket <b style="color:var(--yellow)">${GAP_STATS[gapKey].label}</b>`:'— sem gap significativo'}
-    &nbsp;(base: 2993 dias úteis)
-  </div>
-  <div style="overflow-x:auto;">
-  <table class="hist-table">
-    <thead><tr>
-      <th>Gap de abertura</th><th>Amostras</th><th>% dias</th>
-      <th>Prob. fech. D+1 >0</th><th>Prob. fech. D+2 >0</th><th>Prob. fech. D+3 >0</th>
-      <th>Sinal sugerido</th><th>Score histórico</th>
-    </tr></thead><tbody>`;
-  Object.entries(GAP_STATS).forEach(([key,gs])=>{
-    const isCurrent = key === gapKey;
-    const dirBadge = gs.dir==='CALL'?'<span class="badge b-call">CALL</span>':gs.dir==='PUT'?'<span class="badge b-put">PUT</span>':'<span class="badge" style="border:1px solid var(--border);color:var(--muted)">NEUTRO</span>';
-    const histScore = ((Math.max(gs.d1p,gs.d2p,gs.d3p)-.5)*60 + (gs.n>100?5:gs.n>30?3:1)).toFixed(0);
-    html+=`<tr ${isCurrent?'class="highlight-row"':''}>
-      <td style="${isCurrent?'color:var(--yellow);font-weight:700':''}${gs.dir==='PUT'?';color:var(--red)':''}">${gs.label}${isCurrent?' ◀ atual':''}</td>
-      <td style="font-family:var(--mono)">${gs.n}</td>
-      <td style="font-family:var(--mono)">${f(gs.n/2993*100,1)}%</td>
-      <td>${probPill(gs.d1p)}</td>
-      <td>${probPill(gs.d2p)}</td>
-      <td>${probPill(gs.d3p)}</td>
-      <td>${dirBadge}</td>
-      <td style="font-family:var(--mono);color:${histScore>=15?'var(--green)':histScore>=8?'var(--yellow)':'var(--muted)'}">${histScore} pts</td>
-    </tr>`;
-  });
-  html+='</tbody></table></div>';
-  document.getElementById('hist-area').innerHTML=html;
+function filterChain(type,btn){chainFilter=type;document.querySelectorAll('.chain-filter-btn').forEach(b=>b.classList.remove('on'));btn.classList.add('on');if(selectedTicker)renderChain(selectedTicker);}
+async function renderHistAll(ticker){
+  const prices=await fetchHistory(ticker);
+  if(!prices.length){['hist-gaps','hist-daily','hist-intra','hist-streaks'].forEach(id=>{document.getElementById(id).innerHTML='<div class="loading-overlay">Historico nao disponivel para este ativo.</div>';});return;}
+  renderHistGaps(ticker,prices);renderHistDaily(ticker,prices);renderHistIntra(ticker,prices);renderHistStreaks(ticker,prices);
 }
-
-// ===================== TICKER SIDEBAR =====================
+function renderHistGaps(ticker,prices){
+  const gapKey=classifyGap(stockData[ticker]?.gapPct||0),curGap=stockData[ticker]?.gapPct||0;
+  const rs={};
+  for(let i=1;i<prices.length;i++){const prev=prices[i-1].close,open=prices[i].open,close=prices[i].close;if(!prev||!open||!close)continue;const gap=(open-prev)/prev,dr=(close-open)/open,key=classifyGap(gap);if(!rs[key])rs[key]={n:0,closes:[],gapSum:0};rs[key].n++;rs[key].closes.push(dr>0?1:0);rs[key].gapSum+=gap;}
+  let html=`<div style="margin-bottom:14px;font-size:12px;color:var(--muted)"><b style="color:var(--text)">${ticker}</b> -- Gap hoje: <b style="color:${curGap>=0?'var(--green)':'var(--red)'}">${fp(curGap)}</b>${gapKey!=='flat'?` -- bucket <b style="color:var(--yellow)">${GAP_STATS[gapKey].label}</b>`:''} <span style="color:var(--faint);margin-left:8px">${prices.length} pregoes (brapi)</span></div>
+  <table class="hist-table"><thead><tr><th>Gap de abertura</th><th>Amostras</th><th>% positivos no dia</th><th>Gap medio</th><th>Prob D+1</th><th>Prob D+2</th><th>Prob D+3</th><th>Sinal</th></tr></thead><tbody>`;
+  Object.entries(GAP_STATS).forEach(([key,gs])=>{
+    const isCur=key===gapKey,r=rs[key]||{n:0,closes:[],gapSum:0};
+    const rp=r.n>0?r.closes.reduce((a,b)=>a+b,0)/r.n:null,ag=r.n>0?r.gapSum/r.n:null;
+    const db=gs.dir==='CALL'?'<span class="badge b-call">CALL</span>':gs.dir==='PUT'?'<span class="badge b-put">PUT</span>':'<span class="badge b-cold">--</span>';
+    html+=`<tr ${isCur?'class="highlight-row"':''}><td style="${isCur?'color:var(--yellow);font-weight:700':''}">${gs.label}${isCur?' << ATUAL':''}</td><td>${r.n||gs.n}</td><td style="color:${rp!==null?(rp>=.55?'var(--green)':rp>=.45?'var(--yellow)':'var(--red)'):'var(--muted)'}">${rp!==null?Math.round(rp*100)+'%':'--'}</td><td style="color:var(--muted)">${ag!==null?fp(ag):'--'}</td><td>${probPill(gs.d1p)}</td><td>${probPill(gs.d2p)}</td><td>${probPill(gs.d3p)}</td><td>${db}</td></tr>`;
+  });
+  html+=`</tbody></table>`;
+  document.getElementById('hist-gaps').innerHTML=html;
+}
+function renderHistDaily(ticker,prices){
+  const returns=[];
+  for(let i=1;i<prices.length;i++)if(prices[i-1].close>0)returns.push((prices[i].close-prices[i-1].close)/prices[i-1].close);
+  if(!returns.length){document.getElementById('hist-daily').innerHTML='<div class="loading-overlay">Sem dados.</div>';return;}
+  const sorted=[...returns].sort((a,b)=>a-b);
+  const buckets=[{lo:-1,hi:-.05,label:'< -5%'},{lo:-.05,hi:-.04,label:'-5% a -4%'},{lo:-.04,hi:-.03,label:'-4% a -3%'},{lo:-.03,hi:-.02,label:'-3% a -2%'},{lo:-.02,hi:-.01,label:'-2% a -1%'},{lo:-.01,hi:.00,label:'-1% a 0%'},{lo:.00,hi:.01,label:'0% a +1%'},{lo:.01,hi:.02,label:'+1% a +2%'},{lo:.02,hi:.03,label:'+2% a +3%'},{lo:.03,hi:.04,label:'+3% a +4%'},{lo:.04,hi:.05,label:'+4% a +5%'},{lo:.05,hi:1,label:'> +5%'}];
+  const counts=buckets.map(b=>returns.filter(r=>r>=b.lo&&r<b.hi).length),maxC=Math.max(...counts);
+  const mean=returns.reduce((a,b)=>a+b,0)/returns.length,std=Math.sqrt(returns.reduce((a,b)=>a+(b-mean)**2,0)/returns.length);
+  const p5=sorted[Math.floor(sorted.length*.05)],p95=sorted[Math.floor(sorted.length*.95)],pos=returns.filter(r=>r>0).length;
+  let html=`<div class="intra-grid">
+    <div class="intra-card"><div class="intra-num">${Math.round(pos/returns.length*100)}%</div><div class="intra-label">Dias positivos (${returns.length} pregoes)</div></div>
+    <div class="intra-card"><div class="intra-num" style="color:var(--muted)">${fp(mean)}</div><div class="intra-label">Variacao media diaria</div></div>
+    <div class="intra-card"><div class="intra-num" style="color:var(--yellow)">${fp(std)}</div><div class="intra-label">Desvio padrao diario</div></div>
+    <div class="intra-card"><div class="intra-num" style="color:var(--red)">${fp(p5)}</div><div class="intra-label">Percentil 5% (cauda ruim)</div></div>
+    <div class="intra-card"><div class="intra-num" style="color:var(--green)">${fp(p95)}</div><div class="intra-label">Percentil 95% (cauda boa)</div></div>
+    <div class="intra-card"><div class="intra-num">${fp(Math.max(...returns))}</div><div class="intra-label">Maior alta historica</div></div>
+  </div>
+  <div class="chart-area">
+    <div style="font-size:11px;color:var(--muted);margin-bottom:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;">Distribuicao de variacoes diarias -- ${ticker}</div>
+    <div style="display:flex;align-items:flex-end;gap:4px;height:120px;padding:0 4px;">`;
+  buckets.forEach((b,i)=>{const n=counts[i],h=maxC>0?Math.round(n/maxC*110):0,color=b.lo<0?'var(--red)':'var(--green)';html+=`<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;"><span style="font-size:8px;color:var(--muted)">${n}</span><div style="width:100%;height:${h}px;background:${color};opacity:.7;border-radius:2px 2px 0 0;min-height:2px;" title="${b.label}: ${n} dias"></div></div>`;});
+  html+=`</div></div>
+  <table class="hist-table"><thead><tr><th>Faixa</th><th>Ocorrencias</th><th>% do total</th><th>Freq. anualizada</th></tr></thead><tbody>
+  ${buckets.map((b,i)=>`<tr><td style="color:${b.lo<0?'var(--red)':b.hi<=0?'var(--muted)':'var(--green)'}">${b.label}</td><td>${counts[i]}</td><td>${f(counts[i]/returns.length*100,1)}%</td><td>~${Math.round(counts[i]/returns.length*252)} dias/ano</td></tr>`).join('')}
+  </tbody></table>`;
+  document.getElementById('hist-daily').innerHTML=html;
+}
+function renderHistIntra(ticker,prices){
+  const patterns=[{gapLo:-.08,gapHi:-.05,label:'Gap negativo > -5%',color:'var(--red)'},{gapLo:-.05,gapHi:-.03,label:'Gap -5% a -3%',color:'var(--red)'},{gapLo:-.03,gapHi:-.01,label:'Gap -3% a -1%',color:'var(--red)'},{gapLo:.01,gapHi:.03,label:'Gap +1% a +3%',color:'var(--green)'},{gapLo:.03,gapHi:.05,label:'Gap +3% a +5%',color:'var(--green)'},{gapLo:.05,gapHi:.10,label:'Gap positivo > +5%',color:'var(--green)'}];
+  const rows=[];
+  for(const pat of patterns){
+    const days=[];
+    for(let i=1;i<prices.length;i++){const prev=prices[i-1].close,open=prices[i].open,close=prices[i].close,high=prices[i].high,low=prices[i].low;if(!prev||!open||!close)continue;const gap=(open-prev)/prev;if(gap>=pat.gapLo&&gap<pat.gapHi){const idr=(close-open)/open,hfo=(high-open)/open,lfo=(low-open)/open;days.push({gap,idr,hfo,lfo});}}
+    if(!days.length)continue;
+    const revUp=days.filter(d=>d.idr>0).length,revUp2=days.filter(d=>d.idr>.02).length,avgI=days.reduce((a,d)=>a+d.idr,0)/days.length,maxH=Math.max(...days.map(d=>d.hfo)),minL=Math.min(...days.map(d=>d.lfo));
+    rows.push({pat,n:days.length,revUp,revUp2,avgI,maxH,minL});
+  }
+  if(!rows.length){document.getElementById('hist-intra').innerHTML='<div class="loading-overlay">Dados insuficientes.</div>';return;}
+  let html=`<div style="margin-bottom:14px;font-size:12px;color:var(--muted)">Analise de <b style="color:var(--text)">${prices.length}</b> pregoes -- comportamento intraday apos gap</div>
+  <table class="hist-table"><thead><tr><th>Padrao de gap</th><th>Ocorreu</th><th>Fechou acima abertura</th><th>Fechou > +2% abertura</th><th>Retorno intraday medio</th><th>Max intraday</th><th>Min intraday</th><th>Gatilho</th></tr></thead><tbody>`;
+  rows.forEach(row=>{
+    const rp=row.revUp/row.n,r2p=row.revUp2/row.n,isNeg=row.pat.gapLo<0;
+    const trig=isNeg?(rp>=.60?'<span class="badge b-call">REVERSAO ALTA</span>':rp<=.40?'<span class="badge b-cold">CONTINUA BAIXO</span>':'<span class="badge b-warm">NEUTRO</span>'):(rp>=.55?'<span class="badge b-call">CONTINUA ALTA</span>':'<span class="badge b-warm">REVERSAO</span>');
+    html+=`<tr><td style="color:${row.pat.color};font-weight:600">${row.pat.label}</td><td>${row.n}x</td><td style="color:${rp>=.55?'var(--green)':rp<=.45?'var(--red)':'var(--yellow)'};font-weight:700">${Math.round(rp*100)}%</td><td style="color:${r2p>=.40?'var(--green)':'var(--muted)'}">${Math.round(r2p*100)}%</td><td style="color:${row.avgI>=0?'var(--green)':'var(--red)'};font-weight:600">${fp(row.avgI)}</td><td style="color:var(--green)">${fp(row.maxH)}</td><td style="color:var(--red)">${fp(row.minL)}</td><td>${trig}</td></tr>`;
+  });
+  html+=`</tbody></table><div style="margin-top:16px;font-size:12px;color:var(--muted);background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;line-height:1.8;"><b style="color:var(--text)">Como ler:</b> "Gap -5% a -3%, Fechou acima abertura 65%" = quando ${ticker} abriu -3% a -5%, em 65% dos casos subiu durante o dia. Gatilho para compra de call apos gap negativo.<br><b style="color:var(--yellow)">Max intraday</b> = alvo de take profit. <b style="color:var(--red)">Min intraday</b> = nivel de stop.</div>`;
+  document.getElementById('hist-intra').innerHTML=html;
+}
+function renderHistStreaks(ticker,prices){
+  const streaks={up:[],dn:[]};let cur=0;
+  for(let i=1;i<prices.length;i++){const ret=(prices[i].close-prices[i-1].close)/prices[i-1].close;if(ret>0){if(cur<0){if(cur!==-1)streaks.dn.push(Math.abs(cur));cur=1;}else cur++;}else{if(cur>0){if(cur!==1)streaks.up.push(cur);cur=-1;}else cur--;}}
+  const avg=arr=>arr.length?arr.reduce((a,b)=>a+b,0)/arr.length:0;
+  const maxUp=Math.max(0,...streaks.up),maxDn=Math.max(0,...streaks.dn),avgUp=avg(streaks.up),avgDn=avg(streaks.dn);
+  const upD={},dnD={};streaks.up.forEach(s=>{upD[s]=(upD[s]||0)+1;});streaks.dn.forEach(s=>{dnD[s]=(dnD[s]||0)+1;});
+  let html=`<div class="intra-grid">
+    <div class="intra-card"><div class="intra-num" style="color:var(--green)">${maxUp}</div><div class="intra-label">Maior sequencia de alta (dias)</div></div>
+    <div class="intra-card"><div class="intra-num" style="color:var(--red)">${maxDn}</div><div class="intra-label">Maior sequencia de baixa (dias)</div></div>
+    <div class="intra-card"><div class="intra-num">${f(avgUp,1)}</div><div class="intra-label">Media dias consecutivos alta</div></div>
+    <div class="intra-card"><div class="intra-num">${f(avgDn,1)}</div><div class="intra-label">Media dias consecutivos baixa</div></div>
+    <div class="intra-card"><div class="intra-num">${streaks.up.length}</div><div class="intra-label">Sequencias de alta registradas</div></div>
+    <div class="intra-card"><div class="intra-num">${streaks.dn.length}</div><div class="intra-label">Sequencias de baixa registradas</div></div>
+  </div>
+  <table class="hist-table"><thead><tr><th>Duracao</th><th>Altas seguidas</th><th>Baixas seguidas</th><th>Prob. proximo dia subir apos N altas</th><th>Prob. proximo dia cair apos N baixas</th></tr></thead><tbody>`;
+  for(let n=2;n<=Math.min(Math.max(maxUp,maxDn,8),12);n++){html+=`<tr><td>${n} dias seguidos</td><td>${upD[n]||0}x</td><td>${dnD[n]||0}x</td><td style="color:var(--muted)">--</td><td style="color:var(--muted)">--</td></tr>`;}
+  html+=`</tbody></table>`;
+  document.getElementById('hist-streaks').innerHTML=html;
+}
+function switchSubtab(name,btn){document.querySelectorAll('.subtab').forEach(b=>b.classList.remove('on'));btn.classList.add('on');['hist-gaps','hist-daily','hist-intra','hist-streaks'].forEach(id=>{document.getElementById(id).style.display=id==='hist-'+name?'block':'none';});}
 function renderTickerList(){
-  const el = document.getElementById('ticker-list');
-  el.innerHTML = TICKERS.map(({t,name})=>{
-    const d = stockData[t];
-    const price = d ? fR(d.price) : '…';
-    const chg = d ? fp(d.changePct) : '';
-    const chgCls = d ? (d.changePct>=0?'up':'dn') : '';
-    const active = selectedTicker===t ? 'active' : '';
-    return `<button class="ticker-btn ${active}" onclick="selectTicker('${t}')">
-      <div class="tb-left"><div class="tb-ticker">${t}</div><div class="tb-name">${name}</div></div>
-      <div class="tb-right"><div class="tb-price">${price}</div><div class="tb-chg ${chgCls}">${chg}</div></div>
-    </button>`;
+  const el=document.getElementById('ticker-list');
+  el.innerHTML=TICKERS.map(({t,name})=>{const d=stockData[t],price=d?fR(d.price):'...',chg=d?fp(d.changePct):'',chgCls=d&&d.changePct!==0?(d.changePct>=0?'up':'dn'):'',active=selectedTicker===t?'active':'';
+    return`<button class="ticker-btn ${active}" onclick="selectTicker('${t}')"><div class="tb-left"><div class="tb-ticker">${t}</div><div class="tb-name">${name}</div></div><div class="tb-right"><div class="tb-price">${price}</div><div class="tb-chg ${chgCls}">${chg}</div></div></button>`;
   }).join('');
 }
-
-// ===================== DATA FETCH =====================
 async function fetchStock(ticker){
-  // Try Profit WS first
-  if(profitConnected && wsConn && wsConn.readyState===1){
-    // Will be populated by ws messages
-    if(stockData[ticker]&&stockData[ticker].fromProfit) return stockData[ticker];
-  }
-  // Fallback: brapi.dev
+  if(profitConnected&&stockData[ticker]?.fromProfit)return stockData[ticker];
   try{
-    const r = await fetch(`https://brapi.dev/api/quote/${ticker}?token=demo&range=3mo&interval=1d`);
-    if(!r.ok) throw new Error();
-    const data = await r.json();
-    const q = data.results?.[0];
-    if(!q) throw new Error();
-    let hv30 = HV_BASE[ticker]||.35;
-    if(q.historicalDataPrice&&q.historicalDataPrice.length>=10){
-      const prices = q.historicalDataPrice.slice(-30).map(d=>d.close).filter(Boolean);
-      if(prices.length>=5){
-        const rets=[];
-        for(let i=1;i<prices.length;i++) if(prices[i-1]>0) rets.push(Math.log(prices[i]/prices[i-1]));
-        if(rets.length>2){const m=rets.reduce((a,b)=>a+b,0)/rets.length;const v=rets.reduce((a,b)=>a+(b-m)**2,0)/(rets.length-1);const hv=Math.sqrt(v*252);if(hv>.05&&hv<2)hv30=hv;}
-      }
-    }
-    const price = q.regularMarketPrice||q.currentPrice;
-    const prevClose = q.regularMarketPreviousClose;
-    const open = q.regularMarketOpen;
-    const gapPct = (prevClose&&open) ? (open-prevClose)/prevClose : 0;
-    const ivEst = hv30*(0.90+Math.random()*.30);
-    return {ticker,price,open,prevClose,high:q.regularMarketDayHigh,low:q.regularMarketDayLow,volume:q.regularMarketVolume,change:q.regularMarketChange,changePct:(q.regularMarketChangePercent||0)/100,hv30,iv:ivEst,gapPct,ok:true,src:'brapi'};
-  } catch(e){
-    const bases={PETR4:38.5,VALE3:62.1,B3SA3:11.2,ITUB4:34.8,BBAS3:27.4};
-    const base=bases[ticker]||30;
-    const chg=(Math.random()-.48)*.035;
-    const gap=(Math.random()-.45)*.025;
-    const hv=HV_BASE[ticker];
-    return {ticker,price:base*(1+chg),open:base*(1+gap+.002),prevClose:base,high:base*(1+Math.abs(chg)+.008),low:base*(1-Math.abs(chg)-.006),volume:Math.floor(Math.random()*50e6+5e6),change:base*chg,changePct:chg,hv30:hv,iv:hv*(0.95+Math.random()*.35),gapPct:gap,ok:false,src:'simulado'};
+    const r=await fetch(`https://brapi.dev/api/quote/${ticker}?token=${BRAPI_TOKEN}&range=3mo&interval=1d`);if(!r.ok)throw new Error();
+    const d=await r.json();const q=d.results?.[0];if(!q)throw new Error();
+    let hv30=HV_BASE[ticker]||.35;
+    if(q.historicalDataPrice?.length>=10){const prices=q.historicalDataPrice.slice(-30).map(d=>d.close).filter(Boolean);if(prices.length>=5){const rets=[];for(let i=1;i<prices.length;i++)if(prices[i-1]>0)rets.push(Math.log(prices[i]/prices[i-1]));if(rets.length>2){const m=rets.reduce((a,b)=>a+b,0)/rets.length,v=rets.reduce((a,b)=>a+(b-m)**2,0)/(rets.length-1),hv=Math.sqrt(v*252);if(hv>.05&&hv<2)hv30=hv;}}}
+    const price=q.regularMarketPrice||q.currentPrice,prevClose=q.regularMarketPreviousClose,open=q.regularMarketOpen;
+    const gapPct=(prevClose&&open)?(open-prevClose)/prevClose:0,changePct=(q.regularMarketChangePercent||0)/100,ivEst=hv30*(0.90+Math.random()*.30);
+    if(prevClose)prevCloseCache[ticker]=prevClose;
+    return{ticker,price,open,prevClose,changePct,hv30,iv:ivEst,gapPct,ok:true,src:'brapi'};
+  }catch(e){
+    const bases={PETR4:48.3,VALE3:85.6,B3SA3:19.6,ITUB4:46.2,BBAS3:24.9},base=bases[ticker]||30,chg=(Math.random()-.48)*.035,gap=(Math.random()-.45)*.025,hv=HV_BASE[ticker];
+    return{ticker,price:base*(1+chg),open:base*(1+gap+.002),prevClose:base,changePct:chg,hv30:hv,iv:hv*(0.95+Math.random()*.35),gapPct:gap,ok:false,src:'simulado'};
   }
 }
-
-// ===================== PROFIT WS =====================
-function connectProfit(){
-  const url = document.getElementById('cfg-ws-url').value.trim();
-  try {
-    wsConn = new WebSocket(url);
-    wsConn.onopen = ()=>{ profitConnected=true; document.getElementById('profit-status').textContent='⬡ Profit: conectado'; document.getElementById('profit-status').classList.add('connected'); pushToast('Profit Pro conectado','Recebendo dados ao vivo','hot'); };
-    wsConn.onmessage = e=>{ try{ const d=JSON.parse(e.data); if(d.ticker&&stockData[d.ticker]){ stockData[d.ticker].price=d.price; stockData[d.ticker].changePct=d.changePct; stockData[d.ticker].gapPct=d.gapPct; stockData[d.ticker].fromProfit=true; renderTickerList(); if(selectedTicker===d.ticker) selectTicker(d.ticker,true); }}catch(e2){}};
-    wsConn.onclose = ()=>{ profitConnected=false;
-    document.getElementById('profit-status').textContent='⬡ Profit: desconectado'; document.getElementById('profit-status').classList.remove('connected'); };
-    wsConn.onerror = ()=>{ wsConn.close(); };
-  } catch(e){}
+function connectProfit(manual=false){
+  if(wsReconnectTimer){clearTimeout(wsReconnectTimer);wsReconnectTimer=null;}
+  if(wsConn&&(wsConn.readyState===0||wsConn.readyState===1))wsConn.close();
+  const url=document.getElementById('cfg-ws-url').value.trim(),el=document.getElementById('profit-status');
+  try{
+    el.textContent='Profit: conectando...';el.className='h-badge trying';
+    wsConn=new WebSocket(url);
+    wsConn.onopen=()=>{profitConnected=true;wsAttempts=0;el.textContent='Profit: conectado';el.className='h-badge connected';if(manual)pushToast('Profit conectado','Recebendo dados ao vivo');};
+    wsConn.onmessage=e=>{
+      try{const d=JSON.parse(e.data);if(!d.type)return;
+        if(d.type==='stock'&&d.ticker){
+          const pc=(d.prevClose&&d.prevClose>0)?d.prevClose:(prevCloseCache[d.ticker]||0);
+          let cp=d.changePct||0,gp=d.gapPct||0;
+          if(cp===0&&pc>0&&d.price>0)cp=(d.price-pc)/pc;
+          if(gp===0&&pc>0&&d.openPrice>0)gp=(d.openPrice-pc)/pc;
+          if(!stockData[d.ticker])stockData[d.ticker]={ticker:d.ticker,hv30:HV_BASE[d.ticker]||.35,iv:(HV_BASE[d.ticker]||.35)*1.1};
+          Object.assign(stockData[d.ticker],{price:d.price,changePct:cp,gapPct:gp,prevClose:pc,openPrice:d.openPrice,fromProfit:true,src:'profit'});
+          renderTickerList();if(selectedTicker===d.ticker)selectTicker(d.ticker,true);
+        }
+        if(d.type==='chain'&&d.base&&d.options){
+          optionChains[d.base]=d.options.map(o=>({...o,source:'profit'}));
+          if(selectedTicker===d.base)renderChain(d.base);
+          document.getElementById('chain-load-status').textContent=`${d.options.length} opcoes do Profit`;
+          pushToast(`Cadeia ${d.base}`,`${d.options.length} opcoes ao vivo`);
+        }
+      }catch(e2){}
+    };
+    wsConn.onclose=()=>{profitConnected=false;if(wsAttempts<WS_MAX){wsAttempts++;const delay=Math.min(3000*wsAttempts,30000);el.textContent=`Profit: tentativa ${wsAttempts}/${WS_MAX}...`;el.className='h-badge trying';wsReconnectTimer=setTimeout(()=>connectProfit(false),delay);}else{el.textContent='Profit: offline';el.className='h-badge';pushToast('Profit offline','Usando brapi + BS','warn');}};
+    wsConn.onerror=()=>wsConn.close();
+  }catch(e){el.textContent='Profit: erro';el.className='h-badge';}
 }
-function toggleProfitConfig(){ const p=document.getElementById('profit-config-panel'); p.style.display=p.style.display==='none'?'block':'none';
+function requestChainFromProfit(t){if(!wsConn||wsConn.readyState!==1)return;document.getElementById('chain-load-status').textContent='Solicitando cadeia ao Profit...';wsConn.send(JSON.stringify({action:'get_chain',ticker:t}));}
+function toggleProfitConfig(){const p=document.getElementById('profit-config-panel');p.style.display=p.style.display==='none'?'block':'none';}
+async function selectTicker(t,silent=false){
+  selectedTicker=t;renderTickerList();
+  if(!stockData[t]||(!stockData[t].fromProfit&&!silent)){document.getElementById('ranking-list').innerHTML='<div class="loading-overlay"><div class="spin"></div>Carregando '+t+'...</div>';stockData[t]=await fetchStock(t);}
+  requestChainFromProfit(t);
+  if(!optionChains[t]){document.getElementById('chain-load-status').textContent='Buscando opcoes...';const chain=await fetchOptionChainBrapi(t);optionChains[t]=chain;document.getElementById('chain-load-status').textContent=`${chain.length} opcoes encontradas`;}
+  const stock=stockData[t],signals=generateSignals(stock);
+  document.getElementById('rank-ticker-label').textContent=`${t} -- ${signals.length} sinais | Gap: ${fp(stock.gapPct)} | IV: ${f(stock.iv*100,1)}%`;
+  renderRanking(signals);renderChain(t);await renderHistAll(t);updateTopStats();
+  if(!silent&&signals.length>0&&signals[0].score>=75)pushToast(`${t} -- ${signals[0].code}`,`Score ${signals[0].score} +${f(signals[0].gainPct*100,0)}%`);
 }
-
-// ===================== MAIN SCAN =====================
-async function selectTicker(t, silent=false){
-  selectedTicker = t;
-  renderTickerList();
-  if(!stockData[t]){
-    document.getElementById('ranking-list').innerHTML='<div class="loading-overlay"><div class="spin"></div>Carregando '+t+'...</div>';
-    stockData[t] = await fetchStock(t);
-  }
-  const stock = stockData[t];
-  currentSignals = generateSignals(stock);
-  document.getElementById('rank-ticker-label').textContent = `${t} — ${currentSignals.length} sinais | Gap: ${fp(stock.gapPct)} | IV: ${f(stock.iv*100,1)}%`;
-  renderRanking(currentSignals);
-  renderChain(stock);
-  renderHistPanel(stock);
-  updateTopStats();
-  if(!silent && currentSignals.length>0 && currentSignals[0].score>=75){
-    pushToast(`🔔 ${t} — ${currentSignals[0].code}`,`Score ${currentSignals[0].score} · +${f(currentSignals[0].gainPct*100,0)}% pot. · ${fR(currentSignals[0].bs.price)}`,'hot');
-  }
-}
-
 async function fullScan(){
-  const btn = document.getElementById('scan-btn');
-  btn.disabled=true; btn.textContent='Escaneando...';
-  stockData={};
-  for(const {t} of TICKERS){
-    stockData[t] = await fetchStock(t);
-  }
-  renderTickerList();
-  if(selectedTicker){ await selectTicker(selectedTicker,true);
-  }
-  else { await selectTicker(TICKERS[0].t,true); }
-  updateTopStats();
-  btn.disabled=false; btn.textContent='↻ Escanear tudo';
-  const interval = parseInt(document.getElementById('cfg-interval').value)||60;
-  clearInterval(scanTimer);
-  scanTimer = setInterval(()=>{ if(marketIsOpen()) fullScan(); }, interval*1000);
+  const btn=document.getElementById('scan-btn');btn.disabled=true;btn.textContent='Escaneando...';
+  await Promise.all(TICKERS.map(async({t})=>{if(!(stockData[t]?.fromProfit))stockData[t]=await fetchStock(t);}));
+  renderTickerList();await selectTicker(selectedTicker||TICKERS[0].t,true);updateTopStats();
+  btn.disabled=false;btn.textContent='Escanear tudo';
+  const interval=parseInt(document.getElementById('cfg-interval').value)||60;
+  clearInterval(scanTimer);scanTimer=setInterval(()=>{if(marketIsOpen())fullScan();},interval*1000);
 }
-
 function updateTopStats(){
-  const allSigs = Object.values(stockData).flatMap(s=>generateSignals(s));
-  const hot = allSigs.filter(s=>s.score>=75);
-  document.getElementById('st-signals').textContent = hot.length;
-  const best = allSigs.sort((a,b)=>b.score-a.score)[0];
-  if(best){ document.getElementById('st-best').textContent=best.code; document.getElementById('st-best-sub').textContent=best.ticker+' — score '+best.score; }
-  const ivs = Object.values(stockData).map(s=>s.iv).filter(Boolean);
-  if(ivs.length) document.getElementById('st-iv').textContent=f(ivs.reduce((a,b)=>a+b,0)/ivs.length*100,0)+'%';
-  const probs = Object.values(stockData).map(s=>{ const gs=GAP_STATS[classifyGap(s.gapPct)]; return gs?Math.max(gs.d1p,gs.d2p,gs.d3p):null; }).filter(Boolean);
-  if(probs.length) document.getElementById('st-prob').textContent=f(Math.max(...probs)*100,0)+'%';
+  const all=Object.values(stockData).flatMap(s=>s.price?generateSignals(s):[]),hot=all.filter(s=>s.score>=75);
+  document.getElementById('st-signals').textContent=hot.length;
+  const best=all.sort((a,b)=>b.score-a.score)[0];
+  if(best){document.getElementById('st-best').textContent=best.code;document.getElementById('st-best-sub').textContent=best.ticker+' -- score '+best.score;}
+  const ivs=Object.values(stockData).map(s=>s.iv).filter(Boolean);
+  if(ivs.length)document.getElementById('st-iv').textContent=f(ivs.reduce((a,b)=>a+b,0)/ivs.length*100,0)+'%';
+  const probs=Object.values(stockData).map(s=>{const gs=GAP_STATS[classifyGap(s.gapPct||0)];return gs?Math.max(gs.d1p,gs.d2p,gs.d3p):null;}).filter(Boolean);
+  if(probs.length)document.getElementById('st-prob').textContent=f(Math.max(...probs)*100,0)+'%';
   document.getElementById('st-scan').textContent=new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
-  const srcs = Object.values(stockData).map(s=>s.src).filter(Boolean);
-  document.getElementById('st-src').textContent=srcs.includes('brapi')?'brapi.dev':srcs.includes('simulado')?'simulado':'profit pro';
+  const srcs=[...new Set(Object.values(stockData).map(s=>s.src).filter(Boolean))];
+  document.getElementById('st-src').textContent=srcs.includes('profit')?'profit pro':srcs.includes('brapi')?'brapi.dev':'simulado';
 }
-
-// ===================== UI =====================
-function switchTab(name,btn){
-  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('on'));
-  document.querySelectorAll('.tp').forEach(p=>p.classList.remove('on'));
-  document.getElementById('tp-'+name).classList.add('on');
-  btn.classList.add('on');
-}
-
-function marketIsOpen(){
-  const now=new Date(); const h=now.getHours(),m=now.getMinutes(),day=now.getDay();
-  if(day===0||day===6) return false;
-  const mins=h*60+m; return mins>=9*60&&mins<17*60+30;
-}
-
-function updateClock(){
-  document.getElementById('clock').textContent=new Date().toLocaleTimeString('pt-BR');
-  const open=marketIsOpen();
-  const el=document.getElementById('mkt-badge');
-  el.textContent=open?'ABERTO':'FECHADO';
-  el.className='h-mkt '+(open?'mkt-open':'mkt-closed');
-}
-setInterval(updateClock,1000);
-  updateClock();
-
-function pushToast(title,body,level='hot'){
-  const stack=document.getElementById('alert-stack');
-  const id='t'+Date.now();
-  const el=document.createElement('div');
-  el.className=`a-toast${level==='warn'?' warn':''}`;
-  el.id=id;
-  el.innerHTML=`<button class="a-close" onclick="document.getElementById('${id}').remove()">×</button><div class="a-title">${title}</div><div class="a-body">${body}</div>`;
-  stack.insertBefore(el,stack.firstChild);
-  setTimeout(()=>{ const t=document.getElementById(id);if(t){t.style.transition='opacity .4s';t.style.opacity=0;setTimeout(()=>{const t2=document.getElementById(id);if(t2)t2.remove();},400);} },9000);
-}
-
-function closeModal(){ document.getElementById('modal-wrap').classList.remove('open'); }
-function closeModalOutside(e){ if(e.target===document.getElementById('modal-wrap')) closeModal(); }
-
-// ===================== INIT =====================
-renderTickerList();
-fullScan();
+function switchTab(name,btn){document.querySelectorAll('.tab').forEach(b=>b.classList.remove('on'));document.querySelectorAll('.tp').forEach(p=>p.classList.remove('on'));document.getElementById('tp-'+name).classList.add('on');btn.classList.add('on');}
+function marketIsOpen(){const now=new Date(),h=now.getHours(),m=now.getMinutes(),day=now.getDay();if(day===0||day===6)return false;const mins=h*60+m;return mins>=9*60&&mins<17*60+30;}
+function updateClock(){document.getElementById('clock').textContent=new Date().toLocaleTimeString('pt-BR');const open=marketIsOpen(),el=document.getElementById('mkt-badge');el.textContent=open?'ABERTO':'FECHADO';el.className='h-mkt '+(open?'mkt-open':'mkt-closed');}
+setInterval(updateClock,1000);updateClock();
+function pushToast(title,body,level='hot'){const stack=document.getElementById('alert-stack'),id='t'+Date.now(),el=document.createElement('div');el.className=`a-toast${level==='warn'?' warn':''}`;el.id=id;el.innerHTML=`<button class="a-close" onclick="document.getElementById('${id}').remove()">x</button><div class="a-title">${title}</div><div class="a-body">${body}</div>`;stack.insertBefore(el,stack.firstChild);setTimeout(()=>{const t=document.getElementById(id);if(t){t.style.transition='opacity .4s';t.style.opacity=0;setTimeout(()=>{const t2=document.getElementById(id);if(t2)t2.remove();},400);}},9000);}
+renderTickerList();connectProfit(false);fullScan();
 </script>
 </body>
 </html>
