@@ -375,15 +375,15 @@ function bs(S,K,T,r,sigma,type='call'){
   return{price:Math.max(price,.001),delta,deltaRS:delta,gamma,theta,vega,d1,d2};
 }
 
-// Gera código BOVESPA da opção ex: PETR4 CALL K=38 venc Abril → PETRAD38
-function optionCode(prefix, type, K, expDays){
-  const months = type==='call' ? CALL_MONTHS : PUT_MONTHS;
-  const now = new Date();
-  const expDate = new Date(now.getTime() + expDays*86400000);
-  const monthIdx = expDate.getMonth(); // 0-11
-  const letter = months[monthIdx];
-  const strike = K % 1 === 0 ? String(Math.round(K)) : K.toFixed(1).replace('.','');
-  return prefix.slice(0,4) + letter + strike;
+// ISSO AQUI é a versão nova com brapi real:
+const BRAPI_TOKEN = 'xhruuSpNb1vYRh64XVzfbL'; // ← cola seu token aqui
+
+async function fetchRealOptions(ticker) {
+  const prefix = ticker.slice(0, 4);
+  const url = `https://brapi.dev/api/quote/list?search=${prefix}&token=${BRAPI_TOKEN}&limit=50`;
+  const res = await fetch(url);
+  const data = await res.json();
+  return (data.stocks || []).filter(s => s.stock.length > 5 && /^[A-Z]{4}[A-Z]\d/.test(s.stock));
 }
 
 function optExpDate(expDays){
