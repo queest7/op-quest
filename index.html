@@ -322,18 +322,70 @@ async function fetchHistory(ticker, range='2y') {
   return data?.results?.[0]?.historicalDataPrice || [];
 }
 
-async function fetchOptionsList(prefix) {
-  // Usa o endpoint list com search para achar opções — já traz close/change/volume
-  const data = await brapiGet(`/quote/list?search=${prefix}&limit=100`);
-  if (!data?.stocks) return [];
-  // Filtra só opções (5a letra é A-X, não número)
-  const optRegex = new RegExp(`^${prefix}[A-X]\\d+$`);
-  return data.stocks.filter(s => optRegex.test(s.stock)).map(s => ({
-    ticker: s.stock,
-    close: s.close || 0,
-    change: s.change || 0,
-    volume: s.volume || 0,
-  }));
+function generateOptionTickers(prefix, stockPrice) {
+  // Gera tickers de opção usando nomenclatura B3 real
+  // A brapi NÃO tem opções — geramos os códigos e calculamos via Black-Scholes
+  // Formato: PETR + letra_série + strike_aprox
+  // CALL: A-L (jan-dez), PUT: M-X (jan-dez)
+  
+  const options = [];
+  const now = new Date();
+  const currentMonth = now.getMonth(); // 0-11
+  
+  // Gera para os próximos 3 vencimentos mensais
+  for (let offset = 0; offset < 3; offset++) {
+    const month = (currentMonth + offset) % 12;
+    const callLetter = CALL_LETTERS[month];
+    const putLetter = PUT_LETTERS[month];
+    
+    // Calcula vencimento (3a sexta-feira)
+    let year = now.getFullYear();
+    if (month < currentMonth) year++;
+    const vencDate = getThirdFriday(year, month);
+    const daysToExp = Math.max(1, Math.round((vencDate - now) / 86400000));
+    
+    // Pula vencimentos que já passaram
+    if (daysToExp < 1) continue;
+    
+    // Gera strikes: ±20% do preço atual, em intervalos redondos
+    const minStrike = Math.floor(stockPrice * 0.80);
+    const maxStrike = Math.ceil(stockPrice * 1.20);
+    
+    // Determina step baseado no preço
+    let step = 1;
+    if (stockPrice > 50) step = 2;
+    if (stockPrice > 100) step = 5;
+    if (stockPrice < 10) step = 0.5;
+    
+    for (let strike = minStrike; strike <= maxStrike; strike += step) {
+      const strikeRound = Math.round(strike * 100) / 100;
+      // Código numérico da opção (aproximação)
+      const strikeCode = strike < 100 ? String(Math.round(strike)) : String(Math.round(strike));
+      
+      // CALL
+      options.push({
+        ticker: `${prefix}${callLetter}${strikeCode}`,
+        type: "CALL",
+        isCall: true,
+        strike: strikeRound,
+        daysToExp: daysToExp,
+        vencDate: vencDate,
+        month: month,
+      });
+      
+      // PUT
+      options.push({
+        ticker: `${prefix}${putLetter}${strikeCode}`,
+        type: "PUT",
+        isCall: false,
+        strike: strikeRound,
+        daysToExp: daysToExp,
+        vencDate: vencDate,
+        month: month,
+      });
+    }
+  }
+  return options;
 }
 
 
@@ -712,20 +764,62 @@ function connectProfit() {
 
 // Se não tem WS, puxa da brapi
 async function fetchPricesFromBrapi() {
-  const data = await brapiGet(`/quote/${TICKERS.join(',')}`);
-  if (!data?.results) return;
+  // brapi grátis: PETR4, VALE3, MGLU3, ITUB4 (sem token)
+  // B3SA3 e BBAS3 precisam de token
+  const freeTickers = TICKERS.filter(t => ['PETR4','VALE3','MGLU3','ITUB4'].includes(t));
+  const paidTickers = TICKERS.filter(t => !['PETR4','VALE3','MGLU3','ITUB4'].includes(t));
+  
+  // Busca os gratuitos
+  let allResults = [];
+  if (freeTickers.length) {
+    const data = await brapiGet(`/quote/${freeTickers.join(',')}`);
+    if (data?.results) allResults.push(...data.results);
+  }
+  
+  // Tenta os pagos (pode falhar sem token)
+  if (paidTickers.length && BRAPI_TOKEN) {
+    const data2 = await brapiGet(`/quote/${paidTickers.join(',')}`);
+    if (data2?.results) allResults.push(...data2.results);
+  }
+  
+  // Para tickers sem dados da brapi, cria placeholder
+  for (const t of paidTickers) {
+    if (!allResults.find(r => r.symbol === t)) {
+      // Dados ficam vazios até o Profit conectar
+      if (!state.prices[t]) {
+        state.prices[t] = { ticker: t, price: 0, prevClose: 0, open: 0, high: 0, low: 0, volume: 0, changePct: 0, gapPct: 0 };
+      }
+    }
+  }
+  
+  const data = { results: allResults };
+  if (!data?.results?.length) return;
   data.results.forEach(r => {
+    const price = r.regularMarketPrice || 0;
+    const prevClose = r.regularMarketPreviousClose || 0;
+    const openP = r.regularMarketOpen || 0;
+    
+    // Calcula changePct: usa o da API se disponível, senão calcula
+    let changePct = r.regularMarketChangePercent || 0;
+    if (changePct === 0 && prevClose > 0 && price > 0) {
+      changePct = ((price - prevClose) / prevClose) * 100;
+    }
+    
+    let gapPct = 0;
+    if (openP > 0 && prevClose > 0) {
+      gapPct = ((openP - prevClose) / prevClose) * 100;
+    }
+    
     state.prices[r.symbol] = {
       ticker: r.symbol,
-      price: r.regularMarketPrice,
-      prevClose: r.regularMarketPreviousClose,
-      open: r.regularMarketOpen,
-      high: r.regularMarketDayHigh,
-      low: r.regularMarketDayLow,
-      volume: r.regularMarketVolume,
-      changePct: r.regularMarketChangePercent,
-      gapPct: r.regularMarketOpen && r.regularMarketPreviousClose ? 
-        ((r.regularMarketOpen - r.regularMarketPreviousClose) / r.regularMarketPreviousClose * 100) : 0,
+      price: price,
+      prevClose: prevClose,
+      open: openP,
+      high: r.regularMarketDayHigh || price,
+      low: r.regularMarketDayLow || price,
+      volume: r.regularMarketVolume || 0,
+      changePct: Math.round(changePct * 100) / 100,
+      gapPct: Math.round(gapPct * 100) / 100,
     };
   });
   renderWatchlist();
@@ -755,60 +849,119 @@ async function fullScan() {
     
     // Fetch histórico para análise
     if (!state.histData[ticker]) {
-      const hist = await fetchHistory(ticker, '2y');
-      if (hist?.length) {
-        state.histData[ticker] = hist;
+      try {
+        const hist = await fetchHistory(ticker, '2y');
+        if (hist?.length > 10) {
+          state.histData[ticker] = hist;
+        }
+      } catch(e) {
+        console.warn(`Histórico indisponível para ${ticker} (precisa de token brapi)`);
       }
     }
     
     const gapBuckets = state.histData[ticker] ? analyzeGaps(state.histData[ticker]) : null;
     const hv = state.histData[ticker] ? historicalVol(state.histData[ticker]) : 0.3;
     
-    // Busca opções via brapi list (já vem com close/volume)
-    const prefix = ticker.slice(0, 4);
-    let optList = [];
-    try {
-      optList = await fetchOptionsList(prefix);
-    } catch(e) {}
+    // PRIORIDADE 1: Dados reais do Profit (via WebSocket)
+    const profitChain = state.options[ticker];
+    if (profitChain && profitChain.source === 'profit' && profitChain.data?.length) {
+      for (const po of profitChain.data) {
+        if (po.price <= 0) continue;
+        
+        const parsed = parseOptionCode(po.ticker);
+        const daysToExp = parsed ? parsed.daysToExp : 30;
+        const vencDate = parsed ? parsed.vencDate : new Date();
+        const isCall = po.type === 'CALL';
+        
+        const absDelta = Math.abs(po.delta || 0.3);
+        const moveExpected = sd.price * 0.02;
+        const expectedGain = po.price > 0 ? (absDelta * moveExpected) / po.price * 100 : 0;
+        
+        const option = {
+          ticker: po.ticker,
+          baseTicker: ticker,
+          type: po.type,
+          strike: po.strike,
+          price: po.price,
+          bid: po.bid || po.price * 0.95,
+          ask: po.ask || po.price * 1.05,
+          greeks: { delta: po.delta || 0, gamma: po.gamma || 0, theta: po.theta || 0, vega: po.vega || 0, iv: po.iv || 0 },
+          iv: po.iv || hv * 1.2,
+          hv: hv,
+          daysToExp: daysToExp,
+          vencDate: vencDate,
+          potGainPct: Math.round(expectedGain),
+          volume: po.volume || 0,
+          timeframe: daysToExp <= 5 ? 'DAY' : (daysToExp <= 30 ? 'SWING' : 'COLD'),
+          source: 'profit',
+        };
+        
+        option.probD1 = 0;
+        if (gapBuckets && sd.gapPct !== undefined) {
+          const BUCKET_SIZE = 0.5;
+          const bVal = Math.max(-15, Math.min(14.5, Math.floor(sd.gapPct / BUCKET_SIZE) * BUCKET_SIZE));
+          const bKey = `${bVal >= 0 ? '+' : ''}${bVal.toFixed(1)}`;
+          const bucket = gapBuckets[bKey];
+          if (bucket && bucket.count >= 3) {
+            option.probD1 = Math.round((isCall ? bucket.d1_pos : bucket.d1_neg) / bucket.count * 100);
+          }
+        }
+        
+        option.score = calcScore(option, sd, gapBuckets);
+        allOptions.push(option);
+      }
+      continue; // Pula geração BS — temos dados reais
+    }
     
-    // Para cada opção encontrada — usa dados do /list, SEM chamada individual
-    for (const optItem of optList.slice(0, 40)) {
-      const parsed = parseOptionCode(optItem.ticker);
-      if (!parsed || parsed.daysToExp > 90 || parsed.daysToExp < 1) continue;
+    // PRIORIDADE 2: Gera opções teóricas via nomenclatura B3 + Black-Scholes
+    const prefix = ticker.slice(0, 4);
+    const generatedOptions = generateOptionTickers(prefix, sd.price);
+    
+    // Usa IV estimada baseada na HV (com prêmio de +20% típico do mercado BR)
+    const ivEstimate = Math.max(0.15, hv * 1.20);
+    
+    for (const optGen of generatedOptions) {
+      if (optGen.daysToExp > 90 || optGen.daysToExp < 1) continue;
       
-      const optPrice = optItem.close;
-      if (!optPrice || optPrice <= 0) continue;
-      
-      const T = parsed.daysToExp / 365;
+      const T = optGen.daysToExp / 365;
       const r = 0.1075; // Selic
       
-      const iv = impliedVol(optPrice, sd.price, parsed.strike, T, r, parsed.isCall);
-      const greeks = bsGreeks(sd.price, parsed.strike, T, r, iv, parsed.isCall);
+      // Calcula preço teórico via Black-Scholes
+      const optPrice = bsPrice(sd.price, optGen.strike, T, r, ivEstimate, optGen.isCall);
+      
+      // Filtra: preço mínimo R$0.01, máximo razoável
+      if (optPrice < 0.01 || optPrice > sd.price * 0.5) continue;
+      
+      const greeks = bsGreeks(sd.price, optGen.strike, T, r, ivEstimate, optGen.isCall);
+      
+      // Filtra por delta: só opções com delta entre 0.05 e 0.95 (descarta deep ITM/OTM inúteis)
+      if (Math.abs(greeks.delta) < 0.05 || Math.abs(greeks.delta) > 0.95) continue;
       
       // Potencial de ganho: quanto a opção sobe se o ativo mover 2%
       const absDelta = Math.abs(greeks.delta);
       const moveExpected = sd.price * 0.02;
       const expectedGain = optPrice > 0 ? (absDelta * moveExpected) / optPrice * 100 : 0;
       
-      // Spread estimado (bid/ask aprox.)
+      // Spread estimado
       const spreadEst = optPrice > 0.20 ? 0.05 : 0.02;
       
       const option = {
-        ticker: optItem.ticker,
+        ticker: optGen.ticker,
         baseTicker: ticker,
-        type: parsed.type,
-        strike: parsed.strike,
-        price: optPrice,
-        bid: Math.max(0.01, optPrice - spreadEst),
-        ask: optPrice + spreadEst,
+        type: optGen.type,
+        strike: optGen.strike,
+        price: Math.round(optPrice * 100) / 100,
+        bid: Math.max(0.01, Math.round((optPrice - spreadEst) * 100) / 100),
+        ask: Math.round((optPrice + spreadEst) * 100) / 100,
         greeks: greeks,
-        iv: iv,
+        iv: ivEstimate,
         hv: hv,
-        daysToExp: parsed.daysToExp,
-        vencDate: parsed.vencDate,
+        daysToExp: optGen.daysToExp,
+        vencDate: optGen.vencDate,
         potGainPct: Math.round(expectedGain),
-        volume: optItem.volume,
-        timeframe: parsed.daysToExp <= 5 ? 'DAY' : (parsed.daysToExp <= 30 ? 'SWING' : 'COLD'),
+        volume: 0,
+        timeframe: optGen.daysToExp <= 5 ? 'DAY' : (optGen.daysToExp <= 30 ? 'SWING' : 'COLD'),
+        source: 'bs_calc',
       };
       
       // Calcula prob D+1 com base no gap atual
@@ -819,7 +972,7 @@ async function fullScan() {
         const bKey = `${bVal >= 0 ? '+' : ''}${bVal.toFixed(1)}`;
         const bucket = gapBuckets[bKey];
         if (bucket && bucket.count >= 3) {
-          option.probD1 = Math.round((parsed.isCall ? bucket.d1_pos : bucket.d1_neg) / bucket.count * 100);
+          option.probD1 = Math.round((optGen.isCall ? bucket.d1_pos : bucket.d1_neg) / bucket.count * 100);
         }
       }
       
