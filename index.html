@@ -3,145 +3,547 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Quest Options v3</title>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<title>Quest Options v5</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
+/* ===== RESET & ROOT ===== */
 :root {
-  --bg: #0a0e17;
-  --bg2: #111827;
-  --bg3: #1a2235;
-  --border: #1e2d45;
-  --text: #e2e8f0;
-  --text2: #94a3b8;
-  --text3: #64748b;
-  --green: #22c55e;
-  --green-dim: #16a34a;
-  --red: #ef4444;
-  --red-dim: #dc2626;
-  --blue: #3b82f6;
-  --yellow: #eab308;
-  --orange: #f97316;
-  --purple: #a855f7;
-  --cyan: #06b6d4;
-  --accent: #22c55e;
+  --bg-deep: #06090f;
+  --bg-base: #0c1017;
+  --bg-card: #121820;
+  --bg-elevated: #1a2230;
+  --bg-hover: #1e2940;
+  --border: rgba(255,255,255,0.06);
+  --border-active: rgba(255,255,255,0.12);
+  --text-primary: #e8edf5;
+  --text-secondary: #8896ab;
+  --text-muted: #4d5d73;
+  --accent: #00e59b;
+  --accent-dim: #00b87a;
+  --accent-glow: rgba(0,229,155,0.15);
+  --call: #00d4aa;
+  --call-bg: rgba(0,212,170,0.08);
+  --put: #ff6b8a;
+  --put-bg: rgba(255,107,138,0.08);
+  --up: #00d4aa;
+  --down: #ff6b8a;
+  --warn: #ffb547;
+  --blue: #5b9cf6;
+  --purple: #b07cff;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
 }
 
 * { margin:0; padding:0; box-sizing:border-box; }
-body { background:var(--bg); color:var(--text); font-family:'JetBrains Mono',monospace; font-size:13px; overflow-x:hidden; }
-
-/* ===== LAYOUT ===== */
-.app { display:grid; grid-template-columns:220px 1fr; grid-template-rows:50px 1fr; height:100vh; }
-.header { grid-column:1/-1; background:var(--bg2); border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; padding:0 20px; }
-.header h1 { font-family:'Space Grotesk',sans-serif; font-size:18px; font-weight:700; color:var(--accent); }
-.header .status { display:flex; align-items:center; gap:12px; font-size:11px; color:var(--text2); }
-.header .status .dot { width:8px; height:8px; border-radius:50%; }
-.header .status .dot.on { background:var(--green); box-shadow:0 0 6px var(--green); }
-.header .status .dot.off { background:var(--red); }
-
-.sidebar { background:var(--bg2); border-right:1px solid var(--border); overflow-y:auto; padding:12px; }
-.main { overflow-y:auto; padding:16px; }
-
-/* ===== WATCHLIST ===== */
-.wl-title { font-size:10px; text-transform:uppercase; letter-spacing:1.5px; color:var(--text3); margin-bottom:8px; font-weight:600; }
-.wl-item { padding:10px; border-radius:6px; margin-bottom:4px; cursor:pointer; transition:background .15s; border:1px solid transparent; }
-.wl-item:hover, .wl-item.active { background:var(--bg3); border-color:var(--border); }
-.wl-item .ticker { font-weight:600; font-size:13px; }
-.wl-item .name { font-size:10px; color:var(--text3); }
-.wl-item .price-row { display:flex; justify-content:space-between; align-items:baseline; margin-top:4px; }
-.wl-item .price { font-weight:600; font-size:14px; }
-.wl-item .change { font-size:11px; font-weight:600; }
-.wl-item .change.pos { color:var(--green); }
-.wl-item .change.neg { color:var(--red); }
-.wl-item .change.zero { color:var(--text3); }
-
-/* ===== PARAMS ===== */
-.params { margin-top:16px; padding-top:12px; border-top:1px solid var(--border); }
-.params .wl-title { margin-bottom:10px; }
-.param-row { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
-.param-row label { font-size:11px; color:var(--text2); }
-.param-row input { width:60px; background:var(--bg); border:1px solid var(--border); color:var(--text); padding:4px 6px; border-radius:4px; text-align:center; font-family:inherit; font-size:12px; }
-.btn-scan { width:100%; padding:10px; background:var(--accent); color:var(--bg); border:none; border-radius:6px; font-family:inherit; font-weight:600; font-size:12px; cursor:pointer; margin-top:8px; transition:opacity .15s; }
-.btn-scan:hover { opacity:.85; }
-.btn-scan:disabled { opacity:.4; cursor:not-allowed; }
-
-/* ===== STATS CARDS ===== */
-.stats-row { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:12px; margin-bottom:16px; }
-.stat-card { background:var(--bg2); border:1px solid var(--border); border-radius:8px; padding:14px 16px; }
-.stat-card .label { font-size:10px; text-transform:uppercase; letter-spacing:1px; color:var(--text3); margin-bottom:4px; }
-.stat-card .value { font-family:'Space Grotesk',sans-serif; font-size:22px; font-weight:700; }
-.stat-card .sub { font-size:11px; color:var(--text2); margin-top:2px; }
-
-/* ===== TABS ===== */
-.tabs { display:flex; gap:0; margin-bottom:16px; border-bottom:1px solid var(--border); }
-.tab { padding:10px 18px; font-size:12px; font-weight:500; color:var(--text3); cursor:pointer; border-bottom:2px solid transparent; transition:all .15s; }
-.tab:hover { color:var(--text2); }
-.tab.active { color:var(--accent); border-bottom-color:var(--accent); }
-.tab-content { display:none; }
-.tab-content.active { display:block; }
-
-/* ===== TABLE ===== */
-.tbl-wrap { overflow-x:auto; }
-table { width:100%; border-collapse:collapse; }
-th { font-size:10px; text-transform:uppercase; letter-spacing:1px; color:var(--text3); text-align:left; padding:8px 10px; border-bottom:1px solid var(--border); font-weight:600; white-space:nowrap; }
-td { padding:10px; border-bottom:1px solid rgba(30,45,69,.5); font-size:12px; white-space:nowrap; }
-tr:hover td { background:rgba(30,45,69,.3); }
-.rank { font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:16px; color:var(--accent); }
-.badge { display:inline-block; padding:2px 6px; border-radius:3px; font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:.5px; margin-right:3px; }
-.badge.call { background:rgba(34,197,94,.15); color:var(--green); }
-.badge.put { background:rgba(239,68,68,.15); color:var(--red); }
-.badge.day { background:rgba(59,130,246,.15); color:var(--blue); }
-.badge.swing { background:rgba(168,85,247,.15); color:var(--purple); }
-.badge.cold { background:rgba(100,116,139,.15); color:var(--text3); }
-.badge.warm { background:rgba(234,179,8,.15); color:var(--yellow); }
-.badge.hot { background:rgba(249,115,22,.15); color:var(--orange); }
-.pos { color:var(--green); }
-.neg { color:var(--red); }
-
-/* ===== SCORE BAR ===== */
-.score-bar { display:flex; align-items:center; gap:6px; }
-.score-num { font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:18px; min-width:30px; }
-.score-bars { display:flex; gap:2px; }
-.score-bars .bar { width:4px; height:16px; border-radius:2px; background:var(--border); }
-.score-bars .bar.filled { background:var(--accent); }
-
-/* ===== HISTOGRAM ===== */
-.hist-container { margin:16px 0; }
-.hist-row { display:flex; align-items:center; gap:8px; margin-bottom:4px; }
-.hist-label { width:80px; text-align:right; font-size:11px; color:var(--text2); }
-.hist-bar-wrap { flex:1; height:20px; background:var(--bg); border-radius:3px; overflow:hidden; position:relative; }
-.hist-bar { height:100%; border-radius:3px; transition:width .5s ease; }
-.hist-count { font-size:10px; color:var(--text3); min-width:40px; }
-.hist-bar.green { background:linear-gradient(90deg,var(--green-dim),var(--green)); }
-.hist-bar.red { background:linear-gradient(90deg,var(--red),var(--red-dim)); }
-
-/* ===== PATTERN CARDS ===== */
-.pattern-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:12px; }
-.pattern-card { background:var(--bg2); border:1px solid var(--border); border-radius:8px; padding:16px; }
-.pattern-card .title { font-weight:600; font-size:13px; margin-bottom:8px; }
-.pattern-card .stat { display:flex; justify-content:space-between; padding:4px 0; font-size:12px; border-bottom:1px solid rgba(30,45,69,.3); }
-.pattern-card .stat:last-child { border:none; }
-.pattern-card .highlight { font-weight:700; }
-
-/* ===== TOAST ===== */
-#toast-container { position:fixed; top:60px; right:16px; z-index:9999; display:flex; flex-direction:column; gap:8px; pointer-events:none; }
-.toast { background:var(--bg2); border:1px solid var(--border); border-radius:8px; padding:12px 16px; min-width:280px; box-shadow:0 8px 24px rgba(0,0,0,.4); animation:slideIn .3s ease; pointer-events:auto; }
-.toast .toast-title { font-weight:600; font-size:12px; margin-bottom:2px; }
-.toast .toast-body { font-size:11px; color:var(--text2); }
-.toast.signal { border-left:3px solid var(--green); }
-.toast.info { border-left:3px solid var(--blue); }
-.toast.warning { border-left:3px solid var(--yellow); }
-@keyframes slideIn { from{transform:translateX(100%);opacity:0} to{transform:translateX(0);opacity:1} }
-@keyframes fadeOut { to{transform:translateX(100%);opacity:0} }
+html { font-size: 13px; }
+body {
+  background: var(--bg-deep);
+  color: var(--text-primary);
+  font-family: 'DM Sans', -apple-system, sans-serif;
+  overflow-x: hidden;
+  min-height: 100vh;
+}
 
 /* ===== SCROLLBAR ===== */
-::-webkit-scrollbar { width:6px; }
-::-webkit-scrollbar-track { background:var(--bg); }
-::-webkit-scrollbar-thumb { background:var(--border); border-radius:3px; }
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border-active); border-radius: 10px; }
 
-/* ===== RESPONSIVE ===== */
-@media(max-width:768px) {
-  .app { grid-template-columns:1fr; }
-  .sidebar { display:none; }
+/* ===== LAYOUT ===== */
+.app {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  grid-template-rows: 56px 1fr;
+  height: 100vh;
+}
+
+/* ===== HEADER ===== */
+.header {
+  grid-column: 1 / -1;
+  background: var(--bg-base);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  z-index: 10;
+}
+.header-left { display: flex; align-items: center; gap: 16px; }
+.logo {
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.logo-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 12px var(--accent);
+  animation: pulse-dot 2s infinite;
+}
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; box-shadow: 0 0 12px var(--accent); }
+  50% { opacity: .7; box-shadow: 0 0 4px var(--accent); }
+}
+.header-right { display: flex; align-items: center; gap: 20px; }
+.status-pill {
+  display: flex; align-items: center; gap: 6px;
+  padding: 4px 12px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  font-size: 11px;
+  color: var(--text-secondary);
+  font-family: 'IBM Plex Mono', monospace;
+}
+.status-pill .dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+}
+.dot-on { background: var(--accent); box-shadow: 0 0 6px var(--accent); }
+.dot-off { background: var(--down); }
+.dot-warn { background: var(--warn); }
+.clock {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+/* ===== SIDEBAR ===== */
+.sidebar {
+  background: var(--bg-base);
+  border-right: 1px solid var(--border);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+.sidebar-section {
+  padding: 16px;
+}
+.sidebar-section + .sidebar-section {
+  border-top: 1px solid var(--border);
+}
+.section-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--text-muted);
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+/* Ticker input */
+.add-ticker-row {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+.add-ticker-row input {
+  flex: 1;
+  background: var(--bg-deep);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  padding: 7px 10px;
+  border-radius: var(--radius-sm);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px;
+  text-transform: uppercase;
+  outline: none;
+  transition: border-color .2s;
+}
+.add-ticker-row input:focus { border-color: var(--accent); }
+.add-ticker-row input::placeholder { color: var(--text-muted); text-transform: none; }
+.btn-add {
+  background: var(--accent);
+  color: var(--bg-deep);
+  border: none;
+  width: 32px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 700;
+  transition: opacity .15s;
+}
+.btn-add:hover { opacity: .85; }
+
+/* Watchlist items */
+.wl-item {
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all .15s;
+  border: 1px solid transparent;
+  margin-bottom: 2px;
+  position: relative;
+}
+.wl-item:hover { background: var(--bg-elevated); }
+.wl-item.active {
+  background: var(--bg-elevated);
+  border-color: var(--accent);
+  box-shadow: inset 3px 0 0 var(--accent);
+}
+.wl-top { display: flex; justify-content: space-between; align-items: baseline; }
+.wl-ticker { font-weight: 600; font-size: 13px; letter-spacing: -0.3px; }
+.wl-price {
+  font-family: 'IBM Plex Mono', monospace;
+  font-weight: 500;
+  font-size: 13px;
+}
+.wl-bottom { display: flex; justify-content: space-between; align-items: baseline; margin-top: 2px; }
+.wl-name { font-size: 10px; color: var(--text-muted); }
+.wl-change {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  font-weight: 600;
+}
+.wl-remove {
+  position: absolute;
+  top: 6px; right: 6px;
+  width: 18px; height: 18px;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 12px;
+  border-radius: 50%;
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+.wl-item:hover .wl-remove { display: flex; }
+.wl-remove:hover { color: var(--down); background: var(--put-bg); }
+.up { color: var(--up); }
+.down { color: var(--down); }
+.flat { color: var(--text-muted); }
+
+/* Params */
+.param-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+.param-row label { font-size: 11px; color: var(--text-secondary); }
+.param-row input {
+  width: 52px;
+  background: var(--bg-deep);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  padding: 4px 6px;
+  border-radius: var(--radius-sm);
+  text-align: center;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  outline: none;
+}
+.param-row input:focus { border-color: var(--accent); }
+
+.btn-scan {
+  width: 100%;
+  padding: 10px;
+  background: linear-gradient(135deg, var(--accent), var(--accent-dim));
+  color: var(--bg-deep);
+  border: none;
+  border-radius: var(--radius-md);
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 700;
+  font-size: 12px;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: all .2s;
+  letter-spacing: 0.3px;
+}
+.btn-scan:hover { transform: translateY(-1px); box-shadow: 0 4px 16px var(--accent-glow); }
+.btn-scan:disabled { opacity: .4; cursor: not-allowed; transform: none; box-shadow: none; }
+.btn-scan:active { transform: translateY(0); }
+
+/* ===== MAIN ===== */
+.main {
+  overflow-y: auto;
+  padding: 20px 24px;
+  background: var(--bg-deep);
+}
+
+/* Stats */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.stat-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  transition: border-color .2s;
+}
+.stat-card:hover { border-color: var(--border-active); }
+.stat-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+.stat-value {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+.stat-sub {
+  font-size: 10px;
+  color: var(--text-muted);
+  margin-top: 2px;
+  font-family: 'IBM Plex Mono', monospace;
+}
+
+/* Tabs */
+.tabs-bar {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 20px;
+}
+.tab-btn {
+  padding: 10px 20px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-muted);
+  cursor: pointer;
+  border: none;
+  background: none;
+  border-bottom: 2px solid transparent;
+  transition: all .15s;
+  font-family: 'DM Sans', sans-serif;
+}
+.tab-btn:hover { color: var(--text-secondary); }
+.tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+/* Tables */
+.tbl-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; }
+th {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+  text-align: left;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+  font-weight: 600;
+  white-space: nowrap;
+  position: sticky;
+  top: 0;
+  background: var(--bg-deep);
+}
+td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+  white-space: nowrap;
+  font-family: 'IBM Plex Mono', monospace;
+}
+tr:hover td { background: rgba(255,255,255,0.02); }
+.mono { font-family: 'IBM Plex Mono', monospace; }
+
+/* Badges */
+.badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.badge-call { background: var(--call-bg); color: var(--call); }
+.badge-put { background: var(--put-bg); color: var(--put); }
+.badge-day { background: rgba(91,156,246,0.1); color: var(--blue); }
+.badge-swing { background: rgba(176,124,255,0.1); color: var(--purple); }
+.badge-hot { background: rgba(255,181,71,0.1); color: var(--warn); }
+
+/* Score */
+.score-display {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.score-num {
+  font-weight: 700;
+  font-size: 16px;
+  font-family: 'IBM Plex Mono', monospace;
+}
+.score-track {
+  width: 48px;
+  height: 4px;
+  background: var(--bg-deep);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.score-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width .5s;
+}
+
+/* Rank */
+.rank-num {
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--text-muted);
+  font-family: 'IBM Plex Mono', monospace;
+  min-width: 28px;
+  text-align: center;
+}
+.rank-num.top3 { color: var(--accent); }
+
+/* Histogram */
+.hist-container { margin: 12px 0; }
+.hist-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 3px;
+}
+.hist-label {
+  width: 64px;
+  text-align: right;
+  font-size: 11px;
+  font-family: 'IBM Plex Mono', monospace;
+  color: var(--text-secondary);
+  flex-shrink: 0;
+}
+.hist-track {
+  flex: 1;
+  height: 20px;
+  background: var(--bg-card);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.hist-bar {
+  height: 100%;
+  border-radius: 3px;
+  transition: width .6s ease;
+  min-width: 2px;
+}
+.hist-bar-up { background: linear-gradient(90deg, rgba(0,212,170,0.3), var(--up)); }
+.hist-bar-down { background: linear-gradient(90deg, var(--down), rgba(255,107,138,0.3)); }
+.hist-info {
+  font-size: 10px;
+  font-family: 'IBM Plex Mono', monospace;
+  color: var(--text-muted);
+  min-width: 80px;
+}
+
+/* Pattern Cards */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 12px;
+}
+.analysis-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+}
+.analysis-card .card-title {
+  font-weight: 600;
+  font-size: 13px;
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.card-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 5px 0;
+  font-size: 12px;
+  border-bottom: 1px solid var(--border);
+}
+.card-row:last-child { border: none; }
+.card-row .label { color: var(--text-secondary); }
+.card-row .value { font-weight: 600; font-family: 'IBM Plex Mono', monospace; }
+
+/* Signal badge */
+.signal-tag {
+  font-size: 9px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.signal-reversal { background: rgba(0,212,170,0.12); color: var(--up); }
+.signal-continuation { background: rgba(255,107,138,0.12); color: var(--down); }
+.signal-neutral { background: rgba(255,255,255,0.05); color: var(--text-muted); }
+
+/* Empty state */
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text-muted);
+}
+.empty-state .icon { font-size: 36px; margin-bottom: 12px; opacity: .5; }
+.empty-state p { font-size: 13px; line-height: 1.6; }
+.empty-state .hint { font-size: 11px; margin-top: 8px; color: var(--text-muted); }
+
+/* Loading */
+.loading-spinner {
+  display: inline-block;
+  width: 14px; height: 14px;
+  border: 2px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin .6s linear infinite;
+  margin-right: 6px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Toast */
+#toast-box {
+  position: fixed;
+  top: 64px;
+  right: 20px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  pointer-events: none;
+}
+.toast {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: var(--radius-md);
+  padding: 12px 16px;
+  min-width: 280px;
+  box-shadow: 0 8px 32px rgba(0,0,0,.5);
+  animation: toast-in .3s ease;
+  pointer-events: auto;
+}
+.toast.warn { border-left-color: var(--warn); }
+.toast.error { border-left-color: var(--down); }
+.toast-title { font-weight: 600; font-size: 12px; margin-bottom: 2px; }
+.toast-body { font-size: 11px; color: var(--text-secondary); }
+@keyframes toast-in { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+/* Responsive */
+@media (max-width: 900px) {
+  .app { grid-template-columns: 1fr; }
+  .sidebar { display: none; }
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 1200px) {
+  .stats-grid { grid-template-columns: repeat(3, 1fr); }
 }
 </style>
 </head>
@@ -149,1195 +551,950 @@ tr:hover td { background:rgba(30,45,69,.3); }
 
 <div class="app">
   <!-- HEADER -->
-  <div class="header">
-    <h1>&#9679; QUEST OPTIONS</h1>
-    <div class="status">
-      <span id="profit-status"><span class="dot off"></span> Profit: desconectado</span>
-      <span id="brapi-status"><span class="dot off"></span> brapi</span>
-      <span id="last-scan">--:--</span>
+  <header class="header">
+    <div class="header-left">
+      <div class="logo"><div class="logo-dot"></div>QUEST OPTIONS</div>
     </div>
-  </div>
+    <div class="header-right">
+      <div class="status-pill" id="profit-pill"><div class="dot dot-off" id="ws-dot"></div><span id="ws-label">Profit offline</span></div>
+      <div class="status-pill" id="brapi-pill"><div class="dot dot-off" id="brapi-dot"></div><span id="brapi-label">brapi</span></div>
+      <div class="clock" id="clock-el">--:--</div>
+    </div>
+  </header>
 
   <!-- SIDEBAR -->
-  <div class="sidebar">
-    <div class="wl-title">Watchlist</div>
-    <div id="watchlist"></div>
-
-    <div class="params">
-      <div class="wl-title">Parâmetros</div>
-      <div class="param-row"><label>Gain alvo mín</label><input id="p-gain-min" type="number" value="30"></div>
-      <div class="param-row"><label>Gain alvo máx</label><input id="p-gain-max" type="number" value="60"></div>
-      <div class="param-row"><label>Prob. mín D+1</label><input id="p-prob" type="number" value="52"></div>
-      <div class="param-row"><label>Amostras mín</label><input id="p-samples" type="number" value="8"></div>
-      <div class="param-row"><label>Score mín alerta</label><input id="p-alert-score" type="number" value="55"></div>
-      <div class="param-row"><label>Re-scan (seg)</label><input id="p-interval" type="number" value="60"></div>
-      <button class="btn-scan" id="btn-scan" onclick="fullScan()">&#x21bb; Escanear tudo</button>
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <div class="section-label">Watchlist</div>
+      <div class="add-ticker-row">
+        <input type="text" id="input-ticker" placeholder="Ex: WEGE3" maxlength="6">
+        <button class="btn-add" id="btn-add-ticker" title="Adicionar">+</button>
+      </div>
+      <div id="watchlist"></div>
     </div>
-  </div>
+    <div class="sidebar-section">
+      <div class="section-label">Parâmetros</div>
+      <div class="param-row"><label>Score mín alerta</label><input id="p-alert" type="number" value="50"></div>
+      <div class="param-row"><label>Re-scan (seg)</label><input id="p-interval" type="number" value="90"></div>
+      <button class="btn-scan" id="btn-scan" onclick="doFullScan()">Escanear Tudo</button>
+    </div>
+  </aside>
 
   <!-- MAIN -->
-  <div class="main">
-    <!-- STATS -->
-    <div class="stats-row">
-      <div class="stat-card"><div class="label">Sinais</div><div class="value" id="st-signals">0</div><div class="sub">oportunidades</div></div>
-      <div class="stat-card"><div class="label">Melhor Score</div><div class="value" id="st-best">—</div><div class="sub" id="st-best-sub"></div></div>
-      <div class="stat-card"><div class="label">IV Médio</div><div class="value" id="st-iv">—</div><div class="sub">volatilidade implícita</div></div>
-      <div class="stat-card"><div class="label">Melhor Prob.</div><div class="value" id="st-prob">—</div><div class="sub">D+1 histórico</div></div>
-      <div class="stat-card"><div class="label">Último Scan</div><div class="value" id="st-time">--:--</div><div class="sub" id="st-source">—</div></div>
+  <main class="main">
+    <!-- Stats -->
+    <div class="stats-grid">
+      <div class="stat-card"><div class="stat-label">Sinais</div><div class="stat-value" id="s-count">0</div><div class="stat-sub">oportunidades</div></div>
+      <div class="stat-card"><div class="stat-label">Melhor Score</div><div class="stat-value" id="s-best">—</div><div class="stat-sub" id="s-best-sub"></div></div>
+      <div class="stat-card"><div class="stat-label">IV Médio</div><div class="stat-value" id="s-iv">—</div><div class="stat-sub">vol. implícita</div></div>
+      <div class="stat-card"><div class="stat-label">Melhor Prob.</div><div class="stat-value" id="s-prob">—</div><div class="stat-sub">D+1 histórico</div></div>
+      <div class="stat-card"><div class="stat-label">Último Scan</div><div class="stat-value" id="s-time">--:--</div><div class="stat-sub" id="s-source">—</div></div>
     </div>
 
-    <!-- TABS -->
-    <div class="tabs">
-      <div class="tab active" onclick="switchTab('ranking')">Ranking</div>
-      <div class="tab" onclick="switchTab('chain')">Cadeia de Opções</div>
-      <div class="tab" onclick="switchTab('history')">Histórico por Gap</div>
-      <div class="tab" onclick="switchTab('variation')">Variação Diária</div>
-      <div class="tab" onclick="switchTab('patterns')">Padrões Intraday</div>
-      <div class="tab" onclick="switchTab('sequences')">Sequências</div>
-      <div class="tab" onclick="switchTab('howto')">Como funciona</div>
+    <!-- Tabs -->
+    <div class="tabs-bar" id="tabs-bar">
+      <button class="tab-btn active" data-tab="ranking">Ranking</button>
+      <button class="tab-btn" data-tab="chain">Cadeia de Opções</button>
+      <button class="tab-btn" data-tab="history">Histórico por Gap</button>
+      <button class="tab-btn" data-tab="variation">Variação Diária</button>
+      <button class="tab-btn" data-tab="patterns">Padrões Intraday</button>
+      <button class="tab-btn" data-tab="sequences">Sequências</button>
     </div>
 
-    <!-- TAB: RANKING -->
-    <div class="tab-content active" id="tc-ranking">
-      <div id="ranking-info" style="font-size:11px;color:var(--text3);margin-bottom:12px;"></div>
+    <!-- RANKING -->
+    <div class="tab-panel active" id="panel-ranking">
+      <div id="ranking-info" style="font-size:11px;color:var(--text-muted);margin-bottom:12px;"></div>
       <div class="tbl-wrap">
-        <table id="tbl-ranking">
+        <table>
           <thead><tr>
-            <th>#</th><th>Opção</th><th>Tipo</th><th>Prêmio</th><th>Strike</th><th>Delta(R$)</th><th>Pot.Ganho</th><th>Prob D+1</th><th>IV/HV</th><th>Venc.</th><th>Score</th>
+            <th>#</th><th>Opção</th><th>Tipo</th><th>Prêmio</th><th>Strike</th><th>Delta</th><th>Pot.Ganho</th><th>Prob D+1</th><th>IV</th><th>Venc.</th><th>Score</th>
           </tr></thead>
           <tbody id="ranking-body"></tbody>
         </table>
       </div>
+      <div id="ranking-empty" class="empty-state" style="display:none;">
+        <div class="icon">📊</div>
+        <p>Nenhuma opção rankeada ainda.</p>
+        <div class="hint">Conecte o Profit Pro e clique "Escanear Tudo" para ver oportunidades reais.</div>
+      </div>
     </div>
 
-    <!-- TAB: CHAIN -->
-    <div class="tab-content" id="tc-chain">
-      <div style="margin-bottom:12px;font-size:11px;color:var(--text2);">
-        Selecione um ativo na watchlist para ver a cadeia de opções.
-      </div>
+    <!-- CHAIN -->
+    <div class="tab-panel" id="panel-chain">
+      <div id="chain-info" style="font-size:11px;color:var(--text-muted);margin-bottom:12px;"></div>
       <div class="tbl-wrap">
-        <table id="tbl-chain">
+        <table>
           <thead><tr>
-            <th>Ticker</th><th>Tipo</th><th>Strike</th><th>Prêmio</th><th>Bid</th><th>Ask</th><th>Delta</th><th>Gamma</th><th>Theta</th><th>IV</th><th>Venc.</th>
+            <th>Ticker</th><th>Tipo</th><th>Strike</th><th>Prêmio</th><th>Bid</th><th>Ask</th><th>Volume</th><th>Delta</th><th>Gamma</th><th>Theta</th><th>IV</th>
           </tr></thead>
           <tbody id="chain-body"></tbody>
         </table>
       </div>
-    </div>
-
-    <!-- TAB: HISTORY -->
-    <div class="tab-content" id="tc-history">
-      <div id="hist-ticker-label" style="font-size:13px;font-weight:600;margin-bottom:12px;"></div>
-      <div id="gap-analysis"></div>
-    </div>
-
-    <!-- TAB: VARIATION -->
-    <div class="tab-content" id="tc-variation">
-      <div id="var-ticker-label" style="font-size:13px;font-weight:600;margin-bottom:12px;"></div>
-      <div id="variation-content"></div>
-    </div>
-
-    <!-- TAB: PATTERNS -->
-    <div class="tab-content" id="tc-patterns">
-      <div id="pat-ticker-label" style="font-size:13px;font-weight:600;margin-bottom:12px;"></div>
-      <div class="pattern-grid" id="patterns-content"></div>
-    </div>
-
-    <!-- TAB: SEQUENCES -->
-    <div class="tab-content" id="tc-sequences">
-      <div id="seq-ticker-label" style="font-size:13px;font-weight:600;margin-bottom:12px;"></div>
-      <div id="sequences-content"></div>
-    </div>
-
-    <!-- TAB: HOW TO -->
-    <div class="tab-content" id="tc-howto">
-      <div style="max-width:700px;line-height:1.8;color:var(--text2);font-size:12px;">
-        <h3 style="color:var(--text);font-family:'Space Grotesk',sans-serif;margin-bottom:12px;">Score Combinatório — Como funciona</h3>
-        <p style="margin-bottom:12px;">O score de 0 a 100 combina três pilares:</p>
-        <p><strong style="color:var(--green);">Probabilidade Histórica (35pts)</strong> — Baseado em ~2 anos de dados OHLCV da brapi. Analisa o gap de abertura do dia e compara com o histórico: "quando o gap foi parecido, qual foi o resultado D+1/D+2/D+3?" Quanto maior a amostra e a taxa de acerto, mais pontos.</p>
-        <p style="margin-top:8px;"><strong style="color:var(--blue);">Estrutura da Opção (35pts)</strong> — Avalia delta (prefere 0.20-0.50 para compra a seco), relação prêmio/potencial de ganho, liquidez (spread bid/ask), dias para vencimento (ideal 5-30 dias). Opções muito OTM ou muito ITM perdem pontos.</p>
-        <p style="margin-top:8px;"><strong style="color:var(--purple);">Contexto de Mercado (30pts)</strong> — Compara IV vs HV (volatilidade implícita vs histórica). IV < HV = opção "barata". Considera tendência recente (5 dias), volume, e posicionamento do preço vs máximas/mínimas.</p>
-        <p style="margin-top:16px;color:var(--text3);">Um score acima de 55 já é interessante. Acima de 65 é forte. Acima de 75 é excepcional (raro). O sistema só alerta quando o score muda ≥5 pontos ou a cada 5 minutos — sem spam.</p>
-        <h3 style="color:var(--text);font-family:'Space Grotesk',sans-serif;margin:20px 0 12px;">Variação Diária — Escala completa</h3>
-        <p>A aba "Variação Diária" mostra a distribuição completa das variações, com buckets de 0.5% indo de <strong>-15%</strong> até <strong>+15%</strong>. Você pode ver exatamente quantas vezes o ativo subiu ou caiu 10% em um dia. O histograma mostra barras proporcionais ao número de ocorrências.</p>
-        <h3 style="color:var(--text);font-family:'Space Grotesk',sans-serif;margin:20px 0 12px;">Padrões Intraday</h3>
-        <p>Analisa combinações de gap de abertura + comportamento intraday. Exemplo: "abriu caindo -3% a -5%, e fechou acima da abertura em 67% das vezes, com máxima média de +2.1% e mínima média de -1.3%". Identifica automaticamente padrões de REVERSÃO ou CONTINUAÇÃO.</p>
+      <div id="chain-empty" class="empty-state">
+        <div class="icon">🔗</div>
+        <p>Selecione um ativo na watchlist e conecte o Profit.</p>
+        <div class="hint">As opções reais são descobertas automaticamente pelo bridge do Profit Pro via DDE.</div>
       </div>
     </div>
-  </div>
+
+    <!-- HISTORY -->
+    <div class="tab-panel" id="panel-history">
+      <div id="hist-label" style="font-size:13px;font-weight:600;margin-bottom:14px;"></div>
+      <div id="hist-content"></div>
+      <div id="hist-empty" class="empty-state">
+        <div class="icon">📈</div>
+        <p>Clique "Escanear Tudo" para carregar dados históricos da brapi.</p>
+        <div class="hint">Analisa gaps de abertura dos últimos ~2 anos e calcula probabilidades D+1, D+2, D+3.</div>
+      </div>
+    </div>
+
+    <!-- VARIATION -->
+    <div class="tab-panel" id="panel-variation">
+      <div id="var-label" style="font-size:13px;font-weight:600;margin-bottom:14px;"></div>
+      <div id="var-content"></div>
+      <div id="var-empty" class="empty-state">
+        <div class="icon">📉</div>
+        <p>Clique "Escanear Tudo" para ver a distribuição completa de variações.</p>
+        <div class="hint">Histograma de -15% a +15% com estatísticas detalhadas.</div>
+      </div>
+    </div>
+
+    <!-- PATTERNS -->
+    <div class="tab-panel" id="panel-patterns">
+      <div id="pat-label" style="font-size:13px;font-weight:600;margin-bottom:14px;"></div>
+      <div id="pat-content"></div>
+      <div id="pat-empty" class="empty-state">
+        <div class="icon">🔍</div>
+        <p>Clique "Escanear Tudo" para descobrir padrões intraday.</p>
+        <div class="hint">Combina gap de abertura + comportamento do dia para identificar reversões e continuações.</div>
+      </div>
+    </div>
+
+    <!-- SEQUENCES -->
+    <div class="tab-panel" id="panel-sequences">
+      <div id="seq-label" style="font-size:13px;font-weight:600;margin-bottom:14px;"></div>
+      <div id="seq-content"></div>
+      <div id="seq-empty" class="empty-state">
+        <div class="icon">🔄</div>
+        <p>Clique "Escanear Tudo" para analisar sequências de alta/baixa.</p>
+        <div class="hint">Mostra padrões de dias consecutivos de alta e baixa.</div>
+      </div>
+    </div>
+  </main>
 </div>
 
-<div id="toast-container"></div>
+<div id="toast-box"></div>
 
 <script>
 // ============================================================
-//  Quest Options v3 — JavaScript Engine
+//  QUEST OPTIONS v5 — CLEAN REBUILD
+//  - Dados reais apenas (Profit DDE + brapi para histórico)
+//  - Sem opções fictícias geradas por Black-Scholes
+//  - Watchlist dinâmica com input de ticker
 // ============================================================
 
-const TICKERS = ['PETR4','VALE3','B3SA3','ITUB4','BBAS3'];
-const TICKER_NAMES = {PETR4:'Petrobras',VALE3:'Vale',B3SA3:'B3 S.A.',ITUB4:'Itaú',BBAS3:'Banco do Brasil'};
-const CALL_LETTERS = 'ABCDEFGHIJKL';
-const PUT_LETTERS = 'MNOPQRSTUVWX';
+const TICKER_NAMES = {
+  PETR4:'Petrobras PN',PETR3:'Petrobras ON',VALE3:'Vale ON',B3SA3:'B3 S.A.',ITUB4:'Itaú PN',
+  BBAS3:'Banco do Brasil',WEGE3:'WEG ON',BBDC4:'Bradesco PN',ABEV3:'Ambev ON',RENT3:'Localiza ON',
+  MGLU3:'Magazine Luiza',HAPV3:'Hapvida ON',RADL3:'Raia Drogasil',JBSS3:'JBS ON',SUZB3:'Suzano ON',
+  GGBR4:'Gerdau PN',CSNA3:'CSN ON',EMBR3:'Embraer ON',CPLE6:'Copel PNB',BRAV3:'Brava Energia',
+  BBSE3:'BB Seguridade',BPAC11:'BTG Pactual',LREN3:'Lojas Renner',TOTS3:'Totvs ON',VIVT3:'Telefônica',
+};
 
-// State
-let state = {
-  activeTicker: 'B3SA3',
-  prices: {},
-  options: {},
+// ===== STATE =====
+const S = {
+  tickers: ['PETR4','VALE3','B3SA3','ITUB4','BBAS3'],
+  active: 'PETR4',
+  prices: {},       // ticker -> {price,prevClose,open,high,low,volume,changePct,gapPct}
+  chains: {},       // ticker -> [{ticker,type,strike,price,bid,ask,volume,iv,delta,gamma,theta,vega}]
+  history: {},      // ticker -> [{date,open,high,low,close,volume}]
   rankings: [],
-  histData: {},
   wsConnected: false,
   brapiOk: false,
-  scanInterval: null,
-  lastAlerts: {},
+  scanning: false,
+  scanTimer: null,
 };
 
 // ===== BRAPI =====
-const BRAPI_BASE = 'https://brapi.dev/api';
-const BRAPI_TOKEN = ''; // Adicione seu token aqui se tiver
+const BRAPI = 'https://brapi.dev/api';
 
-async function brapiGet(endpoint) {
-  const sep = endpoint.includes('?') ? '&' : '?';
-  const tokenParam = BRAPI_TOKEN ? `${sep}token=${BRAPI_TOKEN}` : '';
+async function brapiGet(url) {
   try {
-    const r = await fetch(`${BRAPI_BASE}${endpoint}${tokenParam}`);
+    const r = await fetch(`${BRAPI}${url}`);
     if (!r.ok) throw new Error(`HTTP ${r.status}`);
-    const data = await r.json();
-    state.brapiOk = true;
+    const d = await r.json();
+    S.brapiOk = true;
     updateStatus();
-    return data;
+    return d;
   } catch(e) {
-    console.warn('brapi error:', e);
+    console.warn('brapi:', e.message);
     return null;
   }
 }
 
-async function fetchQuote(ticker) {
-  const data = await brapiGet(`/quote/${ticker}`);
-  return data?.results?.[0] || null;
-}
-
-async function fetchHistory(ticker, range='2y') {
-  const data = await brapiGet(`/quote/${ticker}?range=${range}&interval=1d&modules=`);
-  return data?.results?.[0]?.historicalDataPrice || [];
-}
-
-function generateOptionTickers(prefix, stockPrice) {
-  // Gera tickers de opção usando nomenclatura B3 real
-  // A brapi NÃO tem opções — geramos os códigos e calculamos via Black-Scholes
-  // Formato: PETR + letra_série + strike_aprox
-  // CALL: A-L (jan-dez), PUT: M-X (jan-dez)
+async function fetchQuotes() {
+  // brapi grátis aceita múltiplos tickers de uma vez
+  const tickers = S.tickers.join(',');
+  const d = await brapiGet(`/quote/${tickers}`);
+  if (!d?.results) return;
   
-  const options = [];
-  const now = new Date();
-  const currentMonth = now.getMonth(); // 0-11
-  
-  // Gera para os próximos 3 vencimentos mensais
-  for (let offset = 0; offset < 3; offset++) {
-    const month = (currentMonth + offset) % 12;
-    const callLetter = CALL_LETTERS[month];
-    const putLetter = PUT_LETTERS[month];
-    
-    // Calcula vencimento (3a sexta-feira)
-    let year = now.getFullYear();
-    if (month < currentMonth) year++;
-    const vencDate = getThirdFriday(year, month);
-    const daysToExp = Math.max(1, Math.round((vencDate - now) / 86400000));
-    
-    // Pula vencimentos que já passaram
-    if (daysToExp < 1) continue;
-    
-    // Gera strikes: ±20% do preço atual, em intervalos redondos
-    const minStrike = Math.floor(stockPrice * 0.80);
-    const maxStrike = Math.ceil(stockPrice * 1.20);
-    
-    // Determina step baseado no preço
-    let step = 1;
-    if (stockPrice > 50) step = 2;
-    if (stockPrice > 100) step = 5;
-    if (stockPrice < 10) step = 0.5;
-    
-    for (let strike = minStrike; strike <= maxStrike; strike += step) {
-      const strikeRound = Math.round(strike * 100) / 100;
-      // Código numérico da opção (aproximação)
-      const strikeCode = strike < 100 ? String(Math.round(strike)) : String(Math.round(strike));
-      
-      // CALL
-      options.push({
-        ticker: `${prefix}${callLetter}${strikeCode}`,
-        type: "CALL",
-        isCall: true,
-        strike: strikeRound,
-        daysToExp: daysToExp,
-        vencDate: vencDate,
-        month: month,
-      });
-      
-      // PUT
-      options.push({
-        ticker: `${prefix}${putLetter}${strikeCode}`,
-        type: "PUT",
-        isCall: false,
-        strike: strikeRound,
-        daysToExp: daysToExp,
-        vencDate: vencDate,
-        month: month,
-      });
-    }
-  }
-  return options;
-}
-
-
-// ===== BLACK-SCHOLES =====
-function normCDF(x) {
-  const a1=0.254829592, a2=-0.284496736, a3=1.421413741, a4=-1.453152027, a5=1.061405429, p=0.3275911;
-  const sign = x < 0 ? -1 : 1;
-  x = Math.abs(x) / Math.sqrt(2);
-  const t = 1 / (1 + p * x);
-  const y = 1 - (((((a5*t + a4)*t) + a3)*t + a2)*t + a1)*t * Math.exp(-x*x);
-  return 0.5 * (1 + sign * y);
-}
-
-function bsPrice(S, K, T, r, sigma, isCall) {
-  if (T <= 0 || sigma <= 0) return Math.max(0, isCall ? S - K : K - S);
-  const d1 = (Math.log(S/K) + (r + sigma*sigma/2)*T) / (sigma*Math.sqrt(T));
-  const d2 = d1 - sigma*Math.sqrt(T);
-  if (isCall) return S*normCDF(d1) - K*Math.exp(-r*T)*normCDF(d2);
-  return K*Math.exp(-r*T)*normCDF(-d2) - S*normCDF(-d1);
-}
-
-function bsGreeks(S, K, T, r, sigma, isCall) {
-  if (T <= 0 || sigma <= 0) return { delta:isCall?1:(-1), gamma:0, theta:0, vega:0, iv:sigma };
-  const sqrtT = Math.sqrt(T);
-  const d1 = (Math.log(S/K) + (r + sigma*sigma/2)*T) / (sigma*sqrtT);
-  const d2 = d1 - sigma*sqrtT;
-  const nd1 = Math.exp(-d1*d1/2) / Math.sqrt(2*Math.PI);
-  
-  const delta = isCall ? normCDF(d1) : normCDF(d1) - 1;
-  const gamma = nd1 / (S * sigma * sqrtT);
-  const theta = (-(S*nd1*sigma)/(2*sqrtT) - (isCall?1:-1)*r*K*Math.exp(-r*T)*normCDF((isCall?1:-1)*d2)) / 365;
-  const vega = S * nd1 * sqrtT / 100;
-  
-  return { delta:Math.round(delta*100)/100, gamma:Math.round(gamma*1000)/1000, theta:Math.round(theta*100)/100, vega:Math.round(vega*100)/100, iv:Math.round(sigma*100) };
-}
-
-function impliedVol(price, S, K, T, r, isCall) {
-  let lo=0.01, hi=3.0;
-  for (let i=0; i<50; i++) {
-    const mid = (lo+hi)/2;
-    const p = bsPrice(S, K, T, r, mid, isCall);
-    if (p > price) hi = mid; else lo = mid;
-    if (Math.abs(p - price) < 0.001) break;
-  }
-  return (lo+hi)/2;
-}
-
-function historicalVol(hist, days=20) {
-  if (!hist || hist.length < days+1) return 0.3;
-  const returns = [];
-  for (let i=hist.length-days; i<hist.length; i++) {
-    if (hist[i].close && hist[i-1]?.close) {
-      returns.push(Math.log(hist[i].close / hist[i-1].close));
-    }
-  }
-  if (returns.length < 5) return 0.3;
-  const mean = returns.reduce((a,b)=>a+b,0) / returns.length;
-  const variance = returns.reduce((a,b)=>a+(b-mean)**2,0) / (returns.length-1);
-  return Math.sqrt(variance * 252);
-}
-
-
-// ===== OPTION CODE PARSING =====
-function parseOptionCode(code) {
-  // Formato: PETR + D + 30 ou B3SA + D + 20
-  const match = code.match(/^([A-Z]{4})([A-X])(\d+)$/);
-  if (!match) return null;
-  const [_, prefix, letter, strikeStr] = match;
-  const isCall = CALL_LETTERS.includes(letter);
-  const monthIdx = isCall ? CALL_LETTERS.indexOf(letter) : PUT_LETTERS.indexOf(letter);
-  
-  // O strike no código é aproximado, pode ser 20 = R$20 ou 205 = R$20.50
-  let strike;
-  if (strikeStr.length <= 2) strike = parseInt(strikeStr);
-  else strike = parseInt(strikeStr) / (10 ** (strikeStr.length - 2));
-  
-  // Calcula vencimento (3a sexta-feira do mês)
-  const now = new Date();
-  let year = now.getFullYear();
-  let month = monthIdx;
-  if (month < now.getMonth()) year++; // Se o mês já passou, é do próximo ano
-  
-  const vencDate = getThirdFriday(year, month);
-  const daysToExp = Math.max(1, Math.round((vencDate - now) / 86400000));
-  
-  return { prefix, letter, isCall, monthIdx, strike, strikeStr, vencDate, daysToExp, type: isCall ? 'CALL' : 'PUT' };
-}
-
-function getThirdFriday(year, month) {
-  const d = new Date(year, month, 1);
-  let fridays = 0;
-  while (fridays < 3) {
-    if (d.getDay() === 5) fridays++;
-    if (fridays < 3) d.setDate(d.getDate() + 1);
-  }
-  return d;
-}
-
-function formatDate(d) {
-  return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}`;
-}
-
-
-// ===== GAP / HISTORY ANALYSIS =====
-function analyzeGaps(hist) {
-  if (!hist || hist.length < 30) return null;
-  
-  // Buckets de -15% a +15% em steps de 0.5%
-  const BUCKET_SIZE = 0.5;
-  const MIN_BUCKET = -15;
-  const MAX_BUCKET = 15;
-  const buckets = {};
-  
-  for (let b = MIN_BUCKET; b <= MAX_BUCKET; b += BUCKET_SIZE) {
-    const key = `${b >= 0 ? '+' : ''}${b.toFixed(1)}`;
-    buckets[key] = { count: 0, d1_pos: 0, d1_neg: 0, d2_pos: 0, d3_pos: 0, total_d1_change: 0 };
-  }
-  
-  for (let i = 1; i < hist.length; i++) {
-    const prev = hist[i-1];
-    const curr = hist[i];
-    if (!prev.close || !curr.open || !curr.close) continue;
-    
-    const gapPct = ((curr.open - prev.close) / prev.close) * 100;
-    const bucketVal = Math.max(MIN_BUCKET, Math.min(MAX_BUCKET - BUCKET_SIZE, Math.floor(gapPct / BUCKET_SIZE) * BUCKET_SIZE));
-    const key = `${bucketVal >= 0 ? '+' : ''}${bucketVal.toFixed(1)}`;
-    
-    if (!buckets[key]) continue;
-    buckets[key].count++;
-    
-    const d1Change = ((curr.close - curr.open) / curr.open) * 100;
-    buckets[key].total_d1_change += d1Change;
-    if (d1Change > 0) buckets[key].d1_pos++;
-    else buckets[key].d1_neg++;
-    
-    // D+2 e D+3
-    if (i+1 < hist.length && hist[i+1].close) {
-      if (((hist[i+1].close - curr.close) / curr.close) > 0) buckets[key].d2_pos++;
-    }
-    if (i+2 < hist.length && hist[i+2].close) {
-      if (((hist[i+2].close - curr.close) / curr.close) > 0) buckets[key].d3_pos++;
-    }
-  }
-  
-  return buckets;
-}
-
-function analyzeVariation(hist) {
-  if (!hist || hist.length < 30) return null;
-  
-  const BUCKET_SIZE = 0.5;
-  const MIN = -15, MAX = 15;
-  const buckets = {};
-  const allChanges = [];
-  let positiveDays = 0;
-  
-  for (let b = MIN; b <= MAX; b += BUCKET_SIZE) {
-    const key = `${b >= 0 ? '+' : ''}${b.toFixed(1)}`;
-    buckets[key] = 0;
-  }
-  
-  for (let i = 1; i < hist.length; i++) {
-    if (!hist[i].close || !hist[i-1].close) continue;
-    const change = ((hist[i].close - hist[i-1].close) / hist[i-1].close) * 100;
-    allChanges.push(change);
-    if (change > 0) positiveDays++;
-    
-    const bVal = Math.max(MIN, Math.min(MAX - BUCKET_SIZE, Math.floor(change / BUCKET_SIZE) * BUCKET_SIZE));
-    const key = `${bVal >= 0 ? '+' : ''}${bVal.toFixed(1)}`;
-    if (buckets[key] !== undefined) buckets[key]++;
-  }
-  
-  allChanges.sort((a,b) => a-b);
-  const p5 = allChanges[Math.floor(allChanges.length * 0.05)] || 0;
-  const p25 = allChanges[Math.floor(allChanges.length * 0.25)] || 0;
-  const p50 = allChanges[Math.floor(allChanges.length * 0.50)] || 0;
-  const p75 = allChanges[Math.floor(allChanges.length * 0.75)] || 0;
-  const p95 = allChanges[Math.floor(allChanges.length * 0.95)] || 0;
-  const mean = allChanges.reduce((a,b)=>a+b,0) / allChanges.length;
-  const stdDev = Math.sqrt(allChanges.reduce((a,b)=>a+(b-mean)**2,0) / allChanges.length);
-  
-  return { buckets, stats: { p5, p25, p50, p75, p95, mean, stdDev, positiveDays, totalDays: allChanges.length, 
-    bigDrops: allChanges.filter(c => c <= -5).length,
-    bigJumps: allChanges.filter(c => c >= 5).length,
-    hugeDrops: allChanges.filter(c => c <= -10).length,
-    hugeJumps: allChanges.filter(c => c >= 10).length,
-  }};
-}
-
-function analyzePatterns(hist) {
-  if (!hist || hist.length < 60) return [];
-  
-  const gapBuckets = [[-99,-5],[-5,-3],[-3,-1],[-1,0],[0,1],[1,3],[3,5],[5,99]];
-  const gapLabels = ['< -5%','-5% a -3%','-3% a -1%','-1% a 0%','0% a +1%','+1% a +3%','+3% a +5%','> +5%'];
-  
-  const patterns = gapBuckets.map((bucket, idx) => ({
-    label: gapLabels[idx],
-    range: bucket,
-    samples: 0,
-    closedAboveOpen: 0,
-    avgMaxFromOpen: 0,
-    avgMinFromOpen: 0,
-    avgClose: 0,
-    totalMax: 0,
-    totalMin: 0,
-    totalClose: 0,
-  }));
-  
-  for (let i = 1; i < hist.length; i++) {
-    const prev = hist[i-1];
-    const curr = hist[i];
-    if (!prev.close || !curr.open || !curr.close || !curr.high || !curr.low) continue;
-    
-    const gap = ((curr.open - prev.close) / prev.close) * 100;
-    
-    for (const p of patterns) {
-      if (gap >= p.range[0] && gap < p.range[1]) {
-        p.samples++;
-        if (curr.close > curr.open) p.closedAboveOpen++;
-        p.totalMax += ((curr.high - curr.open) / curr.open) * 100;
-        p.totalMin += ((curr.low - curr.open) / curr.open) * 100;
-        p.totalClose += ((curr.close - curr.open) / curr.open) * 100;
-        break;
-      }
-    }
-  }
-  
-  return patterns.filter(p => p.samples >= 3).map(p => ({
-    ...p,
-    closedAbovePct: Math.round((p.closedAboveOpen / p.samples) * 100),
-    avgMaxFromOpen: Math.round((p.totalMax / p.samples) * 100) / 100,
-    avgMinFromOpen: Math.round((p.totalMin / p.samples) * 100) / 100,
-    avgClose: Math.round((p.totalClose / p.samples) * 100) / 100,
-    signal: p.closedAboveOpen / p.samples > 0.6 ? 'REVERSÃO' : (p.closedAboveOpen / p.samples < 0.4 ? 'CONTINUAÇÃO' : 'NEUTRO'),
-  }));
-}
-
-function analyzeSequences(hist) {
-  if (!hist || hist.length < 30) return null;
-  
-  let streaks = { up: [], down: [] };
-  let currentStreak = 0;
-  let currentDir = null;
-  
-  for (let i = 1; i < hist.length; i++) {
-    if (!hist[i].close || !hist[i-1].close) continue;
-    const up = hist[i].close > hist[i-1].close;
-    
-    if (currentDir === null) {
-      currentDir = up;
-      currentStreak = 1;
-    } else if (up === currentDir) {
-      currentStreak++;
-    } else {
-      (currentDir ? streaks.up : streaks.down).push(currentStreak);
-      currentDir = up;
-      currentStreak = 1;
-    }
-  }
-  if (currentDir !== null) (currentDir ? streaks.up : streaks.down).push(currentStreak);
-  
-  const maxUp = streaks.up.length ? Math.max(...streaks.up) : 0;
-  const maxDown = streaks.down.length ? Math.max(...streaks.down) : 0;
-  const avgUp = streaks.up.length ? (streaks.up.reduce((a,b)=>a+b,0)/streaks.up.length).toFixed(1) : 0;
-  const avgDown = streaks.down.length ? (streaks.down.reduce((a,b)=>a+b,0)/streaks.down.length).toFixed(1) : 0;
-  
-  // Distribuição por duração
-  const distUp = {}, distDown = {};
-  streaks.up.forEach(s => { distUp[s] = (distUp[s]||0) + 1; });
-  streaks.down.forEach(s => { distDown[s] = (distDown[s]||0) + 1; });
-  
-  return { maxUp, maxDown, avgUp, avgDown, distUp, distDown, totalUpStreaks: streaks.up.length, totalDownStreaks: streaks.down.length };
-}
-
-
-// ===== COMBINATORIAL SCORE =====
-function calcScore(option, stockData, gapBuckets) {
-  let histScore = 0, optScore = 0, mktScore = 0;
-  
-  // 1) HISTÓRICO (35pts)
-  if (gapBuckets && stockData) {
-    const gap = stockData.gapPct || 0;
-    // Encontra o bucket do gap atual
-    const BUCKET_SIZE = 0.5;
-    const bVal = Math.max(-15, Math.min(14.5, Math.floor(gap / BUCKET_SIZE) * BUCKET_SIZE));
-    const key = `${bVal >= 0 ? '+' : ''}${bVal.toFixed(1)}`;
-    const bucket = gapBuckets[key];
-    
-    if (bucket && bucket.count >= 3) {
-      const probD1 = bucket.d1_pos / bucket.count;
-      const sampleBonus = Math.min(1, bucket.count / 30); // Mais amostras = mais confiança
-      histScore = Math.round(probD1 * sampleBonus * 35);
-    }
-  }
-  
-  // 2) ESTRUTURA DA OPÇÃO (35pts)
-  if (option.greeks) {
-    const absDelta = Math.abs(option.greeks.delta);
-    // Delta ideal para compra a seco: 0.20-0.50
-    const deltaScore = absDelta >= 0.20 && absDelta <= 0.50 ? 10 : (absDelta >= 0.10 && absDelta <= 0.60 ? 6 : 2);
-    
-    // Potencial de ganho
-    const potGain = option.potGainPct || 0;
-    const gainScore = Math.min(10, Math.round(potGain / 50 * 10));
-    
-    // Dias para vencimento (ideal 5-30)
-    const dte = option.daysToExp || 30;
-    const dteScore = (dte >= 5 && dte <= 30) ? 8 : (dte >= 2 && dte <= 60) ? 5 : 2;
-    
-    // Spread bid/ask (liquidez)
-    const spread = option.ask && option.bid ? (option.ask - option.bid) / option.bid : 0.5;
-    const liqScore = spread < 0.05 ? 7 : (spread < 0.15 ? 5 : (spread < 0.30 ? 3 : 1));
-    
-    optScore = deltaScore + gainScore + dteScore + liqScore;
-  }
-  
-  // 3) CONTEXTO DE MERCADO (30pts)
-  if (option.iv && option.hv) {
-    // IV vs HV — IV < HV = opção "barata"
-    const ivRatio = option.iv / Math.max(0.01, option.hv);
-    const ivScore = ivRatio < 0.8 ? 12 : (ivRatio < 1.0 ? 9 : (ivRatio < 1.2 ? 6 : 3));
-    
-    // Tendência recente (usando variação do ativo)
-    const changePct = Math.abs(stockData?.changePct || 0);
-    const trendScore = changePct > 2 ? 8 : (changePct > 1 ? 6 : (changePct > 0.5 ? 4 : 2));
-    
-    // Volume
-    const volScore = (stockData?.volume || 0) > 1000000 ? 10 : ((stockData?.volume || 0) > 100000 ? 6 : 3);
-    
-    mktScore = ivScore + trendScore + volScore;
-  }
-  
-  return Math.min(100, histScore + optScore + mktScore);
-}
-
-
-// ===== WEBSOCKET =====
-let ws = null;
-
-function connectProfit() {
-  // Tenta conectar ao WebSocket local (profit_bridge.py)
-  try {
-    ws = new WebSocket('ws://localhost:8765');
-    ws.onopen = () => {
-      state.wsConnected = true;
-      updateStatus();
-      // Não mostra toast de conexão — só conecta silenciosamente
-    };
-    ws.onmessage = (evt) => {
-      try {
-        const msg = JSON.parse(evt.data);
-        if (msg.type === 'market_data' && Array.isArray(msg.data)) {
-          msg.data.forEach(d => {
-            state.prices[d.ticker] = d;
-          });
-          renderWatchlist();
-        } else if (msg.type === 'chain') {
-          state.options[msg.ticker] = { source: 'profit', data: msg.options };
-        }
-      } catch(e) {}
-    };
-    ws.onclose = () => {
-      state.wsConnected = false;
-      updateStatus();
-      // Reconecta silenciosamente após 10s
-      setTimeout(connectProfit, 10000);
-    };
-    ws.onerror = () => {
-      state.wsConnected = false;
-      ws.close();
-    };
-  } catch(e) {
-    setTimeout(connectProfit, 10000);
-  }
-}
-
-// Se não tem WS, puxa da brapi
-async function fetchPricesFromBrapi() {
-  // brapi grátis: PETR4, VALE3, MGLU3, ITUB4 (sem token)
-  // B3SA3 e BBAS3 precisam de token
-  const freeTickers = TICKERS.filter(t => ['PETR4','VALE3','MGLU3','ITUB4'].includes(t));
-  const paidTickers = TICKERS.filter(t => !['PETR4','VALE3','MGLU3','ITUB4'].includes(t));
-  
-  // Busca os gratuitos
-  let allResults = [];
-  if (freeTickers.length) {
-    const data = await brapiGet(`/quote/${freeTickers.join(',')}`);
-    if (data?.results) allResults.push(...data.results);
-  }
-  
-  // Tenta os pagos (pode falhar sem token)
-  if (paidTickers.length && BRAPI_TOKEN) {
-    const data2 = await brapiGet(`/quote/${paidTickers.join(',')}`);
-    if (data2?.results) allResults.push(...data2.results);
-  }
-  
-  // Para tickers sem dados da brapi, cria placeholder
-  for (const t of paidTickers) {
-    if (!allResults.find(r => r.symbol === t)) {
-      // Dados ficam vazios até o Profit conectar
-      if (!state.prices[t]) {
-        state.prices[t] = { ticker: t, price: 0, prevClose: 0, open: 0, high: 0, low: 0, volume: 0, changePct: 0, gapPct: 0 };
-      }
-    }
-  }
-  
-  const data = { results: allResults };
-  if (!data?.results?.length) return;
-  data.results.forEach(r => {
+  for (const r of d.results) {
+    const t = r.symbol;
     const price = r.regularMarketPrice || 0;
-    const prevClose = r.regularMarketPreviousClose || 0;
-    const openP = r.regularMarketOpen || 0;
+    const prev = r.regularMarketPreviousClose || 0;
+    const open = r.regularMarketOpen || 0;
     
-    // Calcula changePct: usa o da API se disponível, senão calcula
     let changePct = r.regularMarketChangePercent || 0;
-    if (changePct === 0 && prevClose > 0 && price > 0) {
-      changePct = ((price - prevClose) / prevClose) * 100;
-    }
+    if (!changePct && prev > 0 && price > 0) changePct = ((price - prev) / prev) * 100;
     
     let gapPct = 0;
-    if (openP > 0 && prevClose > 0) {
-      gapPct = ((openP - prevClose) / prevClose) * 100;
-    }
+    if (open > 0 && prev > 0) gapPct = ((open - prev) / prev) * 100;
     
-    state.prices[r.symbol] = {
-      ticker: r.symbol,
-      price: price,
-      prevClose: prevClose,
-      open: openP,
+    S.prices[t] = {
+      ticker: t,
+      price,
+      prevClose: prev,
+      open,
       high: r.regularMarketDayHigh || price,
       low: r.regularMarketDayLow || price,
       volume: r.regularMarketVolume || 0,
       changePct: Math.round(changePct * 100) / 100,
       gapPct: Math.round(gapPct * 100) / 100,
     };
-  });
+  }
   renderWatchlist();
 }
 
-
-// ===== SCAN ENGINE =====
-async function fullScan() {
-  const btn = document.getElementById('btn-scan');
-  btn.disabled = true;
-  btn.textContent = 'Escaneando...';
-  
-  // Garante preços atualizados
-  if (!state.wsConnected) await fetchPricesFromBrapi();
-  
-  const gainMin = parseInt(document.getElementById('p-gain-min').value) || 30;
-  const gainMax = parseInt(document.getElementById('p-gain-max').value) || 60;
-  const probMin = parseInt(document.getElementById('p-prob').value) || 52;
-  const samplesMin = parseInt(document.getElementById('p-samples').value) || 8;
-  const alertScore = parseInt(document.getElementById('p-alert-score').value) || 55;
-  
-  const allOptions = [];
-  
-  for (const ticker of TICKERS) {
-    const sd = state.prices[ticker];
-    if (!sd || !sd.price) continue;
-    
-    // Fetch histórico para análise
-    if (!state.histData[ticker]) {
-      try {
-        const hist = await fetchHistory(ticker, '2y');
-        if (hist?.length > 10) {
-          state.histData[ticker] = hist;
-        }
-      } catch(e) {
-        console.warn(`Histórico indisponível para ${ticker} (precisa de token brapi)`);
-      }
-    }
-    
-    const gapBuckets = state.histData[ticker] ? analyzeGaps(state.histData[ticker]) : null;
-    const hv = state.histData[ticker] ? historicalVol(state.histData[ticker]) : 0.3;
-    
-    // PRIORIDADE 1: Dados reais do Profit (via WebSocket)
-    const profitChain = state.options[ticker];
-    if (profitChain && profitChain.source === 'profit' && profitChain.data?.length) {
-      for (const po of profitChain.data) {
-        if (po.price <= 0) continue;
-        
-        const parsed = parseOptionCode(po.ticker);
-        const daysToExp = parsed ? parsed.daysToExp : 30;
-        const vencDate = parsed ? parsed.vencDate : new Date();
-        const isCall = po.type === 'CALL';
-        
-        const absDelta = Math.abs(po.delta || 0.3);
-        const moveExpected = sd.price * 0.02;
-        const expectedGain = po.price > 0 ? (absDelta * moveExpected) / po.price * 100 : 0;
-        
-        const option = {
-          ticker: po.ticker,
-          baseTicker: ticker,
-          type: po.type,
-          strike: po.strike,
-          price: po.price,
-          bid: po.bid || po.price * 0.95,
-          ask: po.ask || po.price * 1.05,
-          greeks: { delta: po.delta || 0, gamma: po.gamma || 0, theta: po.theta || 0, vega: po.vega || 0, iv: po.iv || 0 },
-          iv: po.iv || hv * 1.2,
-          hv: hv,
-          daysToExp: daysToExp,
-          vencDate: vencDate,
-          potGainPct: Math.round(expectedGain),
-          volume: po.volume || 0,
-          timeframe: daysToExp <= 5 ? 'DAY' : (daysToExp <= 30 ? 'SWING' : 'COLD'),
-          source: 'profit',
-        };
-        
-        option.probD1 = 0;
-        if (gapBuckets && sd.gapPct !== undefined) {
-          const BUCKET_SIZE = 0.5;
-          const bVal = Math.max(-15, Math.min(14.5, Math.floor(sd.gapPct / BUCKET_SIZE) * BUCKET_SIZE));
-          const bKey = `${bVal >= 0 ? '+' : ''}${bVal.toFixed(1)}`;
-          const bucket = gapBuckets[bKey];
-          if (bucket && bucket.count >= 3) {
-            option.probD1 = Math.round((isCall ? bucket.d1_pos : bucket.d1_neg) / bucket.count * 100);
-          }
-        }
-        
-        option.score = calcScore(option, sd, gapBuckets);
-        allOptions.push(option);
-      }
-      continue; // Pula geração BS — temos dados reais
-    }
-    
-    // PRIORIDADE 2: Gera opções teóricas via nomenclatura B3 + Black-Scholes
-    const prefix = ticker.slice(0, 4);
-    const generatedOptions = generateOptionTickers(prefix, sd.price);
-    
-    // Usa IV estimada baseada na HV (com prêmio de +20% típico do mercado BR)
-    const ivEstimate = Math.max(0.15, hv * 1.20);
-    
-    for (const optGen of generatedOptions) {
-      if (optGen.daysToExp > 90 || optGen.daysToExp < 1) continue;
-      
-      const T = optGen.daysToExp / 365;
-      const r = 0.1075; // Selic
-      
-      // Calcula preço teórico via Black-Scholes
-      const optPrice = bsPrice(sd.price, optGen.strike, T, r, ivEstimate, optGen.isCall);
-      
-      // Filtra: preço mínimo R$0.01, máximo razoável
-      if (optPrice < 0.01 || optPrice > sd.price * 0.5) continue;
-      
-      const greeks = bsGreeks(sd.price, optGen.strike, T, r, ivEstimate, optGen.isCall);
-      
-      // Filtra por delta: só opções com delta entre 0.05 e 0.95 (descarta deep ITM/OTM inúteis)
-      if (Math.abs(greeks.delta) < 0.05 || Math.abs(greeks.delta) > 0.95) continue;
-      
-      // Potencial de ganho: quanto a opção sobe se o ativo mover 2%
-      const absDelta = Math.abs(greeks.delta);
-      const moveExpected = sd.price * 0.02;
-      const expectedGain = optPrice > 0 ? (absDelta * moveExpected) / optPrice * 100 : 0;
-      
-      // Spread estimado
-      const spreadEst = optPrice > 0.20 ? 0.05 : 0.02;
-      
-      const option = {
-        ticker: optGen.ticker,
-        baseTicker: ticker,
-        type: optGen.type,
-        strike: optGen.strike,
-        price: Math.round(optPrice * 100) / 100,
-        bid: Math.max(0.01, Math.round((optPrice - spreadEst) * 100) / 100),
-        ask: Math.round((optPrice + spreadEst) * 100) / 100,
-        greeks: greeks,
-        iv: ivEstimate,
-        hv: hv,
-        daysToExp: optGen.daysToExp,
-        vencDate: optGen.vencDate,
-        potGainPct: Math.round(expectedGain),
-        volume: 0,
-        timeframe: optGen.daysToExp <= 5 ? 'DAY' : (optGen.daysToExp <= 30 ? 'SWING' : 'COLD'),
-        source: 'bs_calc',
-      };
-      
-      // Calcula prob D+1 com base no gap atual
-      option.probD1 = 0;
-      if (gapBuckets && sd.gapPct !== undefined) {
-        const BUCKET_SIZE = 0.5;
-        const bVal = Math.max(-15, Math.min(14.5, Math.floor(sd.gapPct / BUCKET_SIZE) * BUCKET_SIZE));
-        const bKey = `${bVal >= 0 ? '+' : ''}${bVal.toFixed(1)}`;
-        const bucket = gapBuckets[bKey];
-        if (bucket && bucket.count >= 3) {
-          option.probD1 = Math.round((optGen.isCall ? bucket.d1_pos : bucket.d1_neg) / bucket.count * 100);
-        }
-      }
-      
-      option.score = calcScore(option, sd, gapBuckets);
-      allOptions.push(option);
-    }
+async function fetchHistory(ticker) {
+  if (S.history[ticker]?.length > 50) return S.history[ticker]; // cache
+  const d = await brapiGet(`/quote/${ticker}?range=2y&interval=1d&modules=`);
+  const hist = d?.results?.[0]?.historicalDataPrice;
+  if (hist?.length > 10) {
+    S.history[ticker] = hist;
+    return hist;
   }
-  
-  // Ordena por score
-  allOptions.sort((a,b) => b.score - a.score);
-  state.rankings = allOptions;
-  
-  // Atualiza UI
-  renderRanking(gainMin, gainMax, probMin, samplesMin);
-  updateStats();
-  
-  // Alerta só para scores altos que mudaram significativamente
-  const topOptions = allOptions.filter(o => o.score >= alertScore);
-  for (const opt of topOptions.slice(0, 3)) {
-    const key = opt.ticker;
-    const prev = state.lastAlerts[key];
-    const now = Date.now();
-    
-    if (!prev || (now - prev.time > 300000) || Math.abs(opt.score - prev.score) >= 5) {
-      showToast(`${opt.ticker} — Score ${opt.score}`, 
-        `${opt.type} | Strike R$${opt.strike} | Pot. +${opt.potGainPct}%`, 'signal');
-      state.lastAlerts[key] = { score: opt.score, time: now };
-    }
-  }
-  
-  const now = new Date();
-  const timeStr = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
-  document.getElementById('st-time').textContent = timeStr;
-  document.getElementById('st-source').textContent = state.wsConnected ? 'profit + brapi' : 'brapi.dev';
-  document.getElementById('last-scan').textContent = timeStr;
-  
-  btn.disabled = false;
-  btn.textContent = '\u21bb Escanear tudo';
-  
-  // Re-render tabs se ativo selecionado
-  renderHistoryTab();
-  renderVariationTab();
-  renderPatternsTab();
-  renderSequencesTab();
+  return null;
 }
 
 
-// ===== RENDER =====
+// ===== BLACK-SCHOLES HELPERS (para cálculos quando temos dados reais) =====
+function normCDF(x) {
+  const a1=.254829592,a2=-.284496736,a3=1.421413741,a4=-1.453152027,a5=1.061405429,p=.3275911;
+  const s = x<0?-1:1; x=Math.abs(x)/Math.sqrt(2);
+  const t=1/(1+p*x);
+  return .5*(1+s*(1-(((((a5*t+a4)*t)+a3)*t+a2)*t+a1)*t*Math.exp(-x*x)));
+}
+
+function bsGreeks(S, K, T, r, sigma, isCall) {
+  if (T<=0||sigma<=0) return {delta:isCall?1:-1,gamma:0,theta:0,vega:0};
+  const sqT=Math.sqrt(T);
+  const d1=(Math.log(S/K)+(r+sigma*sigma/2)*T)/(sigma*sqT);
+  const d2=d1-sigma*sqT;
+  const nd1=Math.exp(-d1*d1/2)/Math.sqrt(2*Math.PI);
+  return {
+    delta: Math.round((isCall?normCDF(d1):normCDF(d1)-1)*100)/100,
+    gamma: Math.round(nd1/(S*sigma*sqT)*1000)/1000,
+    theta: Math.round((-(S*nd1*sigma)/(2*sqT)-(isCall?1:-1)*r*K*Math.exp(-r*T)*normCDF((isCall?1:-1)*d2))/365*100)/100,
+    vega: Math.round(S*nd1*sqT/100*100)/100,
+  };
+}
+
+function historicalVol(hist, days=20) {
+  if (!hist || hist.length < days+1) return 0.3;
+  const rets = [];
+  for (let i = hist.length-days; i < hist.length; i++) {
+    if (hist[i]?.close && hist[i-1]?.close) rets.push(Math.log(hist[i].close/hist[i-1].close));
+  }
+  if (rets.length < 5) return 0.3;
+  const m = rets.reduce((a,b)=>a+b,0)/rets.length;
+  return Math.sqrt(rets.reduce((a,b)=>a+(b-m)**2,0)/(rets.length-1)*252);
+}
+
+
+// ===== ANALYSIS FUNCTIONS =====
+function analyzeGaps(hist) {
+  if (!hist || hist.length < 30) return null;
+  const BS = 0.5, MIN = -15, MAX = 15;
+  const buckets = {};
+  for (let b = MIN; b <= MAX; b += BS) {
+    const k = `${b>=0?'+':''}${b.toFixed(1)}`;
+    buckets[k] = { count:0, d1_pos:0, d1_neg:0, d2_pos:0, d3_pos:0, total_d1:0 };
+  }
+  for (let i=1; i<hist.length; i++) {
+    const p = hist[i-1], c = hist[i];
+    if (!p.close || !c.open || !c.close) continue;
+    const gap = ((c.open - p.close)/p.close)*100;
+    const bv = Math.max(MIN, Math.min(MAX-BS, Math.floor(gap/BS)*BS));
+    const k = `${bv>=0?'+':''}${bv.toFixed(1)}`;
+    if (!buckets[k]) continue;
+    buckets[k].count++;
+    const d1 = ((c.close-c.open)/c.open)*100;
+    buckets[k].total_d1 += d1;
+    if (d1>0) buckets[k].d1_pos++; else buckets[k].d1_neg++;
+    if (i+1<hist.length && hist[i+1]?.close && ((hist[i+1].close-c.close)/c.close)>0) buckets[k].d2_pos++;
+    if (i+2<hist.length && hist[i+2]?.close && ((hist[i+2].close-c.close)/c.close)>0) buckets[k].d3_pos++;
+  }
+  return buckets;
+}
+
+function analyzeVariation(hist) {
+  if (!hist || hist.length < 30) return null;
+  const BS=0.5, MIN=-15, MAX=15;
+  const buckets = {};
+  const all = [];
+  let pos = 0;
+  for (let b=MIN; b<=MAX; b+=BS) { buckets[`${b>=0?'+':''}${b.toFixed(1)}`]=0; }
+  for (let i=1; i<hist.length; i++) {
+    if (!hist[i].close || !hist[i-1].close) continue;
+    const ch = ((hist[i].close-hist[i-1].close)/hist[i-1].close)*100;
+    all.push(ch);
+    if (ch>0) pos++;
+    const bv = Math.max(MIN, Math.min(MAX-BS, Math.floor(ch/BS)*BS));
+    const k = `${bv>=0?'+':''}${bv.toFixed(1)}`;
+    if (buckets[k]!==undefined) buckets[k]++;
+  }
+  all.sort((a,b)=>a-b);
+  const pct = p => all[Math.floor(all.length*p)]||0;
+  const mean = all.reduce((a,b)=>a+b,0)/all.length;
+  const std = Math.sqrt(all.reduce((a,b)=>a+(b-mean)**2,0)/all.length);
+  return {
+    buckets, stats: {
+      p5:pct(.05),p25:pct(.25),p50:pct(.5),p75:pct(.75),p95:pct(.95),
+      mean,stdDev:std,posDays:pos,total:all.length,
+      bigDrops:all.filter(c=>c<=-5).length, bigJumps:all.filter(c=>c>=5).length,
+      hugeDrops:all.filter(c=>c<=-10).length, hugeJumps:all.filter(c=>c>=10).length,
+    }
+  };
+}
+
+function analyzePatterns(hist) {
+  if (!hist || hist.length < 60) return [];
+  const ranges = [[-99,-5],[-5,-3],[-3,-1],[-1,0],[0,1],[1,3],[3,5],[5,99]];
+  const labels = ['< -5%','-5% a -3%','-3% a -1%','-1% a 0%','0% a +1%','+1% a +3%','+3% a +5%','> +5%'];
+  const pats = ranges.map((r,i)=>({label:labels[i],range:r,n:0,aboveOpen:0,totMax:0,totMin:0,totClose:0}));
+  for (let i=1; i<hist.length; i++) {
+    const p=hist[i-1],c=hist[i];
+    if (!p.close||!c.open||!c.close||!c.high||!c.low) continue;
+    const gap=((c.open-p.close)/p.close)*100;
+    for (const pat of pats) {
+      if (gap>=pat.range[0]&&gap<pat.range[1]) {
+        pat.n++;
+        if (c.close>c.open) pat.aboveOpen++;
+        pat.totMax+=((c.high-c.open)/c.open)*100;
+        pat.totMin+=((c.low-c.open)/c.open)*100;
+        pat.totClose+=((c.close-c.open)/c.open)*100;
+        break;
+      }
+    }
+  }
+  return pats.filter(p=>p.n>=3).map(p=>({
+    ...p,
+    abovePct: Math.round(p.aboveOpen/p.n*100),
+    avgMax: +(p.totMax/p.n).toFixed(2),
+    avgMin: +(p.totMin/p.n).toFixed(2),
+    avgClose: +(p.totClose/p.n).toFixed(2),
+    signal: p.aboveOpen/p.n>.6?'REVERSÃO':(p.aboveOpen/p.n<.4?'CONTINUAÇÃO':'NEUTRO'),
+  }));
+}
+
+function analyzeSequences(hist) {
+  if (!hist || hist.length < 30) return null;
+  const streaks = { up:[], down:[] };
+  let len=0, dir=null;
+  for (let i=1; i<hist.length; i++) {
+    if (!hist[i].close||!hist[i-1].close) continue;
+    const up = hist[i].close>hist[i-1].close;
+    if (dir===null) { dir=up; len=1; }
+    else if (up===dir) len++;
+    else { (dir?streaks.up:streaks.down).push(len); dir=up; len=1; }
+  }
+  if (dir!==null) (dir?streaks.up:streaks.down).push(len);
+  const maxA = a => a.length?Math.max(...a):0;
+  const avgA = a => a.length?(a.reduce((x,y)=>x+y,0)/a.length).toFixed(1):'0';
+  const distA = a => { const d={}; a.forEach(s=>{d[s]=(d[s]||0)+1;}); return d; };
+  return {
+    maxUp:maxA(streaks.up), maxDown:maxA(streaks.down),
+    avgUp:avgA(streaks.up), avgDown:avgA(streaks.down),
+    distUp:distA(streaks.up), distDown:distA(streaks.down),
+    nUp:streaks.up.length, nDown:streaks.down.length,
+  };
+}
+
+
+// ===== SCORING (para opções reais do Profit) =====
+function calcScore(opt, stock, gaps) {
+  let hist=0, struct=0, mkt=0;
+  
+  // Histórico (35pts)
+  if (gaps && stock) {
+    const gap = stock.gapPct||0;
+    const BS=0.5;
+    const bv = Math.max(-15,Math.min(14.5,Math.floor(gap/BS)*BS));
+    const k = `${bv>=0?'+':''}${bv.toFixed(1)}`;
+    const b = gaps[k];
+    if (b && b.count>=3) {
+      const prob = (opt.type==='CALL'?b.d1_pos:b.d1_neg)/b.count;
+      hist = Math.round(prob*Math.min(1,b.count/30)*35);
+    }
+  }
+  
+  // Estrutura (35pts)
+  const ad = Math.abs(opt.delta||0);
+  const deltaS = (ad>=.2&&ad<=.5)?10:(ad>=.1&&ad<=.6)?6:2;
+  const potS = Math.min(10, Math.round((opt.potGain||0)/50*10));
+  const spread = opt.ask&&opt.bid&&opt.bid>0?(opt.ask-opt.bid)/opt.bid:0.5;
+  const liqS = spread<.05?8:spread<.15?5:spread<.3?3:1;
+  struct = deltaS + potS + liqS;
+  
+  // Mercado (30pts)
+  const iv = opt.iv||0, hv = opt.hv||0;
+  const ivR = hv>0?iv/hv:1;
+  const ivS = ivR<.8?12:ivR<1?9:ivR<1.2?6:3;
+  const chg = Math.abs(stock?.changePct||0);
+  const trendS = chg>2?8:chg>1?6:chg>.5?4:2;
+  const volS = (stock?.volume||0)>1e6?10:(stock?.volume||0)>1e5?6:3;
+  mkt = ivS + trendS + volS;
+  
+  return Math.min(100, hist+struct+mkt);
+}
+
+
+// ===== WEBSOCKET (Profit Bridge) =====
+let ws = null;
+
+function connectWS() {
+  try {
+    ws = new WebSocket('ws://localhost:8765');
+    ws.onopen = () => {
+      S.wsConnected = true;
+      updateStatus();
+      toast('Profit Pro conectado', 'Recebendo dados em tempo real');
+    };
+    ws.onmessage = (e) => {
+      try {
+        const msg = JSON.parse(e.data);
+        if (msg.type === 'market_data' && Array.isArray(msg.data)) {
+          for (const d of msg.data) {
+            S.prices[d.ticker] = d;
+            // Se é um ticker novo, add ao watchlist
+            if (!S.tickers.includes(d.ticker)) {
+              S.tickers.push(d.ticker);
+            }
+          }
+          renderWatchlist();
+        } else if (msg.type === 'chain' && msg.options) {
+          S.chains[msg.ticker] = msg.options;
+          if (msg.ticker === S.active) renderChain();
+        }
+      } catch(err) {}
+    };
+    ws.onclose = () => {
+      S.wsConnected = false;
+      updateStatus();
+      setTimeout(connectWS, 10000);
+    };
+    ws.onerror = () => { ws.close(); };
+  } catch(e) {
+    setTimeout(connectWS, 10000);
+  }
+}
+
+
+// ===== FULL SCAN =====
+async function doFullScan() {
+  if (S.scanning) return;
+  S.scanning = true;
+  const btn = document.getElementById('btn-scan');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="loading-spinner"></span>Escaneando...';
+  
+  // 1) Fetch preços atualizados
+  await fetchQuotes();
+  
+  // 2) Fetch histórico para cada ticker
+  for (const t of S.tickers) {
+    if (!S.history[t]) {
+      try { await fetchHistory(t); } catch(e) { console.warn(`Hist ${t}:`, e); }
+    }
+  }
+  
+  // 3) Montar ranking apenas com opções reais do Profit
+  const allOpts = [];
+  
+  for (const t of S.tickers) {
+    const stock = S.prices[t];
+    if (!stock || !stock.price) continue;
+    
+    const chain = S.chains[t];
+    if (!chain || !chain.length) continue;
+    
+    const hist = S.history[t];
+    const gaps = hist ? analyzeGaps(hist) : null;
+    const hv = hist ? historicalVol(hist) : 0.3;
+    
+    for (const o of chain) {
+      if (o.price <= 0) continue;
+      
+      const ad = Math.abs(o.delta || 0);
+      const move = stock.price * 0.02;
+      const potGain = o.price > 0 ? Math.round(ad * move / o.price * 100) : 0;
+      
+      let probD1 = 0;
+      if (gaps && stock.gapPct !== undefined) {
+        const BS = 0.5;
+        const bv = Math.max(-15, Math.min(14.5, Math.floor(stock.gapPct/BS)*BS));
+        const k = `${bv>=0?'+':''}${bv.toFixed(1)}`;
+        const b = gaps[k];
+        if (b && b.count >= 3) {
+          probD1 = Math.round((o.type==='CALL'?b.d1_pos:b.d1_neg)/b.count*100);
+        }
+      }
+      
+      const opt = {
+        ticker: o.ticker,
+        baseTicker: t,
+        type: o.type,
+        strike: o.strike,
+        price: o.price,
+        bid: o.bid || 0,
+        ask: o.ask || 0,
+        volume: o.volume || 0,
+        delta: o.delta || 0,
+        gamma: o.gamma || 0,
+        theta: o.theta || 0,
+        vega: o.vega || 0,
+        iv: o.iv || 0,
+        hv,
+        potGain,
+        probD1,
+      };
+      opt.score = calcScore(opt, stock, gaps);
+      allOpts.push(opt);
+    }
+  }
+  
+  allOpts.sort((a,b) => b.score - a.score);
+  S.rankings = allOpts;
+  
+  // 4) Render everything
+  renderRanking();
+  renderChain();
+  renderHistory();
+  renderVariation();
+  renderPatterns();
+  renderSequences();
+  updateStats();
+  
+  const now = new Date();
+  const ts = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+  document.getElementById('s-time').textContent = ts;
+  document.getElementById('s-source').textContent = S.wsConnected ? 'profit + brapi' : 'brapi.dev';
+  
+  // Alerts
+  const alertMin = parseInt(document.getElementById('p-alert').value) || 50;
+  for (const o of allOpts.slice(0,3)) {
+    if (o.score >= alertMin) {
+      toast(`${o.ticker} — Score ${o.score}`, `${o.type} | Strike R$${o.strike} | +${o.potGain}%`);
+    }
+  }
+  
+  btn.disabled = false;
+  btn.textContent = 'Escanear Tudo';
+  S.scanning = false;
+}
+
+
+// ===== RENDER FUNCTIONS =====
 function renderWatchlist() {
   const el = document.getElementById('watchlist');
-  el.innerHTML = TICKERS.map(t => {
-    const d = state.prices[t] || {};
+  el.innerHTML = S.tickers.map(t => {
+    const d = S.prices[t] || {};
     const p = d.price ? `R$ ${d.price.toFixed(2)}` : '—';
     const c = d.changePct || 0;
-    const cls = c > 0 ? 'pos' : (c < 0 ? 'neg' : 'zero');
+    const cls = c > 0 ? 'up' : c < 0 ? 'down' : 'flat';
     const sign = c > 0 ? '+' : '';
-    const active = t === state.activeTicker ? 'active' : '';
-    return `<div class="wl-item ${active}" onclick="selectTicker('${t}')">
-      <div class="ticker">${t}</div>
-      <div class="name">${TICKER_NAMES[t]}</div>
-      <div class="price-row">
-        <span class="price">${p}</span>
-        <span class="change ${cls}">${sign}${c.toFixed(1)}%</span>
+    const name = TICKER_NAMES[t] || t;
+    return `<div class="wl-item ${t===S.active?'active':''}" onclick="selectTicker('${t}')">
+      <button class="wl-remove" onclick="event.stopPropagation();removeTicker('${t}')" title="Remover">&times;</button>
+      <div class="wl-top">
+        <span class="wl-ticker">${t}</span>
+        <span class="wl-price mono">${p}</span>
+      </div>
+      <div class="wl-bottom">
+        <span class="wl-name">${name}</span>
+        <span class="wl-change ${cls}">${sign}${c.toFixed(2)}%</span>
       </div>
     </div>`;
   }).join('');
 }
 
-function renderRanking(gainMin, gainMax, probMin, samplesMin) {
-  const filtered = state.rankings.filter(o => o.potGainPct >= gainMin);
+function renderRanking() {
   const body = document.getElementById('ranking-body');
+  const empty = document.getElementById('ranking-empty');
   const info = document.getElementById('ranking-info');
   
-  info.textContent = state.activeTicker ? 
-    `${state.activeTicker} — ${filtered.filter(o=>o.baseTicker===state.activeTicker).length} sinais | Gap: ${(state.prices[state.activeTicker]?.gapPct||0).toFixed(1)}% | IV: ${Math.round((state.rankings.find(o=>o.baseTicker===state.activeTicker)?.iv||0)*100)}%` :
-    `${filtered.length} oportunidades encontradas`;
+  const list = S.rankings;
   
-  // Mostra top 20
-  body.innerHTML = filtered.slice(0, 20).map((o, i) => {
-    const typeBadge = `<span class="badge ${o.type.toLowerCase()}">${o.type}</span>`;
-    const tfBadge = `<span class="badge ${o.timeframe.toLowerCase()}">${o.timeframe}</span>`;
-    const tempBadge = o.score >= 65 ? '<span class="badge hot">HOT</span>' : (o.score >= 50 ? '<span class="badge warm">WARM</span>' : '<span class="badge cold">COLD</span>');
-    
-    const potCls = o.potGainPct > 0 ? 'pos' : 'neg';
-    const probD1 = o.probD1 ? `${o.probD1}%` : '--';
-    
-    const scoreBars = Array.from({length:5}, (_, j) => 
-      `<div class="bar ${j < Math.round(o.score/20) ? 'filled' : ''}"></div>`
-    ).join('');
-    
+  if (!list.length) {
+    body.innerHTML = '';
+    empty.style.display = '';
+    info.textContent = '';
+    if (!S.wsConnected) {
+      empty.querySelector('p').textContent = 'Sem opções reais disponíveis.';
+      empty.querySelector('.hint').textContent = 'Conecte o Profit Pro para descobrir opções reais via DDE. Sem o Profit, apenas dados de preço são exibidos.';
+    }
+    return;
+  }
+  
+  empty.style.display = 'none';
+  const sd = S.prices[S.active] || {};
+  info.textContent = `${list.length} oportunidades reais | ${S.active}: Gap ${(sd.gapPct||0).toFixed(2)}%`;
+  
+  body.innerHTML = list.slice(0, 30).map((o, i) => {
+    const scoreColor = o.score>=65?'var(--up)':o.score>=45?'var(--warn)':'var(--text-muted)';
+    const fillW = Math.round(o.score);
     return `<tr>
-      <td><span class="rank">#${i+1}</span></td>
-      <td><strong>${o.ticker}</strong><br><span style="font-size:10px;color:var(--text3)">Strike R$ ${o.strike.toFixed(2)}</span></td>
-      <td>${typeBadge} ${tfBadge} ${tempBadge}</td>
+      <td><span class="rank-num ${i<3?'top3':''}">${i+1}</span></td>
+      <td><strong>${o.ticker}</strong><br><span style="font-size:10px;color:var(--text-muted)">${o.baseTicker} · R$ ${o.strike}</span></td>
+      <td><span class="badge badge-${o.type.toLowerCase()}">${o.type}</span></td>
       <td>R$ ${o.price.toFixed(2)}</td>
-      <td>R$ ${o.strike.toFixed(2)}</td>
-      <td>${o.greeks.delta.toFixed(2)}</td>
-      <td class="${potCls}">+${o.potGainPct}%</td>
-      <td>${probD1}</td>
-      <td>${Math.round(o.iv*100)}% / ${Math.round(o.hv*100)}%</td>
-      <td>${formatDate(o.vencDate)}</td>
-      <td><div class="score-bar"><span class="score-num" style="color:${o.score>=65?'var(--green)':(o.score>=50?'var(--yellow)':'var(--text3)')}">${o.score}</span><div class="score-bars">${scoreBars}</div></div></td>
+      <td>R$ ${o.strike.toFixed?o.strike.toFixed(2):o.strike}</td>
+      <td>${(o.delta||0).toFixed(2)}</td>
+      <td class="${o.potGain>0?'up':''}">+${o.potGain}%</td>
+      <td>${o.probD1?o.probD1+'%':'—'}</td>
+      <td>${o.iv?Math.round(o.iv*100)+'%':'—'}</td>
+      <td>—</td>
+      <td><div class="score-display"><span class="score-num" style="color:${scoreColor}">${o.score}</span><div class="score-track"><div class="score-fill" style="width:${fillW}%;background:${scoreColor}"></div></div></div></td>
     </tr>`;
   }).join('');
 }
 
-function updateStats() {
-  const r = state.rankings;
-  document.getElementById('st-signals').textContent = r.length;
+function renderChain() {
+  const body = document.getElementById('chain-body');
+  const empty = document.getElementById('chain-empty');
+  const info = document.getElementById('chain-info');
+  const chain = S.chains[S.active] || [];
   
-  if (r.length) {
-    const best = r[0];
-    document.getElementById('st-best').textContent = `${best.ticker}`;
-    document.getElementById('st-best-sub').textContent = `score ${best.score}`;
-    
-    const avgIV = r.reduce((a,b) => a + (b.iv||0), 0) / r.length;
-    document.getElementById('st-iv').textContent = `${Math.round(avgIV*100)}%`;
-    
-    const bestProb = Math.max(...r.map(o => o.score));
-    document.getElementById('st-prob').textContent = `${bestProb}%`;
+  if (!chain.length) {
+    body.innerHTML = '';
+    empty.style.display = '';
+    info.textContent = '';
+    return;
   }
+  
+  empty.style.display = 'none';
+  info.textContent = `${S.active} — ${chain.length} opções reais do Profit Pro`;
+  
+  const sorted = [...chain].sort((a,b) => a.strike - b.strike || (a.type==='CALL'?-1:1));
+  body.innerHTML = sorted.map(o => `<tr>
+    <td><strong>${o.ticker}</strong></td>
+    <td><span class="badge badge-${o.type.toLowerCase()}">${o.type}</span></td>
+    <td>R$ ${o.strike}</td>
+    <td>R$ ${o.price.toFixed(2)}</td>
+    <td>R$ ${(o.bid||0).toFixed(2)}</td>
+    <td>R$ ${(o.ask||0).toFixed(2)}</td>
+    <td>${o.volume||0}</td>
+    <td>${(o.delta||0).toFixed(2)}</td>
+    <td>${(o.gamma||0).toFixed(4)}</td>
+    <td>${(o.theta||0).toFixed(4)}</td>
+    <td>${o.iv?Math.round(o.iv*10000)/100+'%':'—'}</td>
+  </tr>`).join('');
 }
 
-function renderHistoryTab() {
-  const ticker = state.activeTicker;
-  const hist = state.histData[ticker];
-  document.getElementById('hist-ticker-label').textContent = ticker ? `${ticker} — Análise de Gaps (${hist?.length||0} dias)` : '';
+function renderHistory() {
+  const hist = S.history[S.active];
+  const el = document.getElementById('hist-content');
+  const empty = document.getElementById('hist-empty');
+  const label = document.getElementById('hist-label');
   
-  if (!hist) { document.getElementById('gap-analysis').innerHTML = '<div style="color:var(--text3)">Clique em "Escanear tudo" para carregar dados históricos.</div>'; return; }
+  if (!hist || hist.length < 30) {
+    el.innerHTML = '';
+    empty.style.display = '';
+    label.textContent = '';
+    return;
+  }
   
-  const buckets = analyzeGaps(hist);
-  if (!buckets) return;
+  empty.style.display = 'none';
+  label.textContent = `${S.active} — Histórico de Gaps (${hist.length} dias)`;
   
-  const maxCount = Math.max(...Object.values(buckets).map(b => b.count), 1);
+  const gaps = analyzeGaps(hist);
+  if (!gaps) return;
   
-  // Filtra buckets com dados e ordena
-  const entries = Object.entries(buckets).filter(([k,v]) => v.count > 0).sort((a,b) => parseFloat(a[0]) - parseFloat(b[0]));
+  const entries = Object.entries(gaps).filter(([k,v])=>v.count>0).sort((a,b)=>parseFloat(a[0])-parseFloat(b[0]));
+  const maxC = Math.max(...entries.map(([k,v])=>v.count), 1);
   
   let html = '<div class="hist-container">';
-  for (const [key, b] of entries) {
-    const pct = (b.count / maxCount * 100).toFixed(0);
-    const isNeg = parseFloat(key) < 0;
-    const barCls = isNeg ? 'red' : 'green';
-    const d1Prob = b.count > 0 ? Math.round(b.d1_pos / b.count * 100) : 0;
-    
+  for (const [k,b] of entries) {
+    const pct = (b.count/maxC*100).toFixed(0);
+    const isNeg = parseFloat(k) < 0;
+    const d1Prob = b.count>0?Math.round(b.d1_pos/b.count*100):0;
+    const d2Prob = b.count>0?Math.round(b.d2_pos/b.count*100):0;
     html += `<div class="hist-row">
-      <div class="hist-label">${key}%</div>
-      <div class="hist-bar-wrap"><div class="hist-bar ${barCls}" style="width:${pct}%"></div></div>
-      <div class="hist-count">${b.count}x — D+1: ${d1Prob}%</div>
+      <div class="hist-label">${k}%</div>
+      <div class="hist-track"><div class="hist-bar ${isNeg?'hist-bar-down':'hist-bar-up'}" style="width:${pct}%"></div></div>
+      <div class="hist-info">${b.count}x · D+1: ${d1Prob}% · D+2: ${d2Prob}%</div>
     </div>`;
   }
   html += '</div>';
-  document.getElementById('gap-analysis').innerHTML = html;
+  el.innerHTML = html;
 }
 
-function renderVariationTab() {
-  const ticker = state.activeTicker;
-  const hist = state.histData[ticker];
-  document.getElementById('var-ticker-label').textContent = ticker ? `${ticker} — Distribuição de Variação Diária` : '';
+function renderVariation() {
+  const hist = S.history[S.active];
+  const el = document.getElementById('var-content');
+  const empty = document.getElementById('var-empty');
+  const label = document.getElementById('var-label');
   
-  if (!hist) { document.getElementById('variation-content').innerHTML = '<div style="color:var(--text3)">Clique em "Escanear tudo" para carregar dados.</div>'; return; }
+  if (!hist || hist.length < 30) {
+    el.innerHTML = '';
+    empty.style.display = '';
+    label.textContent = '';
+    return;
+  }
   
-  const analysis = analyzeVariation(hist);
-  if (!analysis) return;
+  empty.style.display = 'none';
+  label.textContent = `${S.active} — Distribuição de Variação Diária`;
   
-  const { buckets, stats } = analysis;
-  const maxCount = Math.max(...Object.values(buckets), 1);
+  const a = analyzeVariation(hist);
+  if (!a) return;
+  const {buckets, stats} = a;
+  const maxC = Math.max(...Object.values(buckets), 1);
   
-  let html = `<div class="pattern-grid" style="margin-bottom:20px;">
-    <div class="pattern-card"><div class="title">Estatísticas</div>
-      <div class="stat"><span>Dias analisados</span><span class="highlight">${stats.totalDays}</span></div>
-      <div class="stat"><span>Dias positivos</span><span class="highlight pos">${stats.positiveDays} (${Math.round(stats.positiveDays/stats.totalDays*100)}%)</span></div>
-      <div class="stat"><span>Média diária</span><span class="highlight ${stats.mean>=0?'pos':'neg'}">${stats.mean>=0?'+':''}${stats.mean.toFixed(2)}%</span></div>
-      <div class="stat"><span>Desvio Padrão</span><span class="highlight">${stats.stdDev.toFixed(2)}%</span></div>
+  let html = `<div class="card-grid" style="margin-bottom:20px">
+    <div class="analysis-card"><div class="card-title">Estatísticas</div>
+      <div class="card-row"><span class="label">Dias analisados</span><span class="value">${stats.total}</span></div>
+      <div class="card-row"><span class="label">Dias positivos</span><span class="value up">${stats.posDays} (${Math.round(stats.posDays/stats.total*100)}%)</span></div>
+      <div class="card-row"><span class="label">Média diária</span><span class="value ${stats.mean>=0?'up':'down'}">${stats.mean>=0?'+':''}${stats.mean.toFixed(3)}%</span></div>
+      <div class="card-row"><span class="label">Desvio Padrão</span><span class="value">${stats.stdDev.toFixed(3)}%</span></div>
     </div>
-    <div class="pattern-card"><div class="title">Percentis</div>
-      <div class="stat"><span>P5 (pior caso)</span><span class="highlight neg">${stats.p5.toFixed(2)}%</span></div>
-      <div class="stat"><span>P25</span><span class="highlight">${stats.p25.toFixed(2)}%</span></div>
-      <div class="stat"><span>Mediana (P50)</span><span class="highlight">${stats.p50.toFixed(2)}%</span></div>
-      <div class="stat"><span>P75</span><span class="highlight">${stats.p75.toFixed(2)}%</span></div>
-      <div class="stat"><span>P95 (melhor caso)</span><span class="highlight pos">${stats.p95.toFixed(2)}%</span></div>
+    <div class="analysis-card"><div class="card-title">Percentis</div>
+      <div class="card-row"><span class="label">P5 (pior)</span><span class="value down">${stats.p5.toFixed(2)}%</span></div>
+      <div class="card-row"><span class="label">P25</span><span class="value">${stats.p25.toFixed(2)}%</span></div>
+      <div class="card-row"><span class="label">Mediana</span><span class="value">${stats.p50.toFixed(2)}%</span></div>
+      <div class="card-row"><span class="label">P75</span><span class="value">${stats.p75.toFixed(2)}%</span></div>
+      <div class="card-row"><span class="label">P95 (melhor)</span><span class="value up">+${stats.p95.toFixed(2)}%</span></div>
     </div>
-    <div class="pattern-card"><div class="title">Movimentos Extremos</div>
-      <div class="stat"><span>Quedas >= 5%</span><span class="highlight neg">${stats.bigDrops}x</span></div>
-      <div class="stat"><span>Altas >= 5%</span><span class="highlight pos">${stats.bigJumps}x</span></div>
-      <div class="stat"><span>Quedas >= 10%</span><span class="highlight neg">${stats.hugeDrops}x</span></div>
-      <div class="stat"><span>Altas >= 10%</span><span class="highlight pos">${stats.hugeJumps}x</span></div>
+    <div class="analysis-card"><div class="card-title">Movimentos Extremos</div>
+      <div class="card-row"><span class="label">Quedas ≥ 5%</span><span class="value down">${stats.bigDrops}x</span></div>
+      <div class="card-row"><span class="label">Altas ≥ 5%</span><span class="value up">${stats.bigJumps}x</span></div>
+      <div class="card-row"><span class="label">Quedas ≥ 10%</span><span class="value down">${stats.hugeDrops}x</span></div>
+      <div class="card-row"><span class="label">Altas ≥ 10%</span><span class="value up">${stats.hugeJumps}x</span></div>
     </div>
   </div>`;
   
-  // Histograma completo
   html += '<div class="hist-container">';
-  const entries = Object.entries(buckets).filter(([k,v]) => v > 0).sort((a,b) => parseFloat(a[0]) - parseFloat(b[0]));
-  for (const [key, count] of entries) {
-    const pct = (count / maxCount * 100).toFixed(0);
-    const isNeg = parseFloat(key) < 0;
+  const entries = Object.entries(buckets).filter(([k,v])=>v>0).sort((a,b)=>parseFloat(a[0])-parseFloat(b[0]));
+  for (const [k,count] of entries) {
+    const pct = (count/maxC*100).toFixed(0);
+    const isNeg = parseFloat(k)<0;
     html += `<div class="hist-row">
-      <div class="hist-label">${key}%</div>
-      <div class="hist-bar-wrap"><div class="hist-bar ${isNeg?'red':'green'}" style="width:${pct}%"></div></div>
-      <div class="hist-count">${count}x (${(count/stats.totalDays*100).toFixed(1)}%)</div>
+      <div class="hist-label">${k}%</div>
+      <div class="hist-track"><div class="hist-bar ${isNeg?'hist-bar-down':'hist-bar-up'}" style="width:${pct}%"></div></div>
+      <div class="hist-info">${count}x (${(count/stats.total*100).toFixed(1)}%)</div>
     </div>`;
   }
   html += '</div>';
-  document.getElementById('variation-content').innerHTML = html;
+  el.innerHTML = html;
 }
 
-function renderPatternsTab() {
-  const ticker = state.activeTicker;
-  const hist = state.histData[ticker];
-  document.getElementById('pat-ticker-label').textContent = ticker ? `${ticker} — Padrões Intraday (gap de abertura → comportamento)` : '';
+function renderPatterns() {
+  const hist = S.history[S.active];
+  const el = document.getElementById('pat-content');
+  const empty = document.getElementById('pat-empty');
+  const label = document.getElementById('pat-label');
   
-  if (!hist) { document.getElementById('patterns-content').innerHTML = '<div style="color:var(--text3)">Clique em "Escanear tudo".</div>'; return; }
+  if (!hist || hist.length < 60) {
+    el.innerHTML = '';
+    empty.style.display = '';
+    label.textContent = '';
+    return;
+  }
   
-  const patterns = analyzePatterns(hist);
+  empty.style.display = 'none';
+  label.textContent = `${S.active} — Padrões Intraday (gap → comportamento)`;
   
-  document.getElementById('patterns-content').innerHTML = patterns.map(p => {
-    const signalColor = p.signal === 'REVERSÃO' ? 'var(--green)' : (p.signal === 'CONTINUAÇÃO' ? 'var(--red)' : 'var(--text3)');
-    return `<div class="pattern-card">
-      <div class="title">Gap ${p.label} <span style="float:right;color:${signalColor};font-size:11px;">${p.signal}</span></div>
-      <div class="stat"><span>Amostras</span><span class="highlight">${p.samples}</span></div>
-      <div class="stat"><span>Fechou acima da abertura</span><span class="highlight" style="color:${p.closedAbovePct>55?'var(--green)':'var(--text2)'}">${p.closedAbovePct}%</span></div>
-      <div class="stat"><span>Máxima média (da abertura)</span><span class="highlight pos">+${p.avgMaxFromOpen.toFixed(2)}%</span></div>
-      <div class="stat"><span>Mínima média (da abertura)</span><span class="highlight neg">${p.avgMinFromOpen.toFixed(2)}%</span></div>
-      <div class="stat"><span>Variação média (close-open)</span><span class="highlight ${p.avgClose>=0?'pos':'neg'}">${p.avgClose>=0?'+':''}${p.avgClose.toFixed(2)}%</span></div>
+  const pats = analyzePatterns(hist);
+  if (!pats.length) { el.innerHTML = '<div style="color:var(--text-muted)">Dados insuficientes para este ativo.</div>'; return; }
+  
+  el.innerHTML = '<div class="card-grid">' + pats.map(p => {
+    const sigCls = p.signal==='REVERSÃO'?'signal-reversal':p.signal==='CONTINUAÇÃO'?'signal-continuation':'signal-neutral';
+    return `<div class="analysis-card">
+      <div class="card-title">Gap ${p.label} <span class="signal-tag ${sigCls}">${p.signal}</span></div>
+      <div class="card-row"><span class="label">Amostras</span><span class="value">${p.n}</span></div>
+      <div class="card-row"><span class="label">Fechou acima da abertura</span><span class="value ${p.abovePct>55?'up':''}">${p.abovePct}%</span></div>
+      <div class="card-row"><span class="label">Máxima média</span><span class="value up">+${p.avgMax}%</span></div>
+      <div class="card-row"><span class="label">Mínima média</span><span class="value down">${p.avgMin}%</span></div>
+      <div class="card-row"><span class="label">Variação close-open</span><span class="value ${p.avgClose>=0?'up':'down'}">${p.avgClose>=0?'+':''}${p.avgClose}%</span></div>
     </div>`;
-  }).join('');
+  }).join('') + '</div>';
 }
 
-function renderSequencesTab() {
-  const ticker = state.activeTicker;
-  const hist = state.histData[ticker];
-  document.getElementById('seq-ticker-label').textContent = ticker ? `${ticker} — Sequências de Alta/Baixa` : '';
+function renderSequences() {
+  const hist = S.history[S.active];
+  const el = document.getElementById('seq-content');
+  const empty = document.getElementById('seq-empty');
+  const label = document.getElementById('seq-label');
   
-  if (!hist) { document.getElementById('sequences-content').innerHTML = '<div style="color:var(--text3)">Clique em "Escanear tudo".</div>'; return; }
+  if (!hist || hist.length < 30) {
+    el.innerHTML = '';
+    empty.style.display = '';
+    label.textContent = '';
+    return;
+  }
+  
+  empty.style.display = 'none';
+  label.textContent = `${S.active} — Sequências de Alta/Baixa`;
   
   const seq = analyzeSequences(hist);
   if (!seq) return;
   
-  let html = `<div class="pattern-grid">
-    <div class="pattern-card"><div class="title" style="color:var(--green)">Sequências de Alta</div>
-      <div class="stat"><span>Maior sequência</span><span class="highlight pos">${seq.maxUp} dias</span></div>
-      <div class="stat"><span>Média</span><span class="highlight">${seq.avgUp} dias</span></div>
-      <div class="stat"><span>Total de sequências</span><span class="highlight">${seq.totalUpStreaks}</span></div>
-      ${Object.entries(seq.distUp).sort((a,b)=>parseInt(a[0])-parseInt(b[0])).map(([k,v]) => 
-        `<div class="stat"><span>${k} dia(s) consecutivo(s)</span><span>${v}x</span></div>`
-      ).join('')}
+  const distHTML = (dist) => Object.entries(dist).sort((a,b)=>+a[0]-+b[0]).map(([k,v])=>
+    `<div class="card-row"><span class="label">${k} dia(s)</span><span class="value">${v}x</span></div>`
+  ).join('');
+  
+  el.innerHTML = `<div class="card-grid">
+    <div class="analysis-card">
+      <div class="card-title" style="color:var(--up)">Sequências de Alta</div>
+      <div class="card-row"><span class="label">Maior sequência</span><span class="value up">${seq.maxUp} dias</span></div>
+      <div class="card-row"><span class="label">Média</span><span class="value">${seq.avgUp} dias</span></div>
+      <div class="card-row"><span class="label">Total de sequências</span><span class="value">${seq.nUp}</span></div>
+      ${distHTML(seq.distUp)}
     </div>
-    <div class="pattern-card"><div class="title" style="color:var(--red)">Sequências de Baixa</div>
-      <div class="stat"><span>Maior sequência</span><span class="highlight neg">${seq.maxDown} dias</span></div>
-      <div class="stat"><span>Média</span><span class="highlight">${seq.avgDown} dias</span></div>
-      <div class="stat"><span>Total de sequências</span><span class="highlight">${seq.totalDownStreaks}</span></div>
-      ${Object.entries(seq.distDown).sort((a,b)=>parseInt(a[0])-parseInt(b[0])).map(([k,v]) => 
-        `<div class="stat"><span>${k} dia(s) consecutivo(s)</span><span>${v}x</span></div>`
-      ).join('')}
+    <div class="analysis-card">
+      <div class="card-title" style="color:var(--down)">Sequências de Baixa</div>
+      <div class="card-row"><span class="label">Maior sequência</span><span class="value down">${seq.maxDown} dias</span></div>
+      <div class="card-row"><span class="label">Média</span><span class="value">${seq.avgDown} dias</span></div>
+      <div class="card-row"><span class="label">Total de sequências</span><span class="value">${seq.nDown}</span></div>
+      ${distHTML(seq.distDown)}
     </div>
   </div>`;
-  
-  document.getElementById('sequences-content').innerHTML = html;
 }
 
-
-function renderChainTab() {
-  const ticker = state.activeTicker;
-  const body = document.getElementById('chain-body');
-  
-  // Filtra opções do ativo selecionado do ranking
-  const chain = state.rankings.filter(o => o.baseTicker === ticker)
-    .sort((a,b) => a.strike - b.strike || (a.type === 'CALL' ? -1 : 1));
-  
-  if (!chain.length) {
-    body.innerHTML = `<tr><td colspan="11" style="color:var(--text3);text-align:center;padding:20px;">
-      ${ticker ? `Nenhuma opção encontrada para ${ticker}. Clique em "Escanear tudo" primeiro.` : 'Selecione um ativo na watchlist.'}
-    </td></tr>`;
-    return;
+function updateStats() {
+  const r = S.rankings;
+  document.getElementById('s-count').textContent = r.length;
+  if (r.length) {
+    document.getElementById('s-best').textContent = r[0].ticker;
+    document.getElementById('s-best-sub').textContent = `score ${r[0].score}`;
+    const avgIV = r.reduce((a,b)=>a+(b.iv||0),0)/r.length;
+    document.getElementById('s-iv').textContent = avgIV>0?Math.round(avgIV*100)+'%':'—';
+    const bestProb = Math.max(...r.map(o=>o.probD1||0));
+    document.getElementById('s-prob').textContent = bestProb>0?bestProb+'%':'—';
+  } else {
+    document.getElementById('s-best').textContent = '—';
+    document.getElementById('s-best-sub').textContent = '';
+    document.getElementById('s-iv').textContent = '—';
+    document.getElementById('s-prob').textContent = '—';
   }
-  
-  body.innerHTML = chain.map(o => {
-    const typeCls = o.type === 'CALL' ? 'call' : 'put';
-    return `<tr>
-      <td><strong>${o.ticker}</strong></td>
-      <td><span class="badge ${typeCls}">${o.type}</span></td>
-      <td>R$ ${o.strike.toFixed(2)}</td>
-      <td>R$ ${o.price.toFixed(2)}</td>
-      <td>R$ ${o.bid.toFixed(2)}</td>
-      <td>R$ ${o.ask.toFixed(2)}</td>
-      <td>${o.greeks.delta.toFixed(2)}</td>
-      <td>${o.greeks.gamma.toFixed(3)}</td>
-      <td>${o.greeks.theta.toFixed(2)}</td>
-      <td>${Math.round(o.iv * 100)}%</td>
-      <td>${formatDate(o.vencDate)}</td>
-    </tr>`;
-  }).join('');
 }
 
 
-// ===== UI HELPERS =====
-function switchTab(name) {
-  document.querySelectorAll('.tab').forEach((t, i) => {
-    const tabs = ['ranking','chain','history','variation','patterns','sequences','howto'];
-    t.classList.toggle('active', tabs[i] === name);
-  });
-  document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
-  const el = document.getElementById(`tc-${name}`);
-  if (el) el.classList.add('active');
-}
-
+// ===== UI =====
 function selectTicker(t) {
-  state.activeTicker = t;
+  S.active = t;
   renderWatchlist();
-  renderChainTab();
-  renderHistoryTab();
-  renderVariationTab();
-  renderPatternsTab();
-  renderSequencesTab();
-  // Atualiza info do ranking
-  if (state.rankings.length) {
-    const info = document.getElementById('ranking-info');
-    const sd = state.prices[t] || {};
-    const count = state.rankings.filter(o => o.baseTicker === t).length;
-    info.textContent = `${t} — ${count} sinais | Gap: ${(sd.gapPct||0).toFixed(1)}% | IV: ${Math.round((state.rankings.find(o=>o.baseTicker===t)?.iv||0)*100)}%`;
+  renderChain();
+  renderHistory();
+  renderVariation();
+  renderPatterns();
+  renderSequences();
+  // Request chain from Profit if connected
+  if (S.wsConnected && ws?.readyState === 1) {
+    ws.send(JSON.stringify({ action: 'get_chain', ticker: t }));
   }
+}
+
+function addTicker(t) {
+  t = t.toUpperCase().trim();
+  if (!t || t.length < 4 || S.tickers.includes(t)) return;
+  S.tickers.push(t);
+  S.active = t;
+  renderWatchlist();
+  // Fetch data immediately
+  fetchQuotes();
+  fetchHistory(t).then(() => {
+    renderHistory();
+    renderVariation();
+    renderPatterns();
+    renderSequences();
+  });
+}
+
+function removeTicker(t) {
+  S.tickers = S.tickers.filter(x => x !== t);
+  if (S.active === t) S.active = S.tickers[0] || '';
+  delete S.prices[t];
+  delete S.chains[t];
+  delete S.history[t];
+  renderWatchlist();
+  renderChain();
+  renderHistory();
+  renderVariation();
+  renderPatterns();
+  renderSequences();
 }
 
 function updateStatus() {
-  const pe = document.getElementById('profit-status');
-  const be = document.getElementById('brapi-status');
-  pe.innerHTML = state.wsConnected ? 
-    '<span class="dot on"></span> Profit: conectado' : 
-    '<span class="dot off"></span> Profit: offline';
-  be.innerHTML = state.brapiOk ? 
-    '<span class="dot on"></span> brapi' : 
-    '<span class="dot off"></span> brapi';
+  document.getElementById('ws-dot').className = `dot ${S.wsConnected?'dot-on':'dot-off'}`;
+  document.getElementById('ws-label').textContent = S.wsConnected?'Profit conectado':'Profit offline';
+  document.getElementById('brapi-dot').className = `dot ${S.brapiOk?'dot-on':'dot-off'}`;
+  document.getElementById('brapi-label').textContent = S.brapiOk?'brapi ok':'brapi';
 }
 
-function showToast(title, body, type='info') {
-  const container = document.getElementById('toast-container');
-  const toast = document.createElement('div');
-  toast.className = `toast ${type}`;
-  toast.innerHTML = `<div class="toast-title">${title}</div><div class="toast-body">${body}</div>`;
-  container.appendChild(toast);
-  setTimeout(() => {
-    toast.style.animation = 'fadeOut .3s ease forwards';
-    setTimeout(() => toast.remove(), 300);
-  }, 6000);
+function toast(title, body, type='') {
+  const box = document.getElementById('toast-box');
+  const el = document.createElement('div');
+  el.className = `toast ${type}`;
+  el.innerHTML = `<div class="toast-title">${title}</div><div class="toast-body">${body}</div>`;
+  box.appendChild(el);
+  setTimeout(() => { el.style.animation='toast-in .3s ease reverse forwards'; setTimeout(()=>el.remove(),300); }, 5000);
 }
 
-// ===== INIT =====
-function startAutoScan() {
-  const interval = parseInt(document.getElementById('p-interval').value) || 60;
-  if (state.scanInterval) clearInterval(state.scanInterval);
-  state.scanInterval = setInterval(fullScan, interval * 1000);
-}
-
-// Boot
-renderWatchlist();
-connectProfit();
-fetchPricesFromBrapi().then(() => {
-  renderWatchlist();
-  // Auto-scan após carregar preços
-  setTimeout(fullScan, 2000);
-  startAutoScan();
+// Tabs
+document.getElementById('tabs-bar').addEventListener('click', e => {
+  const btn = e.target.closest('.tab-btn');
+  if (!btn) return;
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById(`panel-${btn.dataset.tab}`).classList.add('active');
 });
 
-// Re-configure auto-scan quando parâmetro mudar
-document.getElementById('p-interval').addEventListener('change', startAutoScan);
+// Add ticker
+document.getElementById('btn-add-ticker').addEventListener('click', () => {
+  addTicker(document.getElementById('input-ticker').value);
+  document.getElementById('input-ticker').value = '';
+});
+document.getElementById('input-ticker').addEventListener('keydown', e => {
+  if (e.key === 'Enter') {
+    addTicker(e.target.value);
+    e.target.value = '';
+  }
+});
+
+// Clock
+setInterval(() => {
+  const n = new Date();
+  document.getElementById('clock-el').textContent = `${String(n.getHours()).padStart(2,'0')}:${String(n.getMinutes()).padStart(2,'0')}:${String(n.getSeconds()).padStart(2,'0')}`;
+}, 1000);
+
+// Auto-scan
+function setupAutoScan() {
+  if (S.scanTimer) clearInterval(S.scanTimer);
+  const sec = parseInt(document.getElementById('p-interval').value) || 90;
+  S.scanTimer = setInterval(doFullScan, sec * 1000);
+}
+document.getElementById('p-interval').addEventListener('change', setupAutoScan);
+
+
+// ===== BOOT =====
+renderWatchlist();
+connectWS();
+fetchQuotes().then(() => {
+  renderWatchlist();
+  setTimeout(doFullScan, 1500);
+  setupAutoScan();
+});
 </script>
 </body>
 </html>
