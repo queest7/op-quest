@@ -178,7 +178,6 @@ header{position:sticky;top:0;z-index:200;height:52px;background:rgba(7,8,16,0.92
 </header>
 
 <div class="main">
-<!-- SIDEBAR -->
 <aside class="sidebar">
   <div class="sl-label">Watchlist</div>
   <div id="ticker-list"></div>
@@ -225,10 +224,8 @@ header{position:sticky;top:0;z-index:200;height:52px;background:rgba(7,8,16,0.92
   </div>
 </aside>
 
-<!-- CONTENT -->
 <main class="content">
 
-  <!-- TOP STATS -->
   <div class="top-stats">
     <div class="stat-c"><div class="stat-l">Sinais</div><div class="stat-v" id="st-signals">0</div><div class="stat-s">oportunidades</div></div>
     <div class="stat-c"><div class="stat-l">Melhor score</div><div class="stat-v" id="st-best">—</div><div class="stat-s" id="st-best-sub">aguardando scan</div></div>
@@ -244,7 +241,6 @@ header{position:sticky;top:0;z-index:200;height:52px;background:rgba(7,8,16,0.92
     <button class="tab" onclick="switchTab('howto',this)">Como funciona</button>
   </div>
 
-  <!-- TAB: RANKING -->
   <div id="tp-ranking" class="tp on">
     <div class="section-head">
       <span class="section-title">Top oportunidades — score combinatório</span>
@@ -253,17 +249,14 @@ header{position:sticky;top:0;z-index:200;height:52px;background:rgba(7,8,16,0.92
     <div id="ranking-list"><div class="loading-overlay"><div class="spin"></div>Clique em "Escanear tudo" para iniciar</div></div>
   </div>
 
-  <!-- TAB: CHAIN -->
   <div id="tp-chain" class="tp">
     <div id="chain-area"><div class="loading-overlay">Selecione uma ação e escaneie</div></div>
   </div>
 
-  <!-- TAB: HIST -->
   <div id="tp-hist" class="tp">
     <div id="hist-area"><div class="loading-overlay">Selecione uma ação e escaneie</div></div>
   </div>
 
-  <!-- TAB: HOWTO -->
   <div id="tp-howto" class="tp">
     <div style="max-width:720px;line-height:1.85;font-size:13px;color:var(--muted);">
       <div style="font-size:18px;font-weight:600;color:var(--text);margin-bottom:16px;">Como o Score Combinatório funciona</div>
@@ -302,10 +295,8 @@ ngrok http 8765
 </main>
 </div>
 
-<!-- ALERT STACK -->
 <div class="alert-stack" id="alert-stack"></div>
 
-<!-- MODAL -->
 <div class="modal-wrap" id="modal-wrap" onclick="closeModalOutside(event)">
   <div class="modal-box">
     <button class="modal-close" onclick="closeModal()">×</button>
@@ -322,13 +313,11 @@ const TICKERS = [
   {t:'ITUB4', name:'Itaú',      seriesPrefix:'ITUB4', optPrefix:{call:'ITUBA',put:'ITUBP'}},
   {t:'BBAS3', name:'Banco do Brasil', seriesPrefix:'BBAS3', optPrefix:{call:'BBASA',put:'BBASP'}},
 ];
-
 // Letra do vencimento BOVESPA (jan=A ... dez=L para calls; jan=M ... dez=X para puts)
 const CALL_MONTHS = ['A','B','C','D','E','F','G','H','I','J','K','L'];
 const PUT_MONTHS  = ['M','N','O','P','Q','R','S','T','U','V','W','X'];
 
 const HV_BASE = {PETR4:.38, VALE3:.34, B3SA3:.30, ITUB4:.28, BBAS3:.30};
-
 // ESTATISTICAS — base histórica completa
 const GAP_STATS = {
   pos1:{label:'+1% a +2%',n:191,d1p:.492,d2p:.445,d3p:.602,dir:'CALL'},
@@ -343,7 +332,6 @@ const GAP_STATS = {
   neg5:{label:'-5%+',     n:7,  d1p:.143,d2p:.143,d3p:.286,dir:'PUT'},
   flat:{label:'0% a ±1%', n:550,d1p:.510,d2p:.500,d3p:.500,dir:null},
 };
-
 // ===================== STATE =====================
 let stockData = {};
 let selectedTicker = null;
@@ -376,7 +364,7 @@ function bs(S,K,T,r,sigma,type='call'){
 }
 
 // ISSO AQUI é a versão nova com brapi real:
-const BRAPI_TOKEN = 'xhruuSpNb1vYRh64XVzfbL'; // ← cola seu token aqui
+const BRAPI_TOKEN = 'xhruu5pNb1vYRh64XVzfbL'; // ← cola seu token aqui
 
 async function fetchRealOptions(ticker) {
   const prefix = ticker.slice(0, 4);
@@ -384,6 +372,11 @@ async function fetchRealOptions(ticker) {
   const res = await fetch(url);
   const data = await res.json();
   return (data.stocks || []).filter(s => s.stock.length > 5 && /^[A-Z]{4}[A-Z]\d/.test(s.stock));
+}
+
+// Função de fallback para não quebrar a tela atual
+function optionCode(prefix, type, K, expDays){
+  return prefix.slice(0,4) + (type==='call'?'A':'M') + Math.round(K); 
 }
 
 function optExpDate(expDays){
@@ -404,12 +397,12 @@ function classifyGap(g){
 function comboScore(sig, gs){
   let score = 0;
   let breakdown = {};
-
   // COMPONENTE 1: probabilidade histórica (35 pts)
   if(gs && gs.n > 0){
     const bestProb = Math.max(gs.d1p, gs.d2p, gs.d3p);
     const probScore = (bestProb - 0.5) * 60; // 0 a ~30 pts
-    const sampleBonus = gs.n > 100 ? 5 : gs.n > 30 ? 3 : gs.n > 10 ? 1 : 0;
+    const sampleBonus = gs.n > 100 ?
+    5 : gs.n > 30 ? 3 : gs.n > 10 ? 1 : 0;
     const probPts = Math.max(0, probScore + sampleBonus);
     score += probPts;
     breakdown.hist = probPts.toFixed(1);
@@ -419,11 +412,14 @@ function comboScore(sig, gs){
 
   // COMPONENTE 2: estrutura da opção (35 pts)
   const delta = Math.abs(sig.bs.delta);
-  const deltaScore = delta >= .25 && delta <= .45 ? 14 : delta >= .15 && delta < .55 ? 8 : 2;
+  const deltaScore = delta >= .25 && delta <= .45 ?
+  14 : delta >= .15 && delta < .55 ? 8 : 2;
   const ivRatio = sig.iv / sig.hv30;
-  const ivScore = ivRatio < 1.05 ? 12 : ivRatio < 1.2 ? 7 : ivRatio < 1.4 ? 3 : 0;
+  const ivScore = ivRatio < 1.05 ? 12 : ivRatio < 1.2 ? 7 : ivRatio < 1.4 ?
+  3 : 0;
   const gainPot = sig.gainPct;
-  const gainScore = gainPot >= .40 ? 9 : gainPot >= .25 ? 5 : gainPot >= .10 ? 2 : 0;
+  const gainScore = gainPot >= .40 ? 9 : gainPot >= .25 ?
+  5 : gainPot >= .10 ? 2 : 0;
   const optPts = deltaScore + ivScore + gainScore;
   score += optPts;
   breakdown.option = optPts.toFixed(1);
@@ -432,7 +428,8 @@ function comboScore(sig, gs){
   const isOpen = marketIsOpen();
   const hourBonus = isOpen && sig.expDays <= 7 ? 10 : isOpen ? 5 : 0;
   const gapMagnitude = Math.abs(sig.gapPct);
-  const gapBonus = gapMagnitude >= .03 ? 8 : gapMagnitude >= .02 ? 5 : gapMagnitude >= .01 ? 3 : 0;
+  const gapBonus = gapMagnitude >= .03 ? 8 : gapMagnitude >= .02 ? 5 : gapMagnitude >= .01 ?
+  3 : 0;
   const expBonus = sig.expDays <= 7 ? 8 : sig.expDays <= 21 ? 5 : 2;
   const ctxPts = hourBonus + gapBonus + expBonus;
   score += ctxPts;
@@ -450,13 +447,11 @@ function generateSignals(stock){
   const r = 0.1375;
   const tickerInfo = TICKERS.find(t=>t.t===ticker);
   const signals = [];
-
   const exps = [
     {days:7,label:'7d',horizon:'day'},
     {days:21,label:'21d',horizon:'swing'},
     {days:42,label:'42d',horizon:'swing'},
   ];
-
   exps.forEach(exp=>{
     const T = exp.days/365;
     const sigma = iv || hv30;
@@ -468,7 +463,8 @@ function generateSignals(stock){
       if(res.price < .03 || res.price > price*.25) return;
       // Estimar ganho na opção se ativo subir conforme histórico
       const moveSize = gs ? Math.max(gs.d1p-.5, 0)*2*.08 + .05 : .05;
-      const Sfuture = price*(1+moveSize);
+      const Sfuture = 
+      price*(1+moveSize);
       const T2 = Math.max(T - exp.days*.4/365, .001);
       const resFuture = bs(Sfuture,K,T2,r,sigma,'call');
       const gainPct = (resFuture.price - res.price)/res.price;
@@ -489,7 +485,8 @@ function generateSignals(stock){
         const moveSize = gs ? Math.max(gs.d1p-.5,0)*2*.06+.04 : .04;
         const Sfuture = price*(1-moveSize);
         const T2 = Math.max(T-exp.days*.4/365,.001);
-        const resFuture = bs(Sfuture,K,T2,r,sigma,'put');
+        const 
+        resFuture = bs(Sfuture,K,T2,r,sigma,'put');
         const gainPct = (resFuture.price-res.price)/res.price;
         if(gainPct < .10) return;
         const code = optionCode(ticker,'put',K,exp.days);
@@ -506,7 +503,6 @@ function generateSignals(stock){
 const f = (n,d=2)=>n==null||isNaN(n)?'—':n.toLocaleString('pt-BR',{minimumFractionDigits:d,maximumFractionDigits:d});
 const fR = n=>'R$\u00a0'+f(n);
 const fp = (n,d=1)=>(n>=0?'+':'')+f(n*100,d)+'%';
-
 function probPill(p){
   const pct = Math.round(p*100);
   const cls = p>=.60?'pp-high':p>=.52?'pp-mid':'pp-low';
@@ -545,7 +541,6 @@ function renderRanking(signals){
     const target60 = fR(s.bs.price*1.60);
     const strikeFmt = fR(s.K);
     const thetaFmt = f(Math.abs(s.bs.theta),4);
-
     return `<div class="sig-card ${rc}" onclick="toggleSigDetail(${i})">
       <div class="sig-top">
         <div class="sig-rank ${rankClass2}">#${rankNum}</div>
@@ -556,6 +551,7 @@ function renderRanking(signals){
         <div class="sig-prices">
           <div class="sig-label-sm">Prêmio</div>
           <div class="sig-price-val">${premiumFmt}</div>
+         
           <div class="sig-label-sm" style="margin-top:2px">Strike</div>
           <div class="sig-price-val">${strikeFmt}</div>
         </div>
@@ -565,6 +561,7 @@ function renderRanking(signals){
             <div class="km-val">${deltaRS}</div>
           </div>
           <div class="km">
+          
             <div class="km-label">Pot. ganho</div>
             <div class="km-val" style="color:var(--green)">+${gainPctFmt}</div>
           </div>
@@ -573,6 +570,7 @@ function renderRanking(signals){
             <div class="km-val">${gs?Math.round(gs.d1p*100)+'%':'—'}</div>
           </div>
           <div class="km">
+     
             <div class="km-label">IV / HV</div>
             <div class="km-val" style="${ivColor}">${ivPct} / ${hvPct}</div>
           </div>
@@ -591,6 +589,7 @@ function renderRanking(signals){
         <div class="detail-grid">
           <div class="detail-block">
             <div class="detail-title">Gregas (Black-Scholes)</div>
+           
             <div class="detail-row"><span class="dr-label">Delta (R$/R$1 ativo)</span><span class="dr-val">${f(Math.abs(s.bs.delta),4)}</span></div>
             <div class="detail-row"><span class="dr-label">Gamma</span><span class="dr-val">${f(s.bs.gamma,5)}</span></div>
             <div class="detail-row"><span class="dr-label">Theta (R$/dia)</span><span class="dr-val" style="color:var(--red)">−${f(Math.abs(s.bs.theta),4)}</span></div>
@@ -598,12 +597,14 @@ function renderRanking(signals){
             <div class="detail-row"><span class="dr-label">IV implícita</span><span class="dr-val" style="${ivColor}">${ivPct}</span></div>
             <div class="detail-row"><span class="dr-label">HV histórica</span><span class="dr-val">${hvPct}</span></div>
           </div>
+  
           <div class="detail-block">
             <div class="detail-title">Targets de saída</div>
             <div class="detail-row"><span class="dr-label">Prêmio entrada</span><span class="dr-val">${premiumFmt}</span></div>
             <div class="detail-row"><span class="dr-label">Alvo +30%</span><span class="dr-val" style="color:var(--yellow)">${target30}</span></div>
             <div class="detail-row"><span class="dr-label">Alvo +60%</span><span class="dr-val" style="color:var(--green)">${fR(s.bs.price*1.60)}</span></div>
             <div class="detail-row"><span class="dr-label">Stop sugerido −50%</span><span class="dr-val" style="color:var(--red)">${fR(s.bs.price*0.50)}</span></div>
+        
             <div class="detail-row"><span class="dr-label">Theta/dia</span><span class="dr-val">−${thetaFmt} (perda tempo)</span></div>
             <div class="detail-row"><span class="dr-label">Prazo</span><span class="dr-val">${s.expLabel} (${s.expDate})</span></div>
           </div>
@@ -615,6 +616,7 @@ function renderRanking(signals){
             <div class="detail-row"><span class="dr-label"><b>Total</b></span><span class="dr-val" style="color:${scoreColor(s.score)};font-weight:700">${s.score} pts</span></div>
             ${gs?`<div style="margin-top:8px;font-size:10px;color:var(--muted)">
               Gap: ${GAP_STATS[s.gapKey].label} (${gs.n} amostras)<br>
+              
               D+1: ${probPill(gs.d1p)} D+2: ${probPill(gs.d2p)} D+3: ${probPill(gs.d3p)}
             </div>`:''}
           </div>
@@ -684,6 +686,7 @@ function renderChain(stock){
       const style=isSweet?'color:var(--yellow)':'';
       html+=`<td style="font-family:var(--mono);font-size:11px;border-left:1px solid var(--border);${style}">${fR(res.price)}</td>
         <td style="font-family:var(--mono);font-size:11px;${style}">${f(res.delta,3)}</td>
+ 
         <td style="font-family:var(--mono);font-size:11px;color:var(--red)">−${f(Math.abs(res.theta),4)}</td>
         <td style="font-family:var(--mono);font-size:11px;">${f(sigma*100,0)}%</td>`;
     });
@@ -760,7 +763,8 @@ async function fetchStock(ticker){
     if(q.historicalDataPrice&&q.historicalDataPrice.length>=10){
       const prices = q.historicalDataPrice.slice(-30).map(d=>d.close).filter(Boolean);
       if(prices.length>=5){
-        const rets=[]; for(let i=1;i<prices.length;i++) if(prices[i-1]>0) rets.push(Math.log(prices[i]/prices[i-1]));
+        const rets=[];
+        for(let i=1;i<prices.length;i++) if(prices[i-1]>0) rets.push(Math.log(prices[i]/prices[i-1]));
         if(rets.length>2){const m=rets.reduce((a,b)=>a+b,0)/rets.length;const v=rets.reduce((a,b)=>a+(b-m)**2,0)/(rets.length-1);const hv=Math.sqrt(v*252);if(hv>.05&&hv<2)hv30=hv;}
       }
     }
@@ -787,11 +791,13 @@ function connectProfit(){
     wsConn = new WebSocket(url);
     wsConn.onopen = ()=>{ profitConnected=true; document.getElementById('profit-status').textContent='⬡ Profit: conectado'; document.getElementById('profit-status').classList.add('connected'); pushToast('Profit Pro conectado','Recebendo dados ao vivo','hot'); };
     wsConn.onmessage = e=>{ try{ const d=JSON.parse(e.data); if(d.ticker&&stockData[d.ticker]){ stockData[d.ticker].price=d.price; stockData[d.ticker].changePct=d.changePct; stockData[d.ticker].gapPct=d.gapPct; stockData[d.ticker].fromProfit=true; renderTickerList(); if(selectedTicker===d.ticker) selectTicker(d.ticker,true); }}catch(e2){}};
-    wsConn.onclose = ()=>{ profitConnected=false; document.getElementById('profit-status').textContent='⬡ Profit: desconectado'; document.getElementById('profit-status').classList.remove('connected'); };
+    wsConn.onclose = ()=>{ profitConnected=false;
+    document.getElementById('profit-status').textContent='⬡ Profit: desconectado'; document.getElementById('profit-status').classList.remove('connected'); };
     wsConn.onerror = ()=>{ wsConn.close(); };
   } catch(e){}
 }
-function toggleProfitConfig(){ const p=document.getElementById('profit-config-panel'); p.style.display=p.style.display==='none'?'block':'none'; }
+function toggleProfitConfig(){ const p=document.getElementById('profit-config-panel'); p.style.display=p.style.display==='none'?'block':'none';
+}
 
 // ===================== MAIN SCAN =====================
 async function selectTicker(t, silent=false){
@@ -821,7 +827,8 @@ async function fullScan(){
     stockData[t] = await fetchStock(t);
   }
   renderTickerList();
-  if(selectedTicker){ await selectTicker(selectedTicker,true); }
+  if(selectedTicker){ await selectTicker(selectedTicker,true);
+  }
   else { await selectTicker(TICKERS[0].t,true); }
   updateTopStats();
   btn.disabled=false; btn.textContent='↻ Escanear tudo';
@@ -866,7 +873,8 @@ function updateClock(){
   el.textContent=open?'ABERTO':'FECHADO';
   el.className='h-mkt '+(open?'mkt-open':'mkt-closed');
 }
-setInterval(updateClock,1000); updateClock();
+setInterval(updateClock,1000);
+  updateClock();
 
 function pushToast(title,body,level='hot'){
   const stack=document.getElementById('alert-stack');
