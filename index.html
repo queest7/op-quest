@@ -3,640 +3,1188 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Quest Options</title>
-<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<title>Quest Options v3</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#070810;--bg2:#0d0e1a;--bg3:#13142a;--bg4:#1a1b33;--border:rgba(120,130,255,0.10);--border2:rgba(120,130,255,0.22);--text:#dde0ff;--muted:#6b72a8;--faint:#3a3f6e;--green:#4afa8a;--red:#ff5f7e;--yellow:#ffd97d;--blue:#6ec6ff;--purple:#c77dff;--mono:'Space Mono',monospace;--sans:'DM Sans',sans-serif;--r:8px;}
-*{box-sizing:border-box;margin:0;padding:0;}
-body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;overflow-x:hidden;font-size:14px;}
-body::after{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 80% 50% at 50% -20%,rgba(100,80,255,0.07),transparent);pointer-events:none;z-index:0;}
-header{position:sticky;top:0;z-index:200;height:52px;background:rgba(7,8,16,0.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 20px;gap:16px;}
-.logo{font-family:var(--mono);font-size:13px;letter-spacing:.15em;color:var(--green);display:flex;align-items:center;gap:8px;}
-.logo-ring{width:9px;height:9px;border-radius:50%;background:var(--green);box-shadow:0 0 12px var(--green);animation:pulse 2s ease-in-out infinite;}
-@keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 12px var(--green)}50%{opacity:.4;box-shadow:0 0 4px var(--green)}}
-.h-sep{flex:1;}
-.h-badge{font-family:var(--mono);font-size:10px;padding:3px 9px;border-radius:4px;border:1px solid var(--border);color:var(--muted);}
-.h-mkt{font-size:10px;font-weight:600;letter-spacing:.07em;padding:3px 10px;border-radius:4px;}
-.mkt-open{background:rgba(74,250,138,0.10);color:var(--green);border:1px solid rgba(74,250,138,0.25);}
-.mkt-closed{background:rgba(255,95,126,0.10);color:var(--red);border:1px solid rgba(255,95,126,0.25);}
-#profit-status{font-size:10px;padding:3px 9px;border-radius:4px;border:1px solid var(--border);color:var(--muted);cursor:pointer;transition:.2s;}
-#profit-status.connected{border-color:rgba(74,250,138,0.3);color:var(--green);}
-#profit-status.trying{border-color:rgba(255,217,125,0.3);color:var(--yellow);}
-.main{position:relative;z-index:1;display:grid;grid-template-columns:260px 1fr;min-height:calc(100vh - 52px);}
-.sidebar{border-right:1px solid var(--border);padding:16px 12px;display:flex;flex-direction:column;gap:10px;overflow-y:auto;}
-.content{padding:16px 20px 40px;overflow-y:auto;}
-.sl-label{font-size:10px;font-weight:600;letter-spacing:.1em;color:var(--muted);text-transform:uppercase;padding:0 6px;margin-bottom:4px;}
-.ticker-btn{width:100%;display:flex;align-items:center;justify-content:space-between;padding:8px 10px;border-radius:var(--r);border:1px solid var(--border);background:transparent;cursor:pointer;transition:all .15s;color:var(--text);}
-.ticker-btn:hover{background:var(--bg3);border-color:var(--border2);}
-.ticker-btn.active{background:rgba(78,100,255,0.12);border-color:rgba(78,100,255,0.4);color:#a0aaff;}
-.tb-left{display:flex;flex-direction:column;gap:1px;}.tb-ticker{font-family:var(--mono);font-size:12px;font-weight:700;}.tb-name{font-size:10px;color:var(--muted);}
-.tb-right{display:flex;flex-direction:column;align-items:flex-end;gap:1px;}.tb-price{font-family:var(--mono);font-size:12px;}.tb-chg{font-size:10px;}
-.up{color:var(--green);}.dn{color:var(--red);}
-.scan-btn{width:100%;padding:9px;border-radius:var(--r);border:1px solid rgba(74,250,138,0.3);background:rgba(74,250,138,0.07);color:var(--green);font-family:var(--sans);font-size:12px;font-weight:600;cursor:pointer;transition:all .15s;margin-top:4px;}
-.scan-btn:hover{background:rgba(74,250,138,0.14);}.scan-btn:disabled{opacity:.5;cursor:not-allowed;}
-.config-section{border-top:1px solid var(--border);padding-top:10px;margin-top:4px;}
-.config-row{display:flex;align-items:center;justify-content:space-between;padding:4px 2px;}
-.config-label{font-size:11px;color:var(--muted);}
-.config-input{font-family:var(--mono);font-size:11px;width:60px;background:var(--bg3);border:1px solid var(--border);border-radius:4px;color:var(--text);padding:3px 6px;text-align:right;}
-.profit-cfg-box{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:10px;font-size:11px;color:var(--muted);line-height:1.7;}
-.profit-cfg-box b{color:var(--blue);}.profit-url{font-family:var(--mono);font-size:10px;word-break:break-all;color:var(--yellow);margin-top:4px;}
-.top-stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:18px;}
-.stat-c{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:12px 14px;}
-.stat-l{font-size:10px;font-weight:600;letter-spacing:.07em;color:var(--muted);text-transform:uppercase;margin-bottom:4px;}
-.stat-v{font-family:var(--mono);font-size:20px;font-weight:700;}.stat-s{font-size:10px;color:var(--muted);margin-top:2px;}
-.sig-card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;margin-bottom:8px;overflow:hidden;transition:border-color .15s;}
-.sig-card:hover{border-color:var(--border2);}
-.sig-card.rank1{border-left:3px solid var(--green);}.sig-card.rank2{border-left:3px solid var(--yellow);}.sig-card.rank3{border-left:3px solid var(--blue);}.sig-card.rank-rest{border-left:3px solid var(--faint);}
-.sig-top{display:grid;grid-template-columns:auto auto auto auto 1fr auto;gap:12px;align-items:center;padding:12px 16px;cursor:pointer;}
-.sig-rank{font-family:var(--mono);font-size:22px;font-weight:700;color:var(--faint);min-width:28px;}
-.sig-rank.r1{color:var(--green);}.sig-rank.r2{color:var(--yellow);}.sig-rank.r3{color:var(--blue);}
-.sig-code{display:flex;flex-direction:column;gap:2px;}.sig-option-code{font-family:var(--mono);font-size:14px;font-weight:700;letter-spacing:.05em;}.sig-type-row{display:flex;gap:4px;}
-.badge{font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.06em;padding:2px 7px;border-radius:3px;}
-.b-call{background:rgba(74,250,138,0.12);color:var(--green);border:1px solid rgba(74,250,138,0.25);}
-.b-put{background:rgba(255,95,126,0.12);color:var(--red);border:1px solid rgba(255,95,126,0.25);}
-.b-day{background:rgba(110,198,255,0.10);color:var(--blue);border:1px solid rgba(110,198,255,0.25);}
-.b-swing{background:rgba(255,217,125,0.10);color:var(--yellow);border:1px solid rgba(255,217,125,0.25);}
-.b-hot{background:rgba(74,250,138,0.12);color:var(--green);border:1px solid rgba(74,250,138,0.3);}
-.b-warm{background:rgba(255,217,125,0.10);color:var(--yellow);border:1px solid rgba(255,217,125,0.25);}
-.b-cold{background:rgba(107,114,168,0.12);color:var(--muted);border:1px solid var(--border);}
-.b-live{background:rgba(74,250,138,0.12);color:var(--green);border:1px solid rgba(74,250,138,0.3);}
-.sig-prices{display:flex;flex-direction:column;gap:2px;}.sig-label-sm{font-size:9px;color:var(--muted);font-weight:600;letter-spacing:.06em;text-transform:uppercase;}.sig-price-val{font-family:var(--mono);font-size:13px;}
-.sig-key-metrics{display:flex;gap:20px;}.km{display:flex;flex-direction:column;gap:2px;}.km-label{font-size:9px;color:var(--muted);font-weight:600;letter-spacing:.06em;text-transform:uppercase;}.km-val{font-family:var(--mono);font-size:13px;font-weight:700;}
-.sig-score-wrap{display:flex;flex-direction:column;align-items:flex-end;gap:4px;}.sig-score-num{font-family:var(--mono);font-size:22px;font-weight:700;}.sig-score-label{font-size:9px;color:var(--muted);}
-.score-bar{display:flex;gap:2px;align-items:flex-end;}.sb{width:4px;border-radius:2px;background:var(--bg4);}.sb.on{background:var(--green);}
-.sig-detail{display:none;border-top:1px solid var(--border);background:var(--bg3);padding:14px 16px;}
-.sig-detail.open{display:block;}
-.detail-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;}
-.detail-block{display:flex;flex-direction:column;gap:8px;}
-.detail-title{font-size:10px;font-weight:600;letter-spacing:.08em;color:var(--muted);text-transform:uppercase;border-bottom:1px solid var(--border);padding-bottom:5px;}
-.detail-row{display:flex;justify-content:space-between;font-size:12px;}.dr-label{color:var(--muted);}.dr-val{font-family:var(--mono);}
-.chain-wrap{overflow-x:auto;}
-.chain-table{width:100%;border-collapse:collapse;font-size:11px;}
-.chain-table th{text-align:right;padding:5px 8px;font-size:9px;letter-spacing:.07em;color:var(--muted);border-bottom:1px solid var(--border);font-weight:600;text-transform:uppercase;white-space:nowrap;}
-.chain-table th.center{text-align:center;}.chain-table th.left{text-align:left;}
-.chain-table td{padding:5px 8px;border-bottom:1px solid rgba(120,130,255,0.05);font-family:var(--mono);font-size:11px;text-align:right;white-space:nowrap;}
-.chain-table td.center{text-align:center;}.chain-table td.left{text-align:left;}
-.chain-table tr:hover td{background:rgba(120,130,255,0.04);}
-.chain-table tr.atm td{background:rgba(74,250,138,0.04);}
-.chain-table tr.atm td.strike-col{color:var(--green);font-weight:700;}
-.sweet-delta{color:var(--yellow)!important;}
-.chain-put-side{color:var(--muted);}
-.chain-filter-bar{display:flex;gap:8px;align-items:center;margin-bottom:12px;flex-wrap:wrap;}
-.chain-filter-btn{font-size:11px;padding:4px 10px;border-radius:4px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;transition:.15s;}
-.chain-filter-btn:hover,.chain-filter-btn.on{background:rgba(78,100,255,0.12);border-color:var(--border2);color:var(--text);}
-.chain-source-badge{font-family:var(--mono);font-size:9px;padding:2px 7px;border-radius:3px;background:rgba(74,250,138,0.08);color:var(--green);border:1px solid rgba(74,250,138,0.2);}
-.chain-source-badge.sim{background:rgba(255,217,125,0.08);color:var(--yellow);border-color:rgba(255,217,125,0.2);}
-.hist-table{width:100%;border-collapse:collapse;font-size:11px;margin-top:6px;}
-.hist-table th{text-align:left;padding:5px 8px;font-size:9px;letter-spacing:.08em;color:var(--muted);border-bottom:1px solid var(--border);font-weight:600;text-transform:uppercase;}
-.hist-table td{padding:6px 8px;border-bottom:1px solid rgba(120,130,255,0.05);font-family:var(--mono);}
-.hist-table tr.highlight-row td{background:rgba(74,250,138,0.05);}
-.prob-pill{display:inline-block;font-size:10px;padding:1px 6px;border-radius:3px;font-weight:700;}
-.pp-high{background:rgba(74,250,138,0.15);color:var(--green);}.pp-mid{background:rgba(255,217,125,0.12);color:var(--yellow);}.pp-low{background:rgba(255,95,126,0.12);color:var(--red);}
-.tabs{display:flex;gap:2px;border-bottom:1px solid var(--border);margin-bottom:16px;}
-.tab{font-size:12px;font-weight:500;padding:7px 14px;border:none;background:none;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .15s;}
-.tab:hover{color:var(--text);}.tab.on{color:var(--green);border-bottom-color:var(--green);}
-.tp{display:none;}.tp.on{display:block;}
-.section-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
-.section-title{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);}
-.subtabs{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap;}
-.subtab{font-size:11px;padding:5px 12px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;transition:.15s;}
-.subtab:hover,.subtab.on{background:rgba(78,100,255,0.12);border-color:var(--border2);color:var(--text);}
-.intra-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px;}
-.intra-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:12px 14px;}
-.intra-num{font-family:var(--mono);font-size:22px;font-weight:700;margin-bottom:2px;}.intra-label{font-size:10px;color:var(--muted);}
-.chart-area{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px;}
-.alert-stack{position:fixed;bottom:20px;right:20px;z-index:400;display:flex;flex-direction:column;gap:6px;width:320px;}
-.a-toast{background:var(--bg2);border:1px solid var(--border2);border-left:3px solid var(--green);border-radius:10px;padding:12px 14px;animation:slideup .25s ease;box-shadow:0 8px 32px rgba(0,0,0,.6);position:relative;}
-.a-toast.warn{border-left-color:var(--yellow);}
-@keyframes slideup{from{transform:translateY(30px);opacity:0}to{transform:translateY(0);opacity:1}}
-.a-title{font-size:12px;font-weight:600;margin-bottom:2px;}.a-body{font-size:11px;color:var(--muted);}.a-close{position:absolute;top:8px;right:10px;background:none;border:none;color:var(--muted);font-size:15px;cursor:pointer;}
-.spin{display:inline-block;width:14px;height:14px;border:2px solid var(--border);border-top-color:var(--green);border-radius:50%;animation:spinner .6s linear infinite;vertical-align:middle;}
-@keyframes spinner{to{transform:rotate(360deg)}}
-.loading-overlay{display:flex;align-items:center;justify-content:center;padding:40px;gap:10px;color:var(--muted);font-size:13px;}
-[data-tip]{position:relative;cursor:help;}
-[data-tip]:hover::after{content:attr(data-tip);position:absolute;bottom:120%;left:50%;transform:translateX(-50%);background:var(--bg4);border:1px solid var(--border2);padding:5px 10px;border-radius:6px;font-size:11px;white-space:nowrap;z-index:99;color:var(--text);}
+:root {
+  --bg: #0a0e17;
+  --bg2: #111827;
+  --bg3: #1a2235;
+  --border: #1e2d45;
+  --text: #e2e8f0;
+  --text2: #94a3b8;
+  --text3: #64748b;
+  --green: #22c55e;
+  --green-dim: #16a34a;
+  --red: #ef4444;
+  --red-dim: #dc2626;
+  --blue: #3b82f6;
+  --yellow: #eab308;
+  --orange: #f97316;
+  --purple: #a855f7;
+  --cyan: #06b6d4;
+  --accent: #22c55e;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:var(--bg); color:var(--text); font-family:'JetBrains Mono',monospace; font-size:13px; overflow-x:hidden; }
+
+/* ===== LAYOUT ===== */
+.app { display:grid; grid-template-columns:220px 1fr; grid-template-rows:50px 1fr; height:100vh; }
+.header { grid-column:1/-1; background:var(--bg2); border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; padding:0 20px; }
+.header h1 { font-family:'Space Grotesk',sans-serif; font-size:18px; font-weight:700; color:var(--accent); }
+.header .status { display:flex; align-items:center; gap:12px; font-size:11px; color:var(--text2); }
+.header .status .dot { width:8px; height:8px; border-radius:50%; }
+.header .status .dot.on { background:var(--green); box-shadow:0 0 6px var(--green); }
+.header .status .dot.off { background:var(--red); }
+
+.sidebar { background:var(--bg2); border-right:1px solid var(--border); overflow-y:auto; padding:12px; }
+.main { overflow-y:auto; padding:16px; }
+
+/* ===== WATCHLIST ===== */
+.wl-title { font-size:10px; text-transform:uppercase; letter-spacing:1.5px; color:var(--text3); margin-bottom:8px; font-weight:600; }
+.wl-item { padding:10px; border-radius:6px; margin-bottom:4px; cursor:pointer; transition:background .15s; border:1px solid transparent; }
+.wl-item:hover, .wl-item.active { background:var(--bg3); border-color:var(--border); }
+.wl-item .ticker { font-weight:600; font-size:13px; }
+.wl-item .name { font-size:10px; color:var(--text3); }
+.wl-item .price-row { display:flex; justify-content:space-between; align-items:baseline; margin-top:4px; }
+.wl-item .price { font-weight:600; font-size:14px; }
+.wl-item .change { font-size:11px; font-weight:600; }
+.wl-item .change.pos { color:var(--green); }
+.wl-item .change.neg { color:var(--red); }
+.wl-item .change.zero { color:var(--text3); }
+
+/* ===== PARAMS ===== */
+.params { margin-top:16px; padding-top:12px; border-top:1px solid var(--border); }
+.params .wl-title { margin-bottom:10px; }
+.param-row { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
+.param-row label { font-size:11px; color:var(--text2); }
+.param-row input { width:60px; background:var(--bg); border:1px solid var(--border); color:var(--text); padding:4px 6px; border-radius:4px; text-align:center; font-family:inherit; font-size:12px; }
+.btn-scan { width:100%; padding:10px; background:var(--accent); color:var(--bg); border:none; border-radius:6px; font-family:inherit; font-weight:600; font-size:12px; cursor:pointer; margin-top:8px; transition:opacity .15s; }
+.btn-scan:hover { opacity:.85; }
+.btn-scan:disabled { opacity:.4; cursor:not-allowed; }
+
+/* ===== STATS CARDS ===== */
+.stats-row { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:12px; margin-bottom:16px; }
+.stat-card { background:var(--bg2); border:1px solid var(--border); border-radius:8px; padding:14px 16px; }
+.stat-card .label { font-size:10px; text-transform:uppercase; letter-spacing:1px; color:var(--text3); margin-bottom:4px; }
+.stat-card .value { font-family:'Space Grotesk',sans-serif; font-size:22px; font-weight:700; }
+.stat-card .sub { font-size:11px; color:var(--text2); margin-top:2px; }
+
+/* ===== TABS ===== */
+.tabs { display:flex; gap:0; margin-bottom:16px; border-bottom:1px solid var(--border); }
+.tab { padding:10px 18px; font-size:12px; font-weight:500; color:var(--text3); cursor:pointer; border-bottom:2px solid transparent; transition:all .15s; }
+.tab:hover { color:var(--text2); }
+.tab.active { color:var(--accent); border-bottom-color:var(--accent); }
+.tab-content { display:none; }
+.tab-content.active { display:block; }
+
+/* ===== TABLE ===== */
+.tbl-wrap { overflow-x:auto; }
+table { width:100%; border-collapse:collapse; }
+th { font-size:10px; text-transform:uppercase; letter-spacing:1px; color:var(--text3); text-align:left; padding:8px 10px; border-bottom:1px solid var(--border); font-weight:600; white-space:nowrap; }
+td { padding:10px; border-bottom:1px solid rgba(30,45,69,.5); font-size:12px; white-space:nowrap; }
+tr:hover td { background:rgba(30,45,69,.3); }
+.rank { font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:16px; color:var(--accent); }
+.badge { display:inline-block; padding:2px 6px; border-radius:3px; font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:.5px; margin-right:3px; }
+.badge.call { background:rgba(34,197,94,.15); color:var(--green); }
+.badge.put { background:rgba(239,68,68,.15); color:var(--red); }
+.badge.day { background:rgba(59,130,246,.15); color:var(--blue); }
+.badge.swing { background:rgba(168,85,247,.15); color:var(--purple); }
+.badge.cold { background:rgba(100,116,139,.15); color:var(--text3); }
+.badge.warm { background:rgba(234,179,8,.15); color:var(--yellow); }
+.badge.hot { background:rgba(249,115,22,.15); color:var(--orange); }
+.pos { color:var(--green); }
+.neg { color:var(--red); }
+
+/* ===== SCORE BAR ===== */
+.score-bar { display:flex; align-items:center; gap:6px; }
+.score-num { font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:18px; min-width:30px; }
+.score-bars { display:flex; gap:2px; }
+.score-bars .bar { width:4px; height:16px; border-radius:2px; background:var(--border); }
+.score-bars .bar.filled { background:var(--accent); }
+
+/* ===== HISTOGRAM ===== */
+.hist-container { margin:16px 0; }
+.hist-row { display:flex; align-items:center; gap:8px; margin-bottom:4px; }
+.hist-label { width:80px; text-align:right; font-size:11px; color:var(--text2); }
+.hist-bar-wrap { flex:1; height:20px; background:var(--bg); border-radius:3px; overflow:hidden; position:relative; }
+.hist-bar { height:100%; border-radius:3px; transition:width .5s ease; }
+.hist-count { font-size:10px; color:var(--text3); min-width:40px; }
+.hist-bar.green { background:linear-gradient(90deg,var(--green-dim),var(--green)); }
+.hist-bar.red { background:linear-gradient(90deg,var(--red),var(--red-dim)); }
+
+/* ===== PATTERN CARDS ===== */
+.pattern-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:12px; }
+.pattern-card { background:var(--bg2); border:1px solid var(--border); border-radius:8px; padding:16px; }
+.pattern-card .title { font-weight:600; font-size:13px; margin-bottom:8px; }
+.pattern-card .stat { display:flex; justify-content:space-between; padding:4px 0; font-size:12px; border-bottom:1px solid rgba(30,45,69,.3); }
+.pattern-card .stat:last-child { border:none; }
+.pattern-card .highlight { font-weight:700; }
+
+/* ===== TOAST ===== */
+#toast-container { position:fixed; top:60px; right:16px; z-index:9999; display:flex; flex-direction:column; gap:8px; pointer-events:none; }
+.toast { background:var(--bg2); border:1px solid var(--border); border-radius:8px; padding:12px 16px; min-width:280px; box-shadow:0 8px 24px rgba(0,0,0,.4); animation:slideIn .3s ease; pointer-events:auto; }
+.toast .toast-title { font-weight:600; font-size:12px; margin-bottom:2px; }
+.toast .toast-body { font-size:11px; color:var(--text2); }
+.toast.signal { border-left:3px solid var(--green); }
+.toast.info { border-left:3px solid var(--blue); }
+.toast.warning { border-left:3px solid var(--yellow); }
+@keyframes slideIn { from{transform:translateX(100%);opacity:0} to{transform:translateX(0);opacity:1} }
+@keyframes fadeOut { to{transform:translateX(100%);opacity:0} }
+
+/* ===== SCROLLBAR ===== */
+::-webkit-scrollbar { width:6px; }
+::-webkit-scrollbar-track { background:var(--bg); }
+::-webkit-scrollbar-thumb { background:var(--border); border-radius:3px; }
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:768px) {
+  .app { grid-template-columns:1fr; }
+  .sidebar { display:none; }
+}
 </style>
 </head>
 <body>
-<header>
-  <div class="logo"><div class="logo-ring"></div>QUEST OPTIONS</div>
-  <div class="h-sep"></div>
-  <div id="profit-status" class="h-badge trying" onclick="toggleProfitConfig()" title="Clique p/ configurar">Profit: conectando...</div>
-  <div id="clock" class="h-badge">--:--:--</div>
-  <div id="mkt-badge" class="h-mkt mkt-closed">FECHADO</div>
-</header>
-<div class="main">
-<aside class="sidebar">
-  <div class="sl-label">Watchlist</div>
-  <div id="ticker-list"></div>
-  <div class="config-section">
-    <div class="sl-label">Parâmetros</div>
-    <div class="config-row"><span class="config-label" data-tip="% minimo de ganho">Gain alvo min</span><input class="config-input" id="cfg-gain-min" type="number" value="30"></div>
-    <div class="config-row"><span class="config-label">Gain alvo max</span><input class="config-input" id="cfg-gain-max" type="number" value="60"></div>
-    <div class="config-row"><span class="config-label">Prob. min D+1</span><input class="config-input" id="cfg-prob-min" type="number" value="52"></div>
-    <div class="config-row"><span class="config-label">Amostras min</span><input class="config-input" id="cfg-samples" type="number" value="8"></div>
-    <div class="config-row"><span class="config-label">Re-scan (seg)</span><input class="config-input" id="cfg-interval" type="number" value="60"></div>
-  </div>
-  <button class="scan-btn" id="scan-btn" onclick="fullScan()">Escanear tudo</button>
-  <div id="profit-config-panel" style="display:none;" class="config-section">
-    <div class="sl-label">Profit Pro</div>
-    <div class="profit-cfg-box">Com o Profit aberto:<div class="profit-url">python profit_bridge.py</div><b>Porta:</b> localhost:8765</div>
-    <div class="config-row" style="margin-top:6px;"><span class="config-label">URL WS</span><input class="config-input" id="cfg-ws-url" type="text" value="ws://localhost:8765" style="width:140px;"></div>
-    <button class="scan-btn" onclick="connectProfit(true)" style="margin-top:6px;">Reconectar</button>
-  </div>
-</aside>
-<main class="content">
-  <div class="top-stats">
-    <div class="stat-c"><div class="stat-l">Sinais</div><div class="stat-v" id="st-signals">0</div><div class="stat-s">oportunidades</div></div>
-    <div class="stat-c"><div class="stat-l">Melhor score</div><div class="stat-v" id="st-best">--</div><div class="stat-s" id="st-best-sub">aguardando scan</div></div>
-    <div class="stat-c"><div class="stat-l">IV medio</div><div class="stat-v" id="st-iv">--</div><div class="stat-s">volatilidade implicita</div></div>
-    <div class="stat-c"><div class="stat-l">Melhor prob.</div><div class="stat-v" id="st-prob">--</div><div class="stat-s">D+1 historico</div></div>
-    <div class="stat-c"><div class="stat-l">Ultimo scan</div><div class="stat-v" id="st-scan">--</div><div class="stat-s" id="st-src">--</div></div>
-  </div>
-  <div class="tabs">
-    <button class="tab on" onclick="switchTab('ranking',this)">Ranking</button>
-    <button class="tab" onclick="switchTab('chain',this)">Cadeia de Opcoes</button>
-    <button class="tab" onclick="switchTab('hist',this)">Historico</button>
-    <button class="tab" onclick="switchTab('howto',this)">Como funciona</button>
-  </div>
-  <div id="tp-ranking" class="tp on">
-    <div class="section-head">
-      <span class="section-title">Top oportunidades -- score combinatorio</span>
-      <span id="rank-ticker-label" style="font-size:11px;color:var(--muted);">Selecione uma acao</span>
+
+<div class="app">
+  <!-- HEADER -->
+  <div class="header">
+    <h1>&#9679; QUEST OPTIONS</h1>
+    <div class="status">
+      <span id="profit-status"><span class="dot off"></span> Profit: desconectado</span>
+      <span id="brapi-status"><span class="dot off"></span> brapi</span>
+      <span id="last-scan">--:--</span>
     </div>
-    <div id="ranking-list"><div class="loading-overlay"><div class="spin"></div>Carregando...</div></div>
   </div>
-  <div id="tp-chain" class="tp">
-    <div class="section-head">
-      <span class="section-title">Cadeia de Opcoes</span>
-      <span id="chain-source" class="chain-source-badge sim">brapi + BS</span>
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="wl-title">Watchlist</div>
+    <div id="watchlist"></div>
+
+    <div class="params">
+      <div class="wl-title">Parâmetros</div>
+      <div class="param-row"><label>Gain alvo mín</label><input id="p-gain-min" type="number" value="30"></div>
+      <div class="param-row"><label>Gain alvo máx</label><input id="p-gain-max" type="number" value="60"></div>
+      <div class="param-row"><label>Prob. mín D+1</label><input id="p-prob" type="number" value="52"></div>
+      <div class="param-row"><label>Amostras mín</label><input id="p-samples" type="number" value="8"></div>
+      <div class="param-row"><label>Score mín alerta</label><input id="p-alert-score" type="number" value="55"></div>
+      <div class="param-row"><label>Re-scan (seg)</label><input id="p-interval" type="number" value="60"></div>
+      <button class="btn-scan" id="btn-scan" onclick="fullScan()">&#x21bb; Escanear tudo</button>
     </div>
-    <div class="chain-filter-bar">
-      <button class="chain-filter-btn on" onclick="filterChain('all',this)">Todas</button>
-      <button class="chain-filter-btn" onclick="filterChain('call',this)">So CALL</button>
-      <button class="chain-filter-btn" onclick="filterChain('put',this)">So PUT</button>
-      <button class="chain-filter-btn" onclick="filterChain('sweet',this)">Sweet Spot (delta 0.25-0.45)</button>
-      <button class="chain-filter-btn" onclick="filterChain('7d',this)">7 dias</button>
-      <button class="chain-filter-btn" onclick="filterChain('21d',this)">21 dias</button>
-      <span id="chain-load-status" style="font-size:11px;color:var(--muted);margin-left:auto;"></span>
-    </div>
-    <div id="chain-area"><div class="loading-overlay">Selecione um ativo e escaneie</div></div>
   </div>
-  <div id="tp-hist" class="tp">
-    <div class="subtabs">
-      <button class="subtab on" onclick="switchSubtab('gaps',this)">Analise de Gaps</button>
-      <button class="subtab" onclick="switchSubtab('daily',this)">Variacao Diaria</button>
-      <button class="subtab" onclick="switchSubtab('intra',this)">Padroes Intraday</button>
-      <button class="subtab" onclick="switchSubtab('streaks',this)">Sequencias</button>
+
+  <!-- MAIN -->
+  <div class="main">
+    <!-- STATS -->
+    <div class="stats-row">
+      <div class="stat-card"><div class="label">Sinais</div><div class="value" id="st-signals">0</div><div class="sub">oportunidades</div></div>
+      <div class="stat-card"><div class="label">Melhor Score</div><div class="value" id="st-best">—</div><div class="sub" id="st-best-sub"></div></div>
+      <div class="stat-card"><div class="label">IV Médio</div><div class="value" id="st-iv">—</div><div class="sub">volatilidade implícita</div></div>
+      <div class="stat-card"><div class="label">Melhor Prob.</div><div class="value" id="st-prob">—</div><div class="sub">D+1 histórico</div></div>
+      <div class="stat-card"><div class="label">Último Scan</div><div class="value" id="st-time">--:--</div><div class="sub" id="st-source">—</div></div>
     </div>
-    <div id="hist-gaps"><div class="loading-overlay">Selecione um ativo e escaneie</div></div>
-    <div id="hist-daily" style="display:none;"></div>
-    <div id="hist-intra" style="display:none;"></div>
-    <div id="hist-streaks" style="display:none;"></div>
-  </div>
-  <div id="tp-howto" class="tp">
-    <div style="max-width:720px;line-height:1.85;font-size:13px;color:var(--muted);">
-      <div style="font-size:18px;font-weight:600;color:var(--text);margin-bottom:16px;">Como o Quest Options funciona</div>
-      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:16px 20px;margin-bottom:12px;">
-        <div style="font-weight:600;color:var(--green);margin-bottom:8px;">Cadeia de Opcoes -- dados reais</div>
-        <p>Com o profit_bridge.py rodando, o dashboard recebe a cadeia real do Profit via DDE: tickers reais, premios ao vivo, delta, theta, IV. Sem o bridge, usa brapi + Black-Scholes como fallback.</p>
-      </div>
-      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:16px 20px;margin-bottom:12px;">
-        <div style="font-weight:600;color:var(--blue);margin-bottom:8px;">Historico -- 4 camadas de analise</div>
-        <p><b style="color:var(--text)">Gaps:</b> bucket de abertura + probabilidade historica D+1/D+2/D+3.<br>
-        <b style="color:var(--text)">Variacao diaria:</b> distribuicao completa dos ultimos 2 anos.<br>
-        <b style="color:var(--text)">Padroes intraday:</b> quantas vezes o ativo abriu em X% de gap e o que fez durante o dia.<br>
-        <b style="color:var(--text)">Sequencias:</b> probabilidade apos N dias consecutivos de alta/baixa.</p>
-      </div>
-      <div style="background:var(--bg3);border:1px solid var(--border2);border-radius:10px;padding:16px 20px;">
-        <div style="font-weight:600;color:var(--red);margin-bottom:6px;">Setup</div>
-        <div style="background:var(--bg);border-radius:6px;padding:10px;font-family:var(--mono);font-size:11px;color:var(--yellow);">pip install websockets pywin32<br>python profit_bridge.py</div>
+
+    <!-- TABS -->
+    <div class="tabs">
+      <div class="tab active" onclick="switchTab('ranking')">Ranking</div>
+      <div class="tab" onclick="switchTab('chain')">Cadeia de Opções</div>
+      <div class="tab" onclick="switchTab('history')">Histórico por Gap</div>
+      <div class="tab" onclick="switchTab('variation')">Variação Diária</div>
+      <div class="tab" onclick="switchTab('patterns')">Padrões Intraday</div>
+      <div class="tab" onclick="switchTab('sequences')">Sequências</div>
+      <div class="tab" onclick="switchTab('howto')">Como funciona</div>
+    </div>
+
+    <!-- TAB: RANKING -->
+    <div class="tab-content active" id="tc-ranking">
+      <div id="ranking-info" style="font-size:11px;color:var(--text3);margin-bottom:12px;"></div>
+      <div class="tbl-wrap">
+        <table id="tbl-ranking">
+          <thead><tr>
+            <th>#</th><th>Opção</th><th>Tipo</th><th>Prêmio</th><th>Strike</th><th>Delta(R$)</th><th>Pot.Ganho</th><th>Prob D+1</th><th>IV/HV</th><th>Venc.</th><th>Score</th>
+          </tr></thead>
+          <tbody id="ranking-body"></tbody>
+        </table>
       </div>
     </div>
+
+    <!-- TAB: CHAIN -->
+    <div class="tab-content" id="tc-chain">
+      <div style="margin-bottom:12px;font-size:11px;color:var(--text2);">
+        Selecione um ativo na watchlist para ver a cadeia de opções.
+      </div>
+      <div class="tbl-wrap">
+        <table id="tbl-chain">
+          <thead><tr>
+            <th>Ticker</th><th>Tipo</th><th>Strike</th><th>Prêmio</th><th>Bid</th><th>Ask</th><th>Delta</th><th>Gamma</th><th>Theta</th><th>IV</th><th>Venc.</th>
+          </tr></thead>
+          <tbody id="chain-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- TAB: HISTORY -->
+    <div class="tab-content" id="tc-history">
+      <div id="hist-ticker-label" style="font-size:13px;font-weight:600;margin-bottom:12px;"></div>
+      <div id="gap-analysis"></div>
+    </div>
+
+    <!-- TAB: VARIATION -->
+    <div class="tab-content" id="tc-variation">
+      <div id="var-ticker-label" style="font-size:13px;font-weight:600;margin-bottom:12px;"></div>
+      <div id="variation-content"></div>
+    </div>
+
+    <!-- TAB: PATTERNS -->
+    <div class="tab-content" id="tc-patterns">
+      <div id="pat-ticker-label" style="font-size:13px;font-weight:600;margin-bottom:12px;"></div>
+      <div class="pattern-grid" id="patterns-content"></div>
+    </div>
+
+    <!-- TAB: SEQUENCES -->
+    <div class="tab-content" id="tc-sequences">
+      <div id="seq-ticker-label" style="font-size:13px;font-weight:600;margin-bottom:12px;"></div>
+      <div id="sequences-content"></div>
+    </div>
+
+    <!-- TAB: HOW TO -->
+    <div class="tab-content" id="tc-howto">
+      <div style="max-width:700px;line-height:1.8;color:var(--text2);font-size:12px;">
+        <h3 style="color:var(--text);font-family:'Space Grotesk',sans-serif;margin-bottom:12px;">Score Combinatório — Como funciona</h3>
+        <p style="margin-bottom:12px;">O score de 0 a 100 combina três pilares:</p>
+        <p><strong style="color:var(--green);">Probabilidade Histórica (35pts)</strong> — Baseado em ~2 anos de dados OHLCV da brapi. Analisa o gap de abertura do dia e compara com o histórico: "quando o gap foi parecido, qual foi o resultado D+1/D+2/D+3?" Quanto maior a amostra e a taxa de acerto, mais pontos.</p>
+        <p style="margin-top:8px;"><strong style="color:var(--blue);">Estrutura da Opção (35pts)</strong> — Avalia delta (prefere 0.20-0.50 para compra a seco), relação prêmio/potencial de ganho, liquidez (spread bid/ask), dias para vencimento (ideal 5-30 dias). Opções muito OTM ou muito ITM perdem pontos.</p>
+        <p style="margin-top:8px;"><strong style="color:var(--purple);">Contexto de Mercado (30pts)</strong> — Compara IV vs HV (volatilidade implícita vs histórica). IV < HV = opção "barata". Considera tendência recente (5 dias), volume, e posicionamento do preço vs máximas/mínimas.</p>
+        <p style="margin-top:16px;color:var(--text3);">Um score acima de 55 já é interessante. Acima de 65 é forte. Acima de 75 é excepcional (raro). O sistema só alerta quando o score muda ≥5 pontos ou a cada 5 minutos — sem spam.</p>
+        <h3 style="color:var(--text);font-family:'Space Grotesk',sans-serif;margin:20px 0 12px;">Variação Diária — Escala completa</h3>
+        <p>A aba "Variação Diária" mostra a distribuição completa das variações, com buckets de 0.5% indo de <strong>-15%</strong> até <strong>+15%</strong>. Você pode ver exatamente quantas vezes o ativo subiu ou caiu 10% em um dia. O histograma mostra barras proporcionais ao número de ocorrências.</p>
+        <h3 style="color:var(--text);font-family:'Space Grotesk',sans-serif;margin:20px 0 12px;">Padrões Intraday</h3>
+        <p>Analisa combinações de gap de abertura + comportamento intraday. Exemplo: "abriu caindo -3% a -5%, e fechou acima da abertura em 67% das vezes, com máxima média de +2.1% e mínima média de -1.3%". Identifica automaticamente padrões de REVERSÃO ou CONTINUAÇÃO.</p>
+      </div>
+    </div>
   </div>
-</main>
 </div>
-<div class="alert-stack" id="alert-stack"></div>
+
+<div id="toast-container"></div>
+
 <script>
-const TICKERS=[{t:'PETR4',name:'Petrobras'},{t:'VALE3',name:'Vale'},{t:'B3SA3',name:'B3 S.A.'},{t:'ITUB4',name:'Itau'},{t:'BBAS3',name:'Banco do Brasil'}];
-const BRAPI_TOKEN='xhruu5pNb1vYRh64XVzfbL';
-const HV_BASE={PETR4:.38,VALE3:.34,B3SA3:.30,ITUB4:.28,BBAS3:.30};
-const GAP_STATS={
-  pos1:{label:'+1% a +2%',n:191,d1p:.492,d2p:.445,d3p:.602,dir:'CALL'},
-  pos2:{label:'+2% a +3%',n:36,d1p:.527,d2p:.666,d3p:.722,dir:'CALL'},
-  pos3:{label:'+3% a +4%',n:6,d1p:.333,d2p:.666,d3p:.500,dir:'CALL'},
-  pos4:{label:'+4% a +5%',n:6,d1p:.666,d2p:.833,d3p:.333,dir:'CALL'},
-  pos5:{label:'+5%+',n:4,d1p:.750,d2p:.750,d3p:.500,dir:'CALL'},
-  neg1:{label:'-1% a -2%',n:118,d1p:.584,d2p:.237,d3p:.500,dir:'PUT'},
-  neg2:{label:'-2% a -3%',n:19,d1p:.578,d2p:.157,d3p:.684,dir:'PUT'},
-  neg3:{label:'-3% a -4%',n:9,d1p:.333,d2p:.222,d3p:.444,dir:'PUT'},
-  neg4:{label:'-4% a -5%',n:1,d1p:.000,d2p:.000,d3p:1.00,dir:'PUT'},
-  neg5:{label:'-5%+',n:7,d1p:.143,d2p:.143,d3p:.286,dir:'PUT'},
-  flat:{label:'0% a +-1%',n:550,d1p:.510,d2p:.500,d3p:.500,dir:null},
+// ============================================================
+//  Quest Options v3 — JavaScript Engine
+// ============================================================
+
+const TICKERS = ['PETR4','VALE3','B3SA3','ITUB4','BBAS3'];
+const TICKER_NAMES = {PETR4:'Petrobras',VALE3:'Vale',B3SA3:'B3 S.A.',ITUB4:'Itaú',BBAS3:'Banco do Brasil'};
+const CALL_LETTERS = 'ABCDEFGHIJKL';
+const PUT_LETTERS = 'MNOPQRSTUVWX';
+
+// State
+let state = {
+  activeTicker: 'B3SA3',
+  prices: {},
+  options: {},
+  rankings: [],
+  histData: {},
+  wsConnected: false,
+  brapiOk: false,
+  scanInterval: null,
+  lastAlerts: {},
 };
-let stockData={},optionChains={},histData={},selectedTicker=null,chainFilter='all',scanTimer=null,wsConn=null,profitConnected=false,wsAttempts=0,wsReconnectTimer=null,prevCloseCache={};
-const WS_MAX=10;
-function Ncdf(x){const a1=.254829592,a2=-.284496736,a3=1.421413741,a4=-1.453152027,a5=1.061405429,p=.3275911;const s=x<0?-1:1;x=Math.abs(x)/Math.SQRT2;const t=1/(1+p*x);return .5*(1+s*(1-(((((a5*t+a4)*t+a3)*t+a2)*t+a1)*t)*Math.exp(-x*x)));}
-function Npdf(x){return Math.exp(-.5*x*x)/Math.sqrt(2*Math.PI);}
-function bs(S,K,T,r,sigma,type){
-  if(T<=0){const i=type==='call'?Math.max(S-K,0):Math.max(K-S,0);return{price:i,delta:0,gamma:0,theta:0,vega:0};}
-  const d1=(Math.log(S/K)+(r+.5*sigma*sigma)*T)/(sigma*Math.sqrt(T)),d2=d1-sigma*Math.sqrt(T);
-  let price,delta;
-  if(type==='call'){price=S*Ncdf(d1)-K*Math.exp(-r*T)*Ncdf(d2);delta=Ncdf(d1);}
-  else{price=K*Math.exp(-r*T)*Ncdf(-d2)-S*Ncdf(-d1);delta=Ncdf(d1)-1;}
-  const gamma=Npdf(d1)/(S*sigma*Math.sqrt(T));
-  const theta=(-(S*Npdf(d1)*sigma)/(2*Math.sqrt(T))-r*K*Math.exp(-r*T)*(type==='call'?Ncdf(d2):Ncdf(-d2)))/365;
-  const vega=S*Npdf(d1)*Math.sqrt(T)/100;
-  return{price:Math.max(price,.001),delta,gamma,theta,vega};
-}
-function thirdMonday(y,m){const d=new Date(y,m,1);const dow=d.getDay();const fm=dow<=1?1+(1-dow+7)%7:1+(8-dow);return new Date(y,m,fm+14);}
-const CALL_ML=[...'ABCDEFGHIJKL'],PUT_ML=[...'MNOPQRSTUVWX'];
-async function fetchOptionChainBrapi(ticker){
-  const prefix=ticker.slice(0,4);
-  try{
-    const r=await fetch(`https://brapi.dev/api/quote/list?search=${prefix}&token=${BRAPI_TOKEN}&limit=100`);
-    const d=await r.json();
-    const raw=(d.stocks||[]).filter(s=>{const sym=s.stock;return sym.length>5&&/^[A-Z]{4}[A-Z]\d/.test(sym);});
-    if(!raw.length)return buildBSChain(ticker);
-    const spot=stockData[ticker]?.price||0;
-    const sigma=stockData[ticker]?.iv||HV_BASE[ticker]||.35;
-    const r2=0.1375;
-    return raw.map(item=>{
-      const sym=item.stock,monthChar=sym[4],isCall=CALL_ML.includes(monthChar);
-      const mIdx=isCall?CALL_ML.indexOf(monthChar):PUT_ML.indexOf(monthChar);
-      const today=new Date();
-      const expYear=today.getMonth()>mIdx?today.getFullYear()+1:today.getFullYear();
-      const expDate=thirdMonday(expYear,mIdx);
-      const expDays=Math.max(1,Math.round((expDate-today)/86400000));
-      const T=expDays/365;
-      const price=item.close||item.regularMarketPrice||0;
-      const rawK=sym.slice(5);
-      let K=parseFloat(rawK);
-      if(K>1000)K=K/10;else if(K>100&&spot<50)K=K/10;
-      const greeks=spot>0&&K>0?bs(spot,K,T,r2,sigma,isCall?'call':'put'):{price,delta:0,gamma:0,theta:0,vega:0};
-      return{ticker:sym,optType:isCall?'call':'put',strike:K,price:price||greeks.price,delta:greeks.delta,gamma:greeks.gamma,theta:greeks.theta,vega:greeks.vega,iv:sigma,expDays,expDate:expDate.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'}),source:'brapi',bid:0,ask:0,change:(item.regularMarketChangePercent||0)/100};
-    });
-  }catch(e){return buildBSChain(ticker);}
-}
-function buildBSChain(ticker){
-  const spot=stockData[ticker]?.price||20,sigma=stockData[ticker]?.iv||HV_BASE[ticker]||.35,r=.1375;
-  const chain=[],exps=[{days:7,mi:new Date().getMonth()%12},{days:21,mi:(new Date().getMonth()+1)%12},{days:42,mi:(new Date().getMonth()+2)%12}];
-  const prefix=ticker.slice(0,4),low=Math.round(spot*.85*2)/2,high=Math.round(spot*1.15*2)/2;
-  exps.forEach(exp=>{
-    const T=exp.days/365,expDate=new Date(Date.now()+exp.days*86400000),expStr=expDate.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'});
-    for(let K=low;K<=high;K=Math.round((K+.5)*10)/10){
-      ['call','put'].forEach(type=>{
-        const ml=type==='call'?CALL_ML[exp.mi]:PUT_ML[exp.mi];
-        const kr=Math.round(K*2)/2,ks=kr%1===0?String(Math.round(kr)):String(Math.round(kr*10));
-        const g=bs(spot,K,T,r,sigma,type);
-        chain.push({ticker:`${prefix}${ml}${ks}`,optType:type,strike:K,price:g.price,delta:g.delta,gamma:g.gamma,theta:g.theta,vega:g.vega,iv:sigma,expDays:exp.days,expDate:expStr,source:'bs',bid:g.price*.95,ask:g.price*1.05,change:0});
-      });
-    }
-  });
-  return chain.sort((a,b)=>a.strike-b.strike);
-}
-async function fetchHistory(ticker){
-  if(histData[ticker]?.length)return histData[ticker];
-  try{
-    const r=await fetch(`https://brapi.dev/api/quote/${ticker}?token=${BRAPI_TOKEN}&range=2y&interval=1d`);
-    const d=await r.json();
-    const prices=d.results?.[0]?.historicalDataPrice||[];
-    histData[ticker]=prices.map(p=>({date:new Date(p.date*1000),open:p.open,high:p.high,low:p.low,close:p.close})).filter(p=>p.open>0&&p.close>0);
-    return histData[ticker];
-  }catch(e){return[];}
-}
-function classifyGap(g){
-  if(g>=.05)return'pos5';if(g>=.04)return'pos4';if(g>=.03)return'pos3';if(g>=.02)return'pos2';if(g>=.01)return'pos1';
-  if(g<=-.05)return'neg5';if(g<=-.04)return'neg4';if(g<=-.03)return'neg3';if(g<=-.02)return'neg2';if(g<=-.01)return'neg1';
-  return'flat';
-}
-function comboScore(sig,gs){
-  let score=0,bd={};
-  if(gs&&gs.n>0){const bp=Math.max(gs.d1p,gs.d2p,gs.d3p),ps=(bp-.5)*60,sb=gs.n>100?5:gs.n>30?3:gs.n>10?1:0,pp=Math.max(0,ps+sb);score+=pp;bd.hist=pp.toFixed(1);}else bd.hist=0;
-  const da=Math.abs(sig.bs.delta),ds=da>=.25&&da<=.45?14:da>=.15&&da<.55?8:2;
-  const ir=sig.iv/sig.hv30,is=ir<1.05?12:ir<1.2?7:ir<1.4?3:0;
-  const gp=sig.gainPct,gs2=gp>=.40?9:gp>=.25?5:gp>=.10?2:0;
-  const op=ds+is+gs2;score+=op;bd.option=op.toFixed(1);
-  const io=marketIsOpen(),hb=io&&sig.expDays<=7?10:io?5:0,gm=Math.abs(sig.gapPct),gb=gm>=.03?8:gm>=.02?5:gm>=.01?3:0,eb=sig.expDays<=7?8:sig.expDays<=21?5:2,cp=hb+gb+eb;
-  score+=cp;bd.ctx=cp.toFixed(1);bd.total=score.toFixed(0);
-  return{score:Math.round(score),breakdown:bd};
-}
-function generateSignals(stock){
-  const{ticker,price,iv,hv30,gapPct}=stock,gapKey=classifyGap(gapPct),gs=GAP_STATS[gapKey],r=.1375,signals=[],chain=optionChains[ticker]||[];
-  if(chain.length>0){
-    chain.forEach(opt=>{
-      if(opt.price<=0.005)return;
-      const T=opt.expDays/365,sigma=opt.iv>1?opt.iv/100:(opt.iv>0?opt.iv:(iv||hv30));
-      const bsRes={price:opt.price,delta:opt.delta||0,gamma:opt.gamma||0,theta:opt.theta||0,vega:opt.vega||0};
-      const moveSize=gs?Math.max(gs.d1p-.5,0)*2*.08+.05:.05;
-      const Sf=opt.optType==='call'?price*(1+moveSize):price*(1-moveSize);
-      const T2=Math.max(T-opt.expDays*.4/365,.001);
-      const rf=bs(Sf,opt.strike,T2,r,sigma,opt.optType);
-      const gainPct=(rf.price-opt.price)/opt.price;
-      if(gainPct<.10)return;
-      const{score,breakdown}=comboScore({bs:bsRes,iv:sigma,hv30,gapPct,gainPct,expDays:opt.expDays,type:opt.optType},gs);
-      signals.push({ticker,code:opt.ticker,type:opt.optType,K:opt.strike,T,expDays:opt.expDays,expLabel:opt.expDays+'d',expDate:opt.expDate,horizon:opt.expDays<=7?'day':'swing',bs:bsRes,iv:sigma,hv30,gapPct,gapKey,gainPct,score,breakdown,gs,price,r,sigma,isLive:opt.source==='profit'});
-    });
-  }else{
-    const exps=[{days:7},{days:21},{days:42}];
-    exps.forEach(exp=>{
-      const T=exp.days/365,sigma=iv||hv30;
-      [1.03,1.05,1.07,1.09,1.12].forEach(mult=>{
-        const K=Math.round(price*mult*2)/2,res=bs(price,K,T,r,sigma,'call');
-        if(res.price<.03||res.price>price*.25)return;
-        const ms=gs?Math.max(gs.d1p-.5,0)*2*.08+.05:.05,Sf=price*(1+ms),T2=Math.max(T-exp.days*.4/365,.001),rf=bs(Sf,K,T2,r,sigma,'call'),gainPct=(rf.price-res.price)/res.price;
-        if(gainPct<.10)return;
-        const mi=new Date().getMonth(),ml=CALL_ML[mi],kr=Math.round(K*2)/2,ks=kr%1===0?String(Math.round(kr)):String(Math.round(kr*10));
-        const code=`${ticker.slice(0,4)}${ml}${ks}`,{score,breakdown}=comboScore({bs:res,iv:sigma,hv30,gapPct,gainPct,expDays:exp.days,type:'call'},gs);
-        signals.push({ticker,code,type:'call',K,T,expDays:exp.days,expLabel:exp.days+'d',expDate:new Date(Date.now()+exp.days*86400000).toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'}),horizon:exp.days<=7?'day':'swing',bs:res,iv:sigma,hv30,gapPct,gapKey,gainPct,score,breakdown,gs,price,r,sigma,isLive:false});
-      });
-    });
-  }
-  return signals.sort((a,b)=>b.score-a.score);
-}
-const f=(n,d=2)=>n==null||isNaN(n)?'--':n.toLocaleString('pt-BR',{minimumFractionDigits:d,maximumFractionDigits:d});
-const fR=n=>'R$ '+f(n);
-const fp=(n,d=1)=>(n>=0?'+':'')+f(n*100,d)+'%';
-function probPill(p){const pct=Math.round(p*100),cls=p>=.60?'pp-high':p>=.52?'pp-mid':'pp-low';return`<span class="prob-pill ${cls}">${pct}%</span>`;}
-function scoreColor(s){return s>=75?'var(--green)':s>=50?'var(--yellow)':'var(--muted)';}
-function scoreBars(s){const n=Math.min(5,Math.round(s/20));return`<div class="score-bar">${[1,2,3,4,5].map(i=>`<div class="sb${i<=n?' on':''}" style="height:${8+i*4}px"></div>`).join('')}</div>`;}
-function renderRanking(signals){
-  const el=document.getElementById('ranking-list');
-  if(!signals.length){el.innerHTML='<div class="loading-overlay">Nenhum sinal. Ajuste parametros ou escaneie.</div>';return;}
-  el.innerHTML=signals.slice(0,15).map((s,i)=>{
-    const rc=i===0?'rank1':i===1?'rank2':i===2?'rank3':'rank-rest',rn=i===0?'r1':i===1?'r2':i===2?'r3':'';
-    const tb=s.type==='call'?'<span class="badge b-call">CALL</span>':'<span class="badge b-put">PUT</span>';
-    const hb=s.horizon==='day'?'<span class="badge b-day">DAY</span>':'<span class="badge b-swing">SWING</span>';
-    const ht=s.score>=75?'<span class="badge b-hot">HOT</span>':s.score>=50?'<span class="badge b-warm">WARM</span>':'<span class="badge b-cold">COLD</span>';
-    const live=s.isLive?'<span class="badge b-live">LIVE</span>':'';
-    const gs=s.gs,ic=s.iv>s.hv30*1.12?'color:var(--red)':s.iv<s.hv30*0.92?'color:var(--green)':'';
-    return`<div class="sig-card ${rc}"><div class="sig-top" onclick="toggleSigDetail(${i},event)">
-      <div class="sig-rank ${rn}">#${i+1}</div>
-      <div class="sig-code"><div class="sig-option-code">${s.code}</div><div class="sig-type-row">${tb}${hb}${ht}${live}</div></div>
-      <div class="sig-prices"><div class="sig-label-sm">Premio</div><div class="sig-price-val">${fR(s.bs.price)}</div><div class="sig-label-sm" style="margin-top:2px">Strike</div><div class="sig-price-val">${fR(s.K)}</div></div>
-      <div class="sig-key-metrics">
-        <div class="km"><div class="km-label">Delta</div><div class="km-val">${f(Math.abs(s.bs.delta),2)}</div></div>
-        <div class="km"><div class="km-label">Pot. ganho</div><div class="km-val" style="color:var(--green)">+${f(s.gainPct*100,0)}%</div></div>
-        <div class="km"><div class="km-label" data-tip="Prob historica D+1">Prob D+1</div><div class="km-val">${gs?Math.round(gs.d1p*100)+'%':'--'}</div></div>
-        <div class="km"><div class="km-label">IV / HV</div><div class="km-val" style="${ic}">${f(s.iv*100,1)}% / ${f(s.hv30*100,1)}%</div></div>
-        <div class="km"><div class="km-label">Venc.</div><div class="km-val">${s.expDate}</div></div>
-      </div>
-      <div class="sig-score-wrap"><div class="sig-score-num" style="color:${scoreColor(s.score)}">${s.score}</div>${scoreBars(s.score)}<div class="sig-score-label">score</div></div>
-    </div>
-    <div class="sig-detail" id="sig-detail-${i}">
-      <div class="detail-grid">
-        <div class="detail-block">
-          <div class="detail-title">Gregas ${s.isLive?'(Profit ao vivo)':'(Black-Scholes)'}</div>
-          <div class="detail-row"><span class="dr-label">Delta</span><span class="dr-val">${f(Math.abs(s.bs.delta),4)}</span></div>
-          <div class="detail-row"><span class="dr-label">Gamma</span><span class="dr-val">${f(s.bs.gamma,5)}</span></div>
-          <div class="detail-row"><span class="dr-label">Theta/dia</span><span class="dr-val" style="color:var(--red)">-${f(Math.abs(s.bs.theta),4)}</span></div>
-          <div class="detail-row"><span class="dr-label">Vega/1%IV</span><span class="dr-val">${f(s.bs.vega,4)}</span></div>
-          <div class="detail-row"><span class="dr-label">IV</span><span class="dr-val" style="${ic}">${f(s.iv*100,1)}%</span></div>
-          <div class="detail-row"><span class="dr-label">HV 30d</span><span class="dr-val">${f(s.hv30*100,1)}%</span></div>
-        </div>
-        <div class="detail-block">
-          <div class="detail-title">Targets</div>
-          <div class="detail-row"><span class="dr-label">Entrada</span><span class="dr-val">${fR(s.bs.price)}</span></div>
-          <div class="detail-row"><span class="dr-label">Alvo +30%</span><span class="dr-val" style="color:var(--yellow)">${fR(s.bs.price*1.30)}</span></div>
-          <div class="detail-row"><span class="dr-label">Alvo +60%</span><span class="dr-val" style="color:var(--green)">${fR(s.bs.price*1.60)}</span></div>
-          <div class="detail-row"><span class="dr-label">Stop -50%</span><span class="dr-val" style="color:var(--red)">${fR(s.bs.price*0.50)}</span></div>
-        </div>
-        <div class="detail-block">
-          <div class="detail-title">Score</div>
-          <div class="detail-row"><span class="dr-label">Prob. hist.</span><span class="dr-val" style="color:var(--green)">${s.breakdown.hist} pts</span></div>
-          <div class="detail-row"><span class="dr-label">Estrutura opcao</span><span class="dr-val" style="color:var(--blue)">${s.breakdown.option} pts</span></div>
-          <div class="detail-row"><span class="dr-label">Contexto</span><span class="dr-val" style="color:var(--yellow)">${s.breakdown.ctx} pts</span></div>
-          <div class="detail-row"><span class="dr-label"><b>Total</b></span><span class="dr-val" style="color:${scoreColor(s.score)};font-weight:700">${s.score}</span></div>
-          ${gs?`<div style="margin-top:8px;font-size:10px;color:var(--muted)">Gap: ${GAP_STATS[s.gapKey].label} (${gs.n} amostras)<br>D+1: ${probPill(gs.d1p)} D+2: ${probPill(gs.d2p)} D+3: ${probPill(gs.d3p)}</div>`:''}
-        </div>
-      </div>
-    </div></div>`;
-  }).join('');
-}
-function toggleSigDetail(i,e){if(e)e.stopPropagation();const el=document.getElementById('sig-detail-'+i);if(el)el.classList.toggle('open');}
-function renderChain(ticker){
-  const chain=optionChains[ticker]||[],spot=stockData[ticker]?.price||0;
-  const src=chain.length>0?(chain[0].source==='profit'?'profit':chain[0].source==='brapi'?'brapi':'bs'):'bs';
-  const srcEl=document.getElementById('chain-source');
-  if(src==='profit'){srcEl.textContent='Profit - LIVE';srcEl.className='chain-source-badge';}
-  else if(src==='brapi'){srcEl.textContent='brapi.dev + BS';srcEl.className='chain-source-badge';}
-  else{srcEl.textContent='Black-Scholes';srcEl.className='chain-source-badge sim';}
-  let filtered=chain;
-  if(chainFilter==='call')filtered=chain.filter(o=>o.optType==='call');
-  if(chainFilter==='put')filtered=chain.filter(o=>o.optType==='put');
-  if(chainFilter==='sweet')filtered=chain.filter(o=>Math.abs(o.delta)>=.25&&Math.abs(o.delta)<=.45);
-  if(chainFilter==='7d')filtered=chain.filter(o=>o.expDays<=8);
-  if(chainFilter==='21d')filtered=chain.filter(o=>o.expDays>8&&o.expDays<=25);
-  if(!filtered.length){document.getElementById('chain-area').innerHTML='<div class="loading-overlay">Nenhuma opcao para este filtro.</div>';return;}
-  const strikes=[...new Set(filtered.map(o=>o.strike))].sort((a,b)=>a-b);
-  const callMap={},putMap={};
-  filtered.forEach(o=>{if(o.optType==='call')callMap[o.strike]=o;else putMap[o.strike]=o;});
-  const hasBoth=chainFilter==='all'||chainFilter==='sweet';
-  let html=`<div class="chain-wrap"><table class="chain-table"><thead><tr>`;
-  if(hasBoth||chainFilter==='call')html+=`<th class="left">Codigo</th><th>Ult</th><th>Bid</th><th>Ask</th><th data-tip="Delta">D</th><th data-tip="Theta">T</th><th>IV</th><th>Var%</th>`;
-  html+=`<th class="center">Strike</th>`;
-  if(hasBoth||chainFilter==='put')html+=`<th>Var%</th><th>IV</th><th data-tip="Theta">T</th><th data-tip="Delta">D</th><th>Bid</th><th>Ask</th><th>Ult</th><th class="left">Codigo</th>`;
-  html+=`</tr></thead><tbody>`;
-  strikes.forEach(k=>{
-    const call=callMap[k],put=putMap[k],isATM=spot>0&&Math.abs(k-spot)/spot<0.015;
-    html+=`<tr class="${isATM?'atm':''}">`;
-    if(hasBoth||chainFilter==='call'){
-      if(call){const dc=Math.abs(call.delta),dcc=dc>=.25&&dc<=.45?'sweet-delta':'',iv=call.iv>1?f(call.iv,1):f(call.iv*100,1);
-        html+=`<td class="left">${call.ticker}</td><td>${fR(call.price)}</td><td>${call.bid>0?fR(call.bid):'--'}</td><td>${call.ask>0?fR(call.ask):'--'}</td><td class="${dcc}">${f(dc,2)}</td><td style="color:var(--red)">-${f(Math.abs(call.theta),3)}</td><td>${iv}%</td><td class="${call.change>=0?'up':'dn'}">${call.change!==0?fp(call.change):'--'}</td>`;}
-      else html+=`<td colspan="8">--</td>`;
-    }
-    html+=`<td class="center strike-col">${fR(k)}</td>`;
-    if(hasBoth||chainFilter==='put'){
-      if(put){const dp=Math.abs(put.delta),dpc=dp>=.25&&dp<=.45?'sweet-delta':'',iv=put.iv>1?f(put.iv,1):f(put.iv*100,1);
-        html+=`<td class="chain-put-side ${put.change<0?'dn':'up'}">${put.change!==0?fp(put.change):'--'}</td><td class="chain-put-side">${iv}%</td><td class="chain-put-side" style="color:var(--red)">-${f(Math.abs(put.theta),3)}</td><td class="chain-put-side ${dpc}">${f(dp,2)}</td><td class="chain-put-side">${put.bid>0?fR(put.bid):'--'}</td><td class="chain-put-side">${put.ask>0?fR(put.ask):'--'}</td><td class="chain-put-side">${fR(put.price)}</td><td class="left chain-put-side">${put.ticker}</td>`;}
-      else html+=`<td colspan="8">--</td>`;
-    }
-    html+=`</tr>`;
-  });
-  html+=`</tbody></table></div>`;
-  document.getElementById('chain-area').innerHTML=html;
-}
-function filterChain(type,btn){chainFilter=type;document.querySelectorAll('.chain-filter-btn').forEach(b=>b.classList.remove('on'));btn.classList.add('on');if(selectedTicker)renderChain(selectedTicker);}
-async function renderHistAll(ticker){
-  const prices=await fetchHistory(ticker);
-  if(!prices.length){['hist-gaps','hist-daily','hist-intra','hist-streaks'].forEach(id=>{document.getElementById(id).innerHTML='<div class="loading-overlay">Historico nao disponivel para este ativo.</div>';});return;}
-  renderHistGaps(ticker,prices);renderHistDaily(ticker,prices);renderHistIntra(ticker,prices);renderHistStreaks(ticker,prices);
-}
-function renderHistGaps(ticker,prices){
-  const gapKey=classifyGap(stockData[ticker]?.gapPct||0),curGap=stockData[ticker]?.gapPct||0;
-  const rs={};
-  for(let i=1;i<prices.length;i++){const prev=prices[i-1].close,open=prices[i].open,close=prices[i].close;if(!prev||!open||!close)continue;const gap=(open-prev)/prev,dr=(close-open)/open,key=classifyGap(gap);if(!rs[key])rs[key]={n:0,closes:[],gapSum:0};rs[key].n++;rs[key].closes.push(dr>0?1:0);rs[key].gapSum+=gap;}
-  let html=`<div style="margin-bottom:14px;font-size:12px;color:var(--muted)"><b style="color:var(--text)">${ticker}</b> -- Gap hoje: <b style="color:${curGap>=0?'var(--green)':'var(--red)'}">${fp(curGap)}</b>${gapKey!=='flat'?` -- bucket <b style="color:var(--yellow)">${GAP_STATS[gapKey].label}</b>`:''} <span style="color:var(--faint);margin-left:8px">${prices.length} pregoes (brapi)</span></div>
-  <table class="hist-table"><thead><tr><th>Gap de abertura</th><th>Amostras</th><th>% positivos no dia</th><th>Gap medio</th><th>Prob D+1</th><th>Prob D+2</th><th>Prob D+3</th><th>Sinal</th></tr></thead><tbody>`;
-  Object.entries(GAP_STATS).forEach(([key,gs])=>{
-    const isCur=key===gapKey,r=rs[key]||{n:0,closes:[],gapSum:0};
-    const rp=r.n>0?r.closes.reduce((a,b)=>a+b,0)/r.n:null,ag=r.n>0?r.gapSum/r.n:null;
-    const db=gs.dir==='CALL'?'<span class="badge b-call">CALL</span>':gs.dir==='PUT'?'<span class="badge b-put">PUT</span>':'<span class="badge b-cold">--</span>';
-    html+=`<tr ${isCur?'class="highlight-row"':''}><td style="${isCur?'color:var(--yellow);font-weight:700':''}">${gs.label}${isCur?' << ATUAL':''}</td><td>${r.n||gs.n}</td><td style="color:${rp!==null?(rp>=.55?'var(--green)':rp>=.45?'var(--yellow)':'var(--red)'):'var(--muted)'}">${rp!==null?Math.round(rp*100)+'%':'--'}</td><td style="color:var(--muted)">${ag!==null?fp(ag):'--'}</td><td>${probPill(gs.d1p)}</td><td>${probPill(gs.d2p)}</td><td>${probPill(gs.d3p)}</td><td>${db}</td></tr>`;
-  });
-  html+=`</tbody></table>`;
-  document.getElementById('hist-gaps').innerHTML=html;
-}
-function renderHistDaily(ticker,prices){
-  const returns=[];
-  for(let i=1;i<prices.length;i++)if(prices[i-1].close>0)returns.push((prices[i].close-prices[i-1].close)/prices[i-1].close);
-  if(!returns.length){document.getElementById('hist-daily').innerHTML='<div class="loading-overlay">Sem dados.</div>';return;}
-  const sorted=[...returns].sort((a,b)=>a-b);
-  const buckets=[{lo:-1,hi:-.05,label:'< -5%'},{lo:-.05,hi:-.04,label:'-5% a -4%'},{lo:-.04,hi:-.03,label:'-4% a -3%'},{lo:-.03,hi:-.02,label:'-3% a -2%'},{lo:-.02,hi:-.01,label:'-2% a -1%'},{lo:-.01,hi:.00,label:'-1% a 0%'},{lo:.00,hi:.01,label:'0% a +1%'},{lo:.01,hi:.02,label:'+1% a +2%'},{lo:.02,hi:.03,label:'+2% a +3%'},{lo:.03,hi:.04,label:'+3% a +4%'},{lo:.04,hi:.05,label:'+4% a +5%'},{lo:.05,hi:1,label:'> +5%'}];
-  const counts=buckets.map(b=>returns.filter(r=>r>=b.lo&&r<b.hi).length),maxC=Math.max(...counts);
-  const mean=returns.reduce((a,b)=>a+b,0)/returns.length,std=Math.sqrt(returns.reduce((a,b)=>a+(b-mean)**2,0)/returns.length);
-  const p5=sorted[Math.floor(sorted.length*.05)],p95=sorted[Math.floor(sorted.length*.95)],pos=returns.filter(r=>r>0).length;
-  let html=`<div class="intra-grid">
-    <div class="intra-card"><div class="intra-num">${Math.round(pos/returns.length*100)}%</div><div class="intra-label">Dias positivos (${returns.length} pregoes)</div></div>
-    <div class="intra-card"><div class="intra-num" style="color:var(--muted)">${fp(mean)}</div><div class="intra-label">Variacao media diaria</div></div>
-    <div class="intra-card"><div class="intra-num" style="color:var(--yellow)">${fp(std)}</div><div class="intra-label">Desvio padrao diario</div></div>
-    <div class="intra-card"><div class="intra-num" style="color:var(--red)">${fp(p5)}</div><div class="intra-label">Percentil 5% (cauda ruim)</div></div>
-    <div class="intra-card"><div class="intra-num" style="color:var(--green)">${fp(p95)}</div><div class="intra-label">Percentil 95% (cauda boa)</div></div>
-    <div class="intra-card"><div class="intra-num">${fp(Math.max(...returns))}</div><div class="intra-label">Maior alta historica</div></div>
-  </div>
-  <div class="chart-area">
-    <div style="font-size:11px;color:var(--muted);margin-bottom:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;">Distribuicao de variacoes diarias -- ${ticker}</div>
-    <div style="display:flex;align-items:flex-end;gap:4px;height:120px;padding:0 4px;">`;
-  buckets.forEach((b,i)=>{const n=counts[i],h=maxC>0?Math.round(n/maxC*110):0,color=b.lo<0?'var(--red)':'var(--green)';html+=`<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;"><span style="font-size:8px;color:var(--muted)">${n}</span><div style="width:100%;height:${h}px;background:${color};opacity:.7;border-radius:2px 2px 0 0;min-height:2px;" title="${b.label}: ${n} dias"></div></div>`;});
-  html+=`</div></div>
-  <table class="hist-table"><thead><tr><th>Faixa</th><th>Ocorrencias</th><th>% do total</th><th>Freq. anualizada</th></tr></thead><tbody>
-  ${buckets.map((b,i)=>`<tr><td style="color:${b.lo<0?'var(--red)':b.hi<=0?'var(--muted)':'var(--green)'}">${b.label}</td><td>${counts[i]}</td><td>${f(counts[i]/returns.length*100,1)}%</td><td>~${Math.round(counts[i]/returns.length*252)} dias/ano</td></tr>`).join('')}
-  </tbody></table>`;
-  document.getElementById('hist-daily').innerHTML=html;
-}
-function renderHistIntra(ticker,prices){
-  const patterns=[{gapLo:-.08,gapHi:-.05,label:'Gap negativo > -5%',color:'var(--red)'},{gapLo:-.05,gapHi:-.03,label:'Gap -5% a -3%',color:'var(--red)'},{gapLo:-.03,gapHi:-.01,label:'Gap -3% a -1%',color:'var(--red)'},{gapLo:.01,gapHi:.03,label:'Gap +1% a +3%',color:'var(--green)'},{gapLo:.03,gapHi:.05,label:'Gap +3% a +5%',color:'var(--green)'},{gapLo:.05,gapHi:.10,label:'Gap positivo > +5%',color:'var(--green)'}];
-  const rows=[];
-  for(const pat of patterns){
-    const days=[];
-    for(let i=1;i<prices.length;i++){const prev=prices[i-1].close,open=prices[i].open,close=prices[i].close,high=prices[i].high,low=prices[i].low;if(!prev||!open||!close)continue;const gap=(open-prev)/prev;if(gap>=pat.gapLo&&gap<pat.gapHi){const idr=(close-open)/open,hfo=(high-open)/open,lfo=(low-open)/open;days.push({gap,idr,hfo,lfo});}}
-    if(!days.length)continue;
-    const revUp=days.filter(d=>d.idr>0).length,revUp2=days.filter(d=>d.idr>.02).length,avgI=days.reduce((a,d)=>a+d.idr,0)/days.length,maxH=Math.max(...days.map(d=>d.hfo)),minL=Math.min(...days.map(d=>d.lfo));
-    rows.push({pat,n:days.length,revUp,revUp2,avgI,maxH,minL});
-  }
-  if(!rows.length){document.getElementById('hist-intra').innerHTML='<div class="loading-overlay">Dados insuficientes.</div>';return;}
-  let html=`<div style="margin-bottom:14px;font-size:12px;color:var(--muted)">Analise de <b style="color:var(--text)">${prices.length}</b> pregoes -- comportamento intraday apos gap</div>
-  <table class="hist-table"><thead><tr><th>Padrao de gap</th><th>Ocorreu</th><th>Fechou acima abertura</th><th>Fechou > +2% abertura</th><th>Retorno intraday medio</th><th>Max intraday</th><th>Min intraday</th><th>Gatilho</th></tr></thead><tbody>`;
-  rows.forEach(row=>{
-    const rp=row.revUp/row.n,r2p=row.revUp2/row.n,isNeg=row.pat.gapLo<0;
-    const trig=isNeg?(rp>=.60?'<span class="badge b-call">REVERSAO ALTA</span>':rp<=.40?'<span class="badge b-cold">CONTINUA BAIXO</span>':'<span class="badge b-warm">NEUTRO</span>'):(rp>=.55?'<span class="badge b-call">CONTINUA ALTA</span>':'<span class="badge b-warm">REVERSAO</span>');
-    html+=`<tr><td style="color:${row.pat.color};font-weight:600">${row.pat.label}</td><td>${row.n}x</td><td style="color:${rp>=.55?'var(--green)':rp<=.45?'var(--red)':'var(--yellow)'};font-weight:700">${Math.round(rp*100)}%</td><td style="color:${r2p>=.40?'var(--green)':'var(--muted)'}">${Math.round(r2p*100)}%</td><td style="color:${row.avgI>=0?'var(--green)':'var(--red)'};font-weight:600">${fp(row.avgI)}</td><td style="color:var(--green)">${fp(row.maxH)}</td><td style="color:var(--red)">${fp(row.minL)}</td><td>${trig}</td></tr>`;
-  });
-  html+=`</tbody></table><div style="margin-top:16px;font-size:12px;color:var(--muted);background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;line-height:1.8;"><b style="color:var(--text)">Como ler:</b> "Gap -5% a -3%, Fechou acima abertura 65%" = quando ${ticker} abriu -3% a -5%, em 65% dos casos subiu durante o dia. Gatilho para compra de call apos gap negativo.<br><b style="color:var(--yellow)">Max intraday</b> = alvo de take profit. <b style="color:var(--red)">Min intraday</b> = nivel de stop.</div>`;
-  document.getElementById('hist-intra').innerHTML=html;
-}
-function renderHistStreaks(ticker,prices){
-  const streaks={up:[],dn:[]};let cur=0;
-  for(let i=1;i<prices.length;i++){const ret=(prices[i].close-prices[i-1].close)/prices[i-1].close;if(ret>0){if(cur<0){if(cur!==-1)streaks.dn.push(Math.abs(cur));cur=1;}else cur++;}else{if(cur>0){if(cur!==1)streaks.up.push(cur);cur=-1;}else cur--;}}
-  const avg=arr=>arr.length?arr.reduce((a,b)=>a+b,0)/arr.length:0;
-  const maxUp=Math.max(0,...streaks.up),maxDn=Math.max(0,...streaks.dn),avgUp=avg(streaks.up),avgDn=avg(streaks.dn);
-  const upD={},dnD={};streaks.up.forEach(s=>{upD[s]=(upD[s]||0)+1;});streaks.dn.forEach(s=>{dnD[s]=(dnD[s]||0)+1;});
-  let html=`<div class="intra-grid">
-    <div class="intra-card"><div class="intra-num" style="color:var(--green)">${maxUp}</div><div class="intra-label">Maior sequencia de alta (dias)</div></div>
-    <div class="intra-card"><div class="intra-num" style="color:var(--red)">${maxDn}</div><div class="intra-label">Maior sequencia de baixa (dias)</div></div>
-    <div class="intra-card"><div class="intra-num">${f(avgUp,1)}</div><div class="intra-label">Media dias consecutivos alta</div></div>
-    <div class="intra-card"><div class="intra-num">${f(avgDn,1)}</div><div class="intra-label">Media dias consecutivos baixa</div></div>
-    <div class="intra-card"><div class="intra-num">${streaks.up.length}</div><div class="intra-label">Sequencias de alta registradas</div></div>
-    <div class="intra-card"><div class="intra-num">${streaks.dn.length}</div><div class="intra-label">Sequencias de baixa registradas</div></div>
-  </div>
-  <table class="hist-table"><thead><tr><th>Duracao</th><th>Altas seguidas</th><th>Baixas seguidas</th><th>Prob. proximo dia subir apos N altas</th><th>Prob. proximo dia cair apos N baixas</th></tr></thead><tbody>`;
-  for(let n=2;n<=Math.min(Math.max(maxUp,maxDn,8),12);n++){html+=`<tr><td>${n} dias seguidos</td><td>${upD[n]||0}x</td><td>${dnD[n]||0}x</td><td style="color:var(--muted)">--</td><td style="color:var(--muted)">--</td></tr>`;}
-  html+=`</tbody></table>`;
-  document.getElementById('hist-streaks').innerHTML=html;
-}
-function switchSubtab(name,btn){document.querySelectorAll('.subtab').forEach(b=>b.classList.remove('on'));btn.classList.add('on');['hist-gaps','hist-daily','hist-intra','hist-streaks'].forEach(id=>{document.getElementById(id).style.display=id==='hist-'+name?'block':'none';});}
-function renderTickerList(){
-  const el=document.getElementById('ticker-list');
-  el.innerHTML=TICKERS.map(({t,name})=>{const d=stockData[t],price=d?fR(d.price):'...',chg=d?fp(d.changePct):'',chgCls=d&&d.changePct!==0?(d.changePct>=0?'up':'dn'):'',active=selectedTicker===t?'active':'';
-    return`<button class="ticker-btn ${active}" onclick="selectTicker('${t}')"><div class="tb-left"><div class="tb-ticker">${t}</div><div class="tb-name">${name}</div></div><div class="tb-right"><div class="tb-price">${price}</div><div class="tb-chg ${chgCls}">${chg}</div></div></button>`;
-  }).join('');
-}
-async function fetchStock(ticker){
-  if(profitConnected&&stockData[ticker]?.fromProfit)return stockData[ticker];
-  try{
-    const r=await fetch(`https://brapi.dev/api/quote/${ticker}?token=${BRAPI_TOKEN}&range=3mo&interval=1d`);if(!r.ok)throw new Error();
-    const d=await r.json();const q=d.results?.[0];if(!q)throw new Error();
-    let hv30=HV_BASE[ticker]||.35;
-    if(q.historicalDataPrice?.length>=10){const prices=q.historicalDataPrice.slice(-30).map(d=>d.close).filter(Boolean);if(prices.length>=5){const rets=[];for(let i=1;i<prices.length;i++)if(prices[i-1]>0)rets.push(Math.log(prices[i]/prices[i-1]));if(rets.length>2){const m=rets.reduce((a,b)=>a+b,0)/rets.length,v=rets.reduce((a,b)=>a+(b-m)**2,0)/(rets.length-1),hv=Math.sqrt(v*252);if(hv>.05&&hv<2)hv30=hv;}}}
-    const price=q.regularMarketPrice||q.currentPrice,prevClose=q.regularMarketPreviousClose,open=q.regularMarketOpen;
-    const gapPct=(prevClose&&open)?(open-prevClose)/prevClose:0,changePct=(q.regularMarketChangePercent||0)/100,ivEst=hv30*(0.90+Math.random()*.30);
-    if(prevClose)prevCloseCache[ticker]=prevClose;
-    return{ticker,price,open,prevClose,changePct,hv30,iv:ivEst,gapPct,ok:true,src:'brapi'};
-  }catch(e){
-    const bases={PETR4:48.3,VALE3:85.6,B3SA3:19.6,ITUB4:46.2,BBAS3:24.9},base=bases[ticker]||30,chg=(Math.random()-.48)*.035,gap=(Math.random()-.45)*.025,hv=HV_BASE[ticker];
-    return{ticker,price:base*(1+chg),open:base*(1+gap+.002),prevClose:base,changePct:chg,hv30:hv,iv:hv*(0.95+Math.random()*.35),gapPct:gap,ok:false,src:'simulado'};
+
+// ===== BRAPI =====
+const BRAPI_BASE = 'https://brapi.dev/api';
+const BRAPI_TOKEN = ''; // Adicione seu token aqui se tiver
+
+async function brapiGet(endpoint) {
+  const sep = endpoint.includes('?') ? '&' : '?';
+  const tokenParam = BRAPI_TOKEN ? `${sep}token=${BRAPI_TOKEN}` : '';
+  try {
+    const r = await fetch(`${BRAPI_BASE}${endpoint}${tokenParam}`);
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    const data = await r.json();
+    state.brapiOk = true;
+    updateStatus();
+    return data;
+  } catch(e) {
+    console.warn('brapi error:', e);
+    return null;
   }
 }
-function connectProfit(manual=false){
-  if(wsReconnectTimer){clearTimeout(wsReconnectTimer);wsReconnectTimer=null;}
-  if(wsConn&&(wsConn.readyState===0||wsConn.readyState===1))wsConn.close();
-  const url=document.getElementById('cfg-ws-url').value.trim(),el=document.getElementById('profit-status');
-  try{
-    el.textContent='Profit: conectando...';el.className='h-badge trying';
-    wsConn=new WebSocket(url);
-    wsConn.onopen=()=>{profitConnected=true;wsAttempts=0;el.textContent='Profit: conectado';el.className='h-badge connected';if(manual)pushToast('Profit conectado','Recebendo dados ao vivo');};
-    wsConn.onmessage=e=>{
-      try{const d=JSON.parse(e.data);if(!d.type)return;
-        if(d.type==='stock'&&d.ticker){
-          const pc=(d.prevClose&&d.prevClose>0)?d.prevClose:(prevCloseCache[d.ticker]||0);
-          let cp=d.changePct||0,gp=d.gapPct||0;
-          if(cp===0&&pc>0&&d.price>0)cp=(d.price-pc)/pc;
-          if(gp===0&&pc>0&&d.openPrice>0)gp=(d.openPrice-pc)/pc;
-          if(!stockData[d.ticker])stockData[d.ticker]={ticker:d.ticker,hv30:HV_BASE[d.ticker]||.35,iv:(HV_BASE[d.ticker]||.35)*1.1};
-          Object.assign(stockData[d.ticker],{price:d.price,changePct:cp,gapPct:gp,prevClose:pc,openPrice:d.openPrice,fromProfit:true,src:'profit'});
-          renderTickerList();if(selectedTicker===d.ticker)selectTicker(d.ticker,true);
-        }
-        if(d.type==='chain'&&d.base&&d.options){
-          optionChains[d.base]=d.options.map(o=>({...o,source:'profit'}));
-          if(selectedTicker===d.base)renderChain(d.base);
-          document.getElementById('chain-load-status').textContent=`${d.options.length} opcoes do Profit`;
-          pushToast(`Cadeia ${d.base}`,`${d.options.length} opcoes ao vivo`);
-        }
-      }catch(e2){}
+
+async function fetchQuote(ticker) {
+  const data = await brapiGet(`/quote/${ticker}`);
+  return data?.results?.[0] || null;
+}
+
+async function fetchHistory(ticker, range='2y') {
+  const data = await brapiGet(`/quote/${ticker}?range=${range}&interval=1d&modules=`);
+  return data?.results?.[0]?.historicalDataPrice || [];
+}
+
+async function fetchOptionsList(prefix) {
+  // Usa o endpoint list com search para achar opções — já traz close/change/volume
+  const data = await brapiGet(`/quote/list?search=${prefix}&limit=100`);
+  if (!data?.stocks) return [];
+  // Filtra só opções (5a letra é A-X, não número)
+  const optRegex = new RegExp(`^${prefix}[A-X]\\d+$`);
+  return data.stocks.filter(s => optRegex.test(s.stock)).map(s => ({
+    ticker: s.stock,
+    close: s.close || 0,
+    change: s.change || 0,
+    volume: s.volume || 0,
+  }));
+}
+
+
+// ===== BLACK-SCHOLES =====
+function normCDF(x) {
+  const a1=0.254829592, a2=-0.284496736, a3=1.421413741, a4=-1.453152027, a5=1.061405429, p=0.3275911;
+  const sign = x < 0 ? -1 : 1;
+  x = Math.abs(x) / Math.sqrt(2);
+  const t = 1 / (1 + p * x);
+  const y = 1 - (((((a5*t + a4)*t) + a3)*t + a2)*t + a1)*t * Math.exp(-x*x);
+  return 0.5 * (1 + sign * y);
+}
+
+function bsPrice(S, K, T, r, sigma, isCall) {
+  if (T <= 0 || sigma <= 0) return Math.max(0, isCall ? S - K : K - S);
+  const d1 = (Math.log(S/K) + (r + sigma*sigma/2)*T) / (sigma*Math.sqrt(T));
+  const d2 = d1 - sigma*Math.sqrt(T);
+  if (isCall) return S*normCDF(d1) - K*Math.exp(-r*T)*normCDF(d2);
+  return K*Math.exp(-r*T)*normCDF(-d2) - S*normCDF(-d1);
+}
+
+function bsGreeks(S, K, T, r, sigma, isCall) {
+  if (T <= 0 || sigma <= 0) return { delta:isCall?1:(-1), gamma:0, theta:0, vega:0, iv:sigma };
+  const sqrtT = Math.sqrt(T);
+  const d1 = (Math.log(S/K) + (r + sigma*sigma/2)*T) / (sigma*sqrtT);
+  const d2 = d1 - sigma*sqrtT;
+  const nd1 = Math.exp(-d1*d1/2) / Math.sqrt(2*Math.PI);
+  
+  const delta = isCall ? normCDF(d1) : normCDF(d1) - 1;
+  const gamma = nd1 / (S * sigma * sqrtT);
+  const theta = (-(S*nd1*sigma)/(2*sqrtT) - (isCall?1:-1)*r*K*Math.exp(-r*T)*normCDF((isCall?1:-1)*d2)) / 365;
+  const vega = S * nd1 * sqrtT / 100;
+  
+  return { delta:Math.round(delta*100)/100, gamma:Math.round(gamma*1000)/1000, theta:Math.round(theta*100)/100, vega:Math.round(vega*100)/100, iv:Math.round(sigma*100) };
+}
+
+function impliedVol(price, S, K, T, r, isCall) {
+  let lo=0.01, hi=3.0;
+  for (let i=0; i<50; i++) {
+    const mid = (lo+hi)/2;
+    const p = bsPrice(S, K, T, r, mid, isCall);
+    if (p > price) hi = mid; else lo = mid;
+    if (Math.abs(p - price) < 0.001) break;
+  }
+  return (lo+hi)/2;
+}
+
+function historicalVol(hist, days=20) {
+  if (!hist || hist.length < days+1) return 0.3;
+  const returns = [];
+  for (let i=hist.length-days; i<hist.length; i++) {
+    if (hist[i].close && hist[i-1]?.close) {
+      returns.push(Math.log(hist[i].close / hist[i-1].close));
+    }
+  }
+  if (returns.length < 5) return 0.3;
+  const mean = returns.reduce((a,b)=>a+b,0) / returns.length;
+  const variance = returns.reduce((a,b)=>a+(b-mean)**2,0) / (returns.length-1);
+  return Math.sqrt(variance * 252);
+}
+
+
+// ===== OPTION CODE PARSING =====
+function parseOptionCode(code) {
+  // Formato: PETR + D + 30 ou B3SA + D + 20
+  const match = code.match(/^([A-Z]{4})([A-X])(\d+)$/);
+  if (!match) return null;
+  const [_, prefix, letter, strikeStr] = match;
+  const isCall = CALL_LETTERS.includes(letter);
+  const monthIdx = isCall ? CALL_LETTERS.indexOf(letter) : PUT_LETTERS.indexOf(letter);
+  
+  // O strike no código é aproximado, pode ser 20 = R$20 ou 205 = R$20.50
+  let strike;
+  if (strikeStr.length <= 2) strike = parseInt(strikeStr);
+  else strike = parseInt(strikeStr) / (10 ** (strikeStr.length - 2));
+  
+  // Calcula vencimento (3a sexta-feira do mês)
+  const now = new Date();
+  let year = now.getFullYear();
+  let month = monthIdx;
+  if (month < now.getMonth()) year++; // Se o mês já passou, é do próximo ano
+  
+  const vencDate = getThirdFriday(year, month);
+  const daysToExp = Math.max(1, Math.round((vencDate - now) / 86400000));
+  
+  return { prefix, letter, isCall, monthIdx, strike, strikeStr, vencDate, daysToExp, type: isCall ? 'CALL' : 'PUT' };
+}
+
+function getThirdFriday(year, month) {
+  const d = new Date(year, month, 1);
+  let fridays = 0;
+  while (fridays < 3) {
+    if (d.getDay() === 5) fridays++;
+    if (fridays < 3) d.setDate(d.getDate() + 1);
+  }
+  return d;
+}
+
+function formatDate(d) {
+  return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}`;
+}
+
+
+// ===== GAP / HISTORY ANALYSIS =====
+function analyzeGaps(hist) {
+  if (!hist || hist.length < 30) return null;
+  
+  // Buckets de -15% a +15% em steps de 0.5%
+  const BUCKET_SIZE = 0.5;
+  const MIN_BUCKET = -15;
+  const MAX_BUCKET = 15;
+  const buckets = {};
+  
+  for (let b = MIN_BUCKET; b <= MAX_BUCKET; b += BUCKET_SIZE) {
+    const key = `${b >= 0 ? '+' : ''}${b.toFixed(1)}`;
+    buckets[key] = { count: 0, d1_pos: 0, d1_neg: 0, d2_pos: 0, d3_pos: 0, total_d1_change: 0 };
+  }
+  
+  for (let i = 1; i < hist.length; i++) {
+    const prev = hist[i-1];
+    const curr = hist[i];
+    if (!prev.close || !curr.open || !curr.close) continue;
+    
+    const gapPct = ((curr.open - prev.close) / prev.close) * 100;
+    const bucketVal = Math.max(MIN_BUCKET, Math.min(MAX_BUCKET - BUCKET_SIZE, Math.floor(gapPct / BUCKET_SIZE) * BUCKET_SIZE));
+    const key = `${bucketVal >= 0 ? '+' : ''}${bucketVal.toFixed(1)}`;
+    
+    if (!buckets[key]) continue;
+    buckets[key].count++;
+    
+    const d1Change = ((curr.close - curr.open) / curr.open) * 100;
+    buckets[key].total_d1_change += d1Change;
+    if (d1Change > 0) buckets[key].d1_pos++;
+    else buckets[key].d1_neg++;
+    
+    // D+2 e D+3
+    if (i+1 < hist.length && hist[i+1].close) {
+      if (((hist[i+1].close - curr.close) / curr.close) > 0) buckets[key].d2_pos++;
+    }
+    if (i+2 < hist.length && hist[i+2].close) {
+      if (((hist[i+2].close - curr.close) / curr.close) > 0) buckets[key].d3_pos++;
+    }
+  }
+  
+  return buckets;
+}
+
+function analyzeVariation(hist) {
+  if (!hist || hist.length < 30) return null;
+  
+  const BUCKET_SIZE = 0.5;
+  const MIN = -15, MAX = 15;
+  const buckets = {};
+  const allChanges = [];
+  let positiveDays = 0;
+  
+  for (let b = MIN; b <= MAX; b += BUCKET_SIZE) {
+    const key = `${b >= 0 ? '+' : ''}${b.toFixed(1)}`;
+    buckets[key] = 0;
+  }
+  
+  for (let i = 1; i < hist.length; i++) {
+    if (!hist[i].close || !hist[i-1].close) continue;
+    const change = ((hist[i].close - hist[i-1].close) / hist[i-1].close) * 100;
+    allChanges.push(change);
+    if (change > 0) positiveDays++;
+    
+    const bVal = Math.max(MIN, Math.min(MAX - BUCKET_SIZE, Math.floor(change / BUCKET_SIZE) * BUCKET_SIZE));
+    const key = `${bVal >= 0 ? '+' : ''}${bVal.toFixed(1)}`;
+    if (buckets[key] !== undefined) buckets[key]++;
+  }
+  
+  allChanges.sort((a,b) => a-b);
+  const p5 = allChanges[Math.floor(allChanges.length * 0.05)] || 0;
+  const p25 = allChanges[Math.floor(allChanges.length * 0.25)] || 0;
+  const p50 = allChanges[Math.floor(allChanges.length * 0.50)] || 0;
+  const p75 = allChanges[Math.floor(allChanges.length * 0.75)] || 0;
+  const p95 = allChanges[Math.floor(allChanges.length * 0.95)] || 0;
+  const mean = allChanges.reduce((a,b)=>a+b,0) / allChanges.length;
+  const stdDev = Math.sqrt(allChanges.reduce((a,b)=>a+(b-mean)**2,0) / allChanges.length);
+  
+  return { buckets, stats: { p5, p25, p50, p75, p95, mean, stdDev, positiveDays, totalDays: allChanges.length, 
+    bigDrops: allChanges.filter(c => c <= -5).length,
+    bigJumps: allChanges.filter(c => c >= 5).length,
+    hugeDrops: allChanges.filter(c => c <= -10).length,
+    hugeJumps: allChanges.filter(c => c >= 10).length,
+  }};
+}
+
+function analyzePatterns(hist) {
+  if (!hist || hist.length < 60) return [];
+  
+  const gapBuckets = [[-99,-5],[-5,-3],[-3,-1],[-1,0],[0,1],[1,3],[3,5],[5,99]];
+  const gapLabels = ['< -5%','-5% a -3%','-3% a -1%','-1% a 0%','0% a +1%','+1% a +3%','+3% a +5%','> +5%'];
+  
+  const patterns = gapBuckets.map((bucket, idx) => ({
+    label: gapLabels[idx],
+    range: bucket,
+    samples: 0,
+    closedAboveOpen: 0,
+    avgMaxFromOpen: 0,
+    avgMinFromOpen: 0,
+    avgClose: 0,
+    totalMax: 0,
+    totalMin: 0,
+    totalClose: 0,
+  }));
+  
+  for (let i = 1; i < hist.length; i++) {
+    const prev = hist[i-1];
+    const curr = hist[i];
+    if (!prev.close || !curr.open || !curr.close || !curr.high || !curr.low) continue;
+    
+    const gap = ((curr.open - prev.close) / prev.close) * 100;
+    
+    for (const p of patterns) {
+      if (gap >= p.range[0] && gap < p.range[1]) {
+        p.samples++;
+        if (curr.close > curr.open) p.closedAboveOpen++;
+        p.totalMax += ((curr.high - curr.open) / curr.open) * 100;
+        p.totalMin += ((curr.low - curr.open) / curr.open) * 100;
+        p.totalClose += ((curr.close - curr.open) / curr.open) * 100;
+        break;
+      }
+    }
+  }
+  
+  return patterns.filter(p => p.samples >= 3).map(p => ({
+    ...p,
+    closedAbovePct: Math.round((p.closedAboveOpen / p.samples) * 100),
+    avgMaxFromOpen: Math.round((p.totalMax / p.samples) * 100) / 100,
+    avgMinFromOpen: Math.round((p.totalMin / p.samples) * 100) / 100,
+    avgClose: Math.round((p.totalClose / p.samples) * 100) / 100,
+    signal: p.closedAboveOpen / p.samples > 0.6 ? 'REVERSÃO' : (p.closedAboveOpen / p.samples < 0.4 ? 'CONTINUAÇÃO' : 'NEUTRO'),
+  }));
+}
+
+function analyzeSequences(hist) {
+  if (!hist || hist.length < 30) return null;
+  
+  let streaks = { up: [], down: [] };
+  let currentStreak = 0;
+  let currentDir = null;
+  
+  for (let i = 1; i < hist.length; i++) {
+    if (!hist[i].close || !hist[i-1].close) continue;
+    const up = hist[i].close > hist[i-1].close;
+    
+    if (currentDir === null) {
+      currentDir = up;
+      currentStreak = 1;
+    } else if (up === currentDir) {
+      currentStreak++;
+    } else {
+      (currentDir ? streaks.up : streaks.down).push(currentStreak);
+      currentDir = up;
+      currentStreak = 1;
+    }
+  }
+  if (currentDir !== null) (currentDir ? streaks.up : streaks.down).push(currentStreak);
+  
+  const maxUp = streaks.up.length ? Math.max(...streaks.up) : 0;
+  const maxDown = streaks.down.length ? Math.max(...streaks.down) : 0;
+  const avgUp = streaks.up.length ? (streaks.up.reduce((a,b)=>a+b,0)/streaks.up.length).toFixed(1) : 0;
+  const avgDown = streaks.down.length ? (streaks.down.reduce((a,b)=>a+b,0)/streaks.down.length).toFixed(1) : 0;
+  
+  // Distribuição por duração
+  const distUp = {}, distDown = {};
+  streaks.up.forEach(s => { distUp[s] = (distUp[s]||0) + 1; });
+  streaks.down.forEach(s => { distDown[s] = (distDown[s]||0) + 1; });
+  
+  return { maxUp, maxDown, avgUp, avgDown, distUp, distDown, totalUpStreaks: streaks.up.length, totalDownStreaks: streaks.down.length };
+}
+
+
+// ===== COMBINATORIAL SCORE =====
+function calcScore(option, stockData, gapBuckets) {
+  let histScore = 0, optScore = 0, mktScore = 0;
+  
+  // 1) HISTÓRICO (35pts)
+  if (gapBuckets && stockData) {
+    const gap = stockData.gapPct || 0;
+    // Encontra o bucket do gap atual
+    const BUCKET_SIZE = 0.5;
+    const bVal = Math.max(-15, Math.min(14.5, Math.floor(gap / BUCKET_SIZE) * BUCKET_SIZE));
+    const key = `${bVal >= 0 ? '+' : ''}${bVal.toFixed(1)}`;
+    const bucket = gapBuckets[key];
+    
+    if (bucket && bucket.count >= 3) {
+      const probD1 = bucket.d1_pos / bucket.count;
+      const sampleBonus = Math.min(1, bucket.count / 30); // Mais amostras = mais confiança
+      histScore = Math.round(probD1 * sampleBonus * 35);
+    }
+  }
+  
+  // 2) ESTRUTURA DA OPÇÃO (35pts)
+  if (option.greeks) {
+    const absDelta = Math.abs(option.greeks.delta);
+    // Delta ideal para compra a seco: 0.20-0.50
+    const deltaScore = absDelta >= 0.20 && absDelta <= 0.50 ? 10 : (absDelta >= 0.10 && absDelta <= 0.60 ? 6 : 2);
+    
+    // Potencial de ganho
+    const potGain = option.potGainPct || 0;
+    const gainScore = Math.min(10, Math.round(potGain / 50 * 10));
+    
+    // Dias para vencimento (ideal 5-30)
+    const dte = option.daysToExp || 30;
+    const dteScore = (dte >= 5 && dte <= 30) ? 8 : (dte >= 2 && dte <= 60) ? 5 : 2;
+    
+    // Spread bid/ask (liquidez)
+    const spread = option.ask && option.bid ? (option.ask - option.bid) / option.bid : 0.5;
+    const liqScore = spread < 0.05 ? 7 : (spread < 0.15 ? 5 : (spread < 0.30 ? 3 : 1));
+    
+    optScore = deltaScore + gainScore + dteScore + liqScore;
+  }
+  
+  // 3) CONTEXTO DE MERCADO (30pts)
+  if (option.iv && option.hv) {
+    // IV vs HV — IV < HV = opção "barata"
+    const ivRatio = option.iv / Math.max(0.01, option.hv);
+    const ivScore = ivRatio < 0.8 ? 12 : (ivRatio < 1.0 ? 9 : (ivRatio < 1.2 ? 6 : 3));
+    
+    // Tendência recente (usando variação do ativo)
+    const changePct = Math.abs(stockData?.changePct || 0);
+    const trendScore = changePct > 2 ? 8 : (changePct > 1 ? 6 : (changePct > 0.5 ? 4 : 2));
+    
+    // Volume
+    const volScore = (stockData?.volume || 0) > 1000000 ? 10 : ((stockData?.volume || 0) > 100000 ? 6 : 3);
+    
+    mktScore = ivScore + trendScore + volScore;
+  }
+  
+  return Math.min(100, histScore + optScore + mktScore);
+}
+
+
+// ===== WEBSOCKET =====
+let ws = null;
+
+function connectProfit() {
+  // Tenta conectar ao WebSocket local (profit_bridge.py)
+  try {
+    ws = new WebSocket('ws://localhost:8765');
+    ws.onopen = () => {
+      state.wsConnected = true;
+      updateStatus();
+      // Não mostra toast de conexão — só conecta silenciosamente
     };
-    wsConn.onclose=()=>{profitConnected=false;if(wsAttempts<WS_MAX){wsAttempts++;const delay=Math.min(3000*wsAttempts,30000);el.textContent=`Profit: tentativa ${wsAttempts}/${WS_MAX}...`;el.className='h-badge trying';wsReconnectTimer=setTimeout(()=>connectProfit(false),delay);}else{el.textContent='Profit: offline';el.className='h-badge';pushToast('Profit offline','Usando brapi + BS','warn');}};
-    wsConn.onerror=()=>wsConn.close();
-  }catch(e){el.textContent='Profit: erro';el.className='h-badge';}
+    ws.onmessage = (evt) => {
+      try {
+        const msg = JSON.parse(evt.data);
+        if (msg.type === 'market_data' && Array.isArray(msg.data)) {
+          msg.data.forEach(d => {
+            state.prices[d.ticker] = d;
+          });
+          renderWatchlist();
+        } else if (msg.type === 'chain') {
+          state.options[msg.ticker] = { source: 'profit', data: msg.options };
+        }
+      } catch(e) {}
+    };
+    ws.onclose = () => {
+      state.wsConnected = false;
+      updateStatus();
+      // Reconecta silenciosamente após 10s
+      setTimeout(connectProfit, 10000);
+    };
+    ws.onerror = () => {
+      state.wsConnected = false;
+      ws.close();
+    };
+  } catch(e) {
+    setTimeout(connectProfit, 10000);
+  }
 }
-function requestChainFromProfit(t){if(!wsConn||wsConn.readyState!==1)return;document.getElementById('chain-load-status').textContent='Solicitando cadeia ao Profit...';wsConn.send(JSON.stringify({action:'get_chain',ticker:t}));}
-function toggleProfitConfig(){const p=document.getElementById('profit-config-panel');p.style.display=p.style.display==='none'?'block':'none';}
-async function selectTicker(t,silent=false){
-  selectedTicker=t;renderTickerList();
-  if(!stockData[t]||(!stockData[t].fromProfit&&!silent)){document.getElementById('ranking-list').innerHTML='<div class="loading-overlay"><div class="spin"></div>Carregando '+t+'...</div>';stockData[t]=await fetchStock(t);}
-  requestChainFromProfit(t);
-  if(!optionChains[t]){document.getElementById('chain-load-status').textContent='Buscando opcoes...';const chain=await fetchOptionChainBrapi(t);optionChains[t]=chain;document.getElementById('chain-load-status').textContent=`${chain.length} opcoes encontradas`;}
-  const stock=stockData[t],signals=generateSignals(stock);
-  document.getElementById('rank-ticker-label').textContent=`${t} -- ${signals.length} sinais | Gap: ${fp(stock.gapPct)} | IV: ${f(stock.iv*100,1)}%`;
-  renderRanking(signals);renderChain(t);await renderHistAll(t);updateTopStats();
-  if(!silent&&signals.length>0&&signals[0].score>=75)pushToast(`${t} -- ${signals[0].code}`,`Score ${signals[0].score} +${f(signals[0].gainPct*100,0)}%`);
+
+// Se não tem WS, puxa da brapi
+async function fetchPricesFromBrapi() {
+  const data = await brapiGet(`/quote/${TICKERS.join(',')}`);
+  if (!data?.results) return;
+  data.results.forEach(r => {
+    state.prices[r.symbol] = {
+      ticker: r.symbol,
+      price: r.regularMarketPrice,
+      prevClose: r.regularMarketPreviousClose,
+      open: r.regularMarketOpen,
+      high: r.regularMarketDayHigh,
+      low: r.regularMarketDayLow,
+      volume: r.regularMarketVolume,
+      changePct: r.regularMarketChangePercent,
+      gapPct: r.regularMarketOpen && r.regularMarketPreviousClose ? 
+        ((r.regularMarketOpen - r.regularMarketPreviousClose) / r.regularMarketPreviousClose * 100) : 0,
+    };
+  });
+  renderWatchlist();
 }
-async function fullScan(){
-  const btn=document.getElementById('scan-btn');btn.disabled=true;btn.textContent='Escaneando...';
-  await Promise.all(TICKERS.map(async({t})=>{if(!(stockData[t]?.fromProfit))stockData[t]=await fetchStock(t);}));
-  renderTickerList();await selectTicker(selectedTicker||TICKERS[0].t,true);updateTopStats();
-  btn.disabled=false;btn.textContent='Escanear tudo';
-  const interval=parseInt(document.getElementById('cfg-interval').value)||60;
-  clearInterval(scanTimer);scanTimer=setInterval(()=>{if(marketIsOpen())fullScan();},interval*1000);
+
+
+// ===== SCAN ENGINE =====
+async function fullScan() {
+  const btn = document.getElementById('btn-scan');
+  btn.disabled = true;
+  btn.textContent = 'Escaneando...';
+  
+  // Garante preços atualizados
+  if (!state.wsConnected) await fetchPricesFromBrapi();
+  
+  const gainMin = parseInt(document.getElementById('p-gain-min').value) || 30;
+  const gainMax = parseInt(document.getElementById('p-gain-max').value) || 60;
+  const probMin = parseInt(document.getElementById('p-prob').value) || 52;
+  const samplesMin = parseInt(document.getElementById('p-samples').value) || 8;
+  const alertScore = parseInt(document.getElementById('p-alert-score').value) || 55;
+  
+  const allOptions = [];
+  
+  for (const ticker of TICKERS) {
+    const sd = state.prices[ticker];
+    if (!sd || !sd.price) continue;
+    
+    // Fetch histórico para análise
+    if (!state.histData[ticker]) {
+      const hist = await fetchHistory(ticker, '2y');
+      if (hist?.length) {
+        state.histData[ticker] = hist;
+      }
+    }
+    
+    const gapBuckets = state.histData[ticker] ? analyzeGaps(state.histData[ticker]) : null;
+    const hv = state.histData[ticker] ? historicalVol(state.histData[ticker]) : 0.3;
+    
+    // Busca opções via brapi list (já vem com close/volume)
+    const prefix = ticker.slice(0, 4);
+    let optList = [];
+    try {
+      optList = await fetchOptionsList(prefix);
+    } catch(e) {}
+    
+    // Para cada opção encontrada — usa dados do /list, SEM chamada individual
+    for (const optItem of optList.slice(0, 40)) {
+      const parsed = parseOptionCode(optItem.ticker);
+      if (!parsed || parsed.daysToExp > 90 || parsed.daysToExp < 1) continue;
+      
+      const optPrice = optItem.close;
+      if (!optPrice || optPrice <= 0) continue;
+      
+      const T = parsed.daysToExp / 365;
+      const r = 0.1075; // Selic
+      
+      const iv = impliedVol(optPrice, sd.price, parsed.strike, T, r, parsed.isCall);
+      const greeks = bsGreeks(sd.price, parsed.strike, T, r, iv, parsed.isCall);
+      
+      // Potencial de ganho: quanto a opção sobe se o ativo mover 2%
+      const absDelta = Math.abs(greeks.delta);
+      const moveExpected = sd.price * 0.02;
+      const expectedGain = optPrice > 0 ? (absDelta * moveExpected) / optPrice * 100 : 0;
+      
+      // Spread estimado (bid/ask aprox.)
+      const spreadEst = optPrice > 0.20 ? 0.05 : 0.02;
+      
+      const option = {
+        ticker: optItem.ticker,
+        baseTicker: ticker,
+        type: parsed.type,
+        strike: parsed.strike,
+        price: optPrice,
+        bid: Math.max(0.01, optPrice - spreadEst),
+        ask: optPrice + spreadEst,
+        greeks: greeks,
+        iv: iv,
+        hv: hv,
+        daysToExp: parsed.daysToExp,
+        vencDate: parsed.vencDate,
+        potGainPct: Math.round(expectedGain),
+        volume: optItem.volume,
+        timeframe: parsed.daysToExp <= 5 ? 'DAY' : (parsed.daysToExp <= 30 ? 'SWING' : 'COLD'),
+      };
+      
+      // Calcula prob D+1 com base no gap atual
+      option.probD1 = 0;
+      if (gapBuckets && sd.gapPct !== undefined) {
+        const BUCKET_SIZE = 0.5;
+        const bVal = Math.max(-15, Math.min(14.5, Math.floor(sd.gapPct / BUCKET_SIZE) * BUCKET_SIZE));
+        const bKey = `${bVal >= 0 ? '+' : ''}${bVal.toFixed(1)}`;
+        const bucket = gapBuckets[bKey];
+        if (bucket && bucket.count >= 3) {
+          option.probD1 = Math.round((parsed.isCall ? bucket.d1_pos : bucket.d1_neg) / bucket.count * 100);
+        }
+      }
+      
+      option.score = calcScore(option, sd, gapBuckets);
+      allOptions.push(option);
+    }
+  }
+  
+  // Ordena por score
+  allOptions.sort((a,b) => b.score - a.score);
+  state.rankings = allOptions;
+  
+  // Atualiza UI
+  renderRanking(gainMin, gainMax, probMin, samplesMin);
+  updateStats();
+  
+  // Alerta só para scores altos que mudaram significativamente
+  const topOptions = allOptions.filter(o => o.score >= alertScore);
+  for (const opt of topOptions.slice(0, 3)) {
+    const key = opt.ticker;
+    const prev = state.lastAlerts[key];
+    const now = Date.now();
+    
+    if (!prev || (now - prev.time > 300000) || Math.abs(opt.score - prev.score) >= 5) {
+      showToast(`${opt.ticker} — Score ${opt.score}`, 
+        `${opt.type} | Strike R$${opt.strike} | Pot. +${opt.potGainPct}%`, 'signal');
+      state.lastAlerts[key] = { score: opt.score, time: now };
+    }
+  }
+  
+  const now = new Date();
+  const timeStr = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+  document.getElementById('st-time').textContent = timeStr;
+  document.getElementById('st-source').textContent = state.wsConnected ? 'profit + brapi' : 'brapi.dev';
+  document.getElementById('last-scan').textContent = timeStr;
+  
+  btn.disabled = false;
+  btn.textContent = '\u21bb Escanear tudo';
+  
+  // Re-render tabs se ativo selecionado
+  renderHistoryTab();
+  renderVariationTab();
+  renderPatternsTab();
+  renderSequencesTab();
 }
-function updateTopStats(){
-  const all=Object.values(stockData).flatMap(s=>s.price?generateSignals(s):[]),hot=all.filter(s=>s.score>=75);
-  document.getElementById('st-signals').textContent=hot.length;
-  const best=all.sort((a,b)=>b.score-a.score)[0];
-  if(best){document.getElementById('st-best').textContent=best.code;document.getElementById('st-best-sub').textContent=best.ticker+' -- score '+best.score;}
-  const ivs=Object.values(stockData).map(s=>s.iv).filter(Boolean);
-  if(ivs.length)document.getElementById('st-iv').textContent=f(ivs.reduce((a,b)=>a+b,0)/ivs.length*100,0)+'%';
-  const probs=Object.values(stockData).map(s=>{const gs=GAP_STATS[classifyGap(s.gapPct||0)];return gs?Math.max(gs.d1p,gs.d2p,gs.d3p):null;}).filter(Boolean);
-  if(probs.length)document.getElementById('st-prob').textContent=f(Math.max(...probs)*100,0)+'%';
-  document.getElementById('st-scan').textContent=new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
-  const srcs=[...new Set(Object.values(stockData).map(s=>s.src).filter(Boolean))];
-  document.getElementById('st-src').textContent=srcs.includes('profit')?'profit pro':srcs.includes('brapi')?'brapi.dev':'simulado';
+
+
+// ===== RENDER =====
+function renderWatchlist() {
+  const el = document.getElementById('watchlist');
+  el.innerHTML = TICKERS.map(t => {
+    const d = state.prices[t] || {};
+    const p = d.price ? `R$ ${d.price.toFixed(2)}` : '—';
+    const c = d.changePct || 0;
+    const cls = c > 0 ? 'pos' : (c < 0 ? 'neg' : 'zero');
+    const sign = c > 0 ? '+' : '';
+    const active = t === state.activeTicker ? 'active' : '';
+    return `<div class="wl-item ${active}" onclick="selectTicker('${t}')">
+      <div class="ticker">${t}</div>
+      <div class="name">${TICKER_NAMES[t]}</div>
+      <div class="price-row">
+        <span class="price">${p}</span>
+        <span class="change ${cls}">${sign}${c.toFixed(1)}%</span>
+      </div>
+    </div>`;
+  }).join('');
 }
-function switchTab(name,btn){document.querySelectorAll('.tab').forEach(b=>b.classList.remove('on'));document.querySelectorAll('.tp').forEach(p=>p.classList.remove('on'));document.getElementById('tp-'+name).classList.add('on');btn.classList.add('on');}
-function marketIsOpen(){const now=new Date(),h=now.getHours(),m=now.getMinutes(),day=now.getDay();if(day===0||day===6)return false;const mins=h*60+m;return mins>=9*60&&mins<17*60+30;}
-function updateClock(){document.getElementById('clock').textContent=new Date().toLocaleTimeString('pt-BR');const open=marketIsOpen(),el=document.getElementById('mkt-badge');el.textContent=open?'ABERTO':'FECHADO';el.className='h-mkt '+(open?'mkt-open':'mkt-closed');}
-setInterval(updateClock,1000);updateClock();
-function pushToast(title,body,level='hot'){const stack=document.getElementById('alert-stack'),id='t'+Date.now(),el=document.createElement('div');el.className=`a-toast${level==='warn'?' warn':''}`;el.id=id;el.innerHTML=`<button class="a-close" onclick="document.getElementById('${id}').remove()">x</button><div class="a-title">${title}</div><div class="a-body">${body}</div>`;stack.insertBefore(el,stack.firstChild);setTimeout(()=>{const t=document.getElementById(id);if(t){t.style.transition='opacity .4s';t.style.opacity=0;setTimeout(()=>{const t2=document.getElementById(id);if(t2)t2.remove();},400);}},9000);}
-renderTickerList();connectProfit(false);fullScan();
+
+function renderRanking(gainMin, gainMax, probMin, samplesMin) {
+  const filtered = state.rankings.filter(o => o.potGainPct >= gainMin);
+  const body = document.getElementById('ranking-body');
+  const info = document.getElementById('ranking-info');
+  
+  info.textContent = state.activeTicker ? 
+    `${state.activeTicker} — ${filtered.filter(o=>o.baseTicker===state.activeTicker).length} sinais | Gap: ${(state.prices[state.activeTicker]?.gapPct||0).toFixed(1)}% | IV: ${Math.round((state.rankings.find(o=>o.baseTicker===state.activeTicker)?.iv||0)*100)}%` :
+    `${filtered.length} oportunidades encontradas`;
+  
+  // Mostra top 20
+  body.innerHTML = filtered.slice(0, 20).map((o, i) => {
+    const typeBadge = `<span class="badge ${o.type.toLowerCase()}">${o.type}</span>`;
+    const tfBadge = `<span class="badge ${o.timeframe.toLowerCase()}">${o.timeframe}</span>`;
+    const tempBadge = o.score >= 65 ? '<span class="badge hot">HOT</span>' : (o.score >= 50 ? '<span class="badge warm">WARM</span>' : '<span class="badge cold">COLD</span>');
+    
+    const potCls = o.potGainPct > 0 ? 'pos' : 'neg';
+    const probD1 = o.probD1 ? `${o.probD1}%` : '--';
+    
+    const scoreBars = Array.from({length:5}, (_, j) => 
+      `<div class="bar ${j < Math.round(o.score/20) ? 'filled' : ''}"></div>`
+    ).join('');
+    
+    return `<tr>
+      <td><span class="rank">#${i+1}</span></td>
+      <td><strong>${o.ticker}</strong><br><span style="font-size:10px;color:var(--text3)">Strike R$ ${o.strike.toFixed(2)}</span></td>
+      <td>${typeBadge} ${tfBadge} ${tempBadge}</td>
+      <td>R$ ${o.price.toFixed(2)}</td>
+      <td>R$ ${o.strike.toFixed(2)}</td>
+      <td>${o.greeks.delta.toFixed(2)}</td>
+      <td class="${potCls}">+${o.potGainPct}%</td>
+      <td>${probD1}</td>
+      <td>${Math.round(o.iv*100)}% / ${Math.round(o.hv*100)}%</td>
+      <td>${formatDate(o.vencDate)}</td>
+      <td><div class="score-bar"><span class="score-num" style="color:${o.score>=65?'var(--green)':(o.score>=50?'var(--yellow)':'var(--text3)')}">${o.score}</span><div class="score-bars">${scoreBars}</div></div></td>
+    </tr>`;
+  }).join('');
+}
+
+function updateStats() {
+  const r = state.rankings;
+  document.getElementById('st-signals').textContent = r.length;
+  
+  if (r.length) {
+    const best = r[0];
+    document.getElementById('st-best').textContent = `${best.ticker}`;
+    document.getElementById('st-best-sub').textContent = `score ${best.score}`;
+    
+    const avgIV = r.reduce((a,b) => a + (b.iv||0), 0) / r.length;
+    document.getElementById('st-iv').textContent = `${Math.round(avgIV*100)}%`;
+    
+    const bestProb = Math.max(...r.map(o => o.score));
+    document.getElementById('st-prob').textContent = `${bestProb}%`;
+  }
+}
+
+function renderHistoryTab() {
+  const ticker = state.activeTicker;
+  const hist = state.histData[ticker];
+  document.getElementById('hist-ticker-label').textContent = ticker ? `${ticker} — Análise de Gaps (${hist?.length||0} dias)` : '';
+  
+  if (!hist) { document.getElementById('gap-analysis').innerHTML = '<div style="color:var(--text3)">Clique em "Escanear tudo" para carregar dados históricos.</div>'; return; }
+  
+  const buckets = analyzeGaps(hist);
+  if (!buckets) return;
+  
+  const maxCount = Math.max(...Object.values(buckets).map(b => b.count), 1);
+  
+  // Filtra buckets com dados e ordena
+  const entries = Object.entries(buckets).filter(([k,v]) => v.count > 0).sort((a,b) => parseFloat(a[0]) - parseFloat(b[0]));
+  
+  let html = '<div class="hist-container">';
+  for (const [key, b] of entries) {
+    const pct = (b.count / maxCount * 100).toFixed(0);
+    const isNeg = parseFloat(key) < 0;
+    const barCls = isNeg ? 'red' : 'green';
+    const d1Prob = b.count > 0 ? Math.round(b.d1_pos / b.count * 100) : 0;
+    
+    html += `<div class="hist-row">
+      <div class="hist-label">${key}%</div>
+      <div class="hist-bar-wrap"><div class="hist-bar ${barCls}" style="width:${pct}%"></div></div>
+      <div class="hist-count">${b.count}x — D+1: ${d1Prob}%</div>
+    </div>`;
+  }
+  html += '</div>';
+  document.getElementById('gap-analysis').innerHTML = html;
+}
+
+function renderVariationTab() {
+  const ticker = state.activeTicker;
+  const hist = state.histData[ticker];
+  document.getElementById('var-ticker-label').textContent = ticker ? `${ticker} — Distribuição de Variação Diária` : '';
+  
+  if (!hist) { document.getElementById('variation-content').innerHTML = '<div style="color:var(--text3)">Clique em "Escanear tudo" para carregar dados.</div>'; return; }
+  
+  const analysis = analyzeVariation(hist);
+  if (!analysis) return;
+  
+  const { buckets, stats } = analysis;
+  const maxCount = Math.max(...Object.values(buckets), 1);
+  
+  let html = `<div class="pattern-grid" style="margin-bottom:20px;">
+    <div class="pattern-card"><div class="title">Estatísticas</div>
+      <div class="stat"><span>Dias analisados</span><span class="highlight">${stats.totalDays}</span></div>
+      <div class="stat"><span>Dias positivos</span><span class="highlight pos">${stats.positiveDays} (${Math.round(stats.positiveDays/stats.totalDays*100)}%)</span></div>
+      <div class="stat"><span>Média diária</span><span class="highlight ${stats.mean>=0?'pos':'neg'}">${stats.mean>=0?'+':''}${stats.mean.toFixed(2)}%</span></div>
+      <div class="stat"><span>Desvio Padrão</span><span class="highlight">${stats.stdDev.toFixed(2)}%</span></div>
+    </div>
+    <div class="pattern-card"><div class="title">Percentis</div>
+      <div class="stat"><span>P5 (pior caso)</span><span class="highlight neg">${stats.p5.toFixed(2)}%</span></div>
+      <div class="stat"><span>P25</span><span class="highlight">${stats.p25.toFixed(2)}%</span></div>
+      <div class="stat"><span>Mediana (P50)</span><span class="highlight">${stats.p50.toFixed(2)}%</span></div>
+      <div class="stat"><span>P75</span><span class="highlight">${stats.p75.toFixed(2)}%</span></div>
+      <div class="stat"><span>P95 (melhor caso)</span><span class="highlight pos">${stats.p95.toFixed(2)}%</span></div>
+    </div>
+    <div class="pattern-card"><div class="title">Movimentos Extremos</div>
+      <div class="stat"><span>Quedas >= 5%</span><span class="highlight neg">${stats.bigDrops}x</span></div>
+      <div class="stat"><span>Altas >= 5%</span><span class="highlight pos">${stats.bigJumps}x</span></div>
+      <div class="stat"><span>Quedas >= 10%</span><span class="highlight neg">${stats.hugeDrops}x</span></div>
+      <div class="stat"><span>Altas >= 10%</span><span class="highlight pos">${stats.hugeJumps}x</span></div>
+    </div>
+  </div>`;
+  
+  // Histograma completo
+  html += '<div class="hist-container">';
+  const entries = Object.entries(buckets).filter(([k,v]) => v > 0).sort((a,b) => parseFloat(a[0]) - parseFloat(b[0]));
+  for (const [key, count] of entries) {
+    const pct = (count / maxCount * 100).toFixed(0);
+    const isNeg = parseFloat(key) < 0;
+    html += `<div class="hist-row">
+      <div class="hist-label">${key}%</div>
+      <div class="hist-bar-wrap"><div class="hist-bar ${isNeg?'red':'green'}" style="width:${pct}%"></div></div>
+      <div class="hist-count">${count}x (${(count/stats.totalDays*100).toFixed(1)}%)</div>
+    </div>`;
+  }
+  html += '</div>';
+  document.getElementById('variation-content').innerHTML = html;
+}
+
+function renderPatternsTab() {
+  const ticker = state.activeTicker;
+  const hist = state.histData[ticker];
+  document.getElementById('pat-ticker-label').textContent = ticker ? `${ticker} — Padrões Intraday (gap de abertura → comportamento)` : '';
+  
+  if (!hist) { document.getElementById('patterns-content').innerHTML = '<div style="color:var(--text3)">Clique em "Escanear tudo".</div>'; return; }
+  
+  const patterns = analyzePatterns(hist);
+  
+  document.getElementById('patterns-content').innerHTML = patterns.map(p => {
+    const signalColor = p.signal === 'REVERSÃO' ? 'var(--green)' : (p.signal === 'CONTINUAÇÃO' ? 'var(--red)' : 'var(--text3)');
+    return `<div class="pattern-card">
+      <div class="title">Gap ${p.label} <span style="float:right;color:${signalColor};font-size:11px;">${p.signal}</span></div>
+      <div class="stat"><span>Amostras</span><span class="highlight">${p.samples}</span></div>
+      <div class="stat"><span>Fechou acima da abertura</span><span class="highlight" style="color:${p.closedAbovePct>55?'var(--green)':'var(--text2)'}">${p.closedAbovePct}%</span></div>
+      <div class="stat"><span>Máxima média (da abertura)</span><span class="highlight pos">+${p.avgMaxFromOpen.toFixed(2)}%</span></div>
+      <div class="stat"><span>Mínima média (da abertura)</span><span class="highlight neg">${p.avgMinFromOpen.toFixed(2)}%</span></div>
+      <div class="stat"><span>Variação média (close-open)</span><span class="highlight ${p.avgClose>=0?'pos':'neg'}">${p.avgClose>=0?'+':''}${p.avgClose.toFixed(2)}%</span></div>
+    </div>`;
+  }).join('');
+}
+
+function renderSequencesTab() {
+  const ticker = state.activeTicker;
+  const hist = state.histData[ticker];
+  document.getElementById('seq-ticker-label').textContent = ticker ? `${ticker} — Sequências de Alta/Baixa` : '';
+  
+  if (!hist) { document.getElementById('sequences-content').innerHTML = '<div style="color:var(--text3)">Clique em "Escanear tudo".</div>'; return; }
+  
+  const seq = analyzeSequences(hist);
+  if (!seq) return;
+  
+  let html = `<div class="pattern-grid">
+    <div class="pattern-card"><div class="title" style="color:var(--green)">Sequências de Alta</div>
+      <div class="stat"><span>Maior sequência</span><span class="highlight pos">${seq.maxUp} dias</span></div>
+      <div class="stat"><span>Média</span><span class="highlight">${seq.avgUp} dias</span></div>
+      <div class="stat"><span>Total de sequências</span><span class="highlight">${seq.totalUpStreaks}</span></div>
+      ${Object.entries(seq.distUp).sort((a,b)=>parseInt(a[0])-parseInt(b[0])).map(([k,v]) => 
+        `<div class="stat"><span>${k} dia(s) consecutivo(s)</span><span>${v}x</span></div>`
+      ).join('')}
+    </div>
+    <div class="pattern-card"><div class="title" style="color:var(--red)">Sequências de Baixa</div>
+      <div class="stat"><span>Maior sequência</span><span class="highlight neg">${seq.maxDown} dias</span></div>
+      <div class="stat"><span>Média</span><span class="highlight">${seq.avgDown} dias</span></div>
+      <div class="stat"><span>Total de sequências</span><span class="highlight">${seq.totalDownStreaks}</span></div>
+      ${Object.entries(seq.distDown).sort((a,b)=>parseInt(a[0])-parseInt(b[0])).map(([k,v]) => 
+        `<div class="stat"><span>${k} dia(s) consecutivo(s)</span><span>${v}x</span></div>`
+      ).join('')}
+    </div>
+  </div>`;
+  
+  document.getElementById('sequences-content').innerHTML = html;
+}
+
+
+function renderChainTab() {
+  const ticker = state.activeTicker;
+  const body = document.getElementById('chain-body');
+  
+  // Filtra opções do ativo selecionado do ranking
+  const chain = state.rankings.filter(o => o.baseTicker === ticker)
+    .sort((a,b) => a.strike - b.strike || (a.type === 'CALL' ? -1 : 1));
+  
+  if (!chain.length) {
+    body.innerHTML = `<tr><td colspan="11" style="color:var(--text3);text-align:center;padding:20px;">
+      ${ticker ? `Nenhuma opção encontrada para ${ticker}. Clique em "Escanear tudo" primeiro.` : 'Selecione um ativo na watchlist.'}
+    </td></tr>`;
+    return;
+  }
+  
+  body.innerHTML = chain.map(o => {
+    const typeCls = o.type === 'CALL' ? 'call' : 'put';
+    return `<tr>
+      <td><strong>${o.ticker}</strong></td>
+      <td><span class="badge ${typeCls}">${o.type}</span></td>
+      <td>R$ ${o.strike.toFixed(2)}</td>
+      <td>R$ ${o.price.toFixed(2)}</td>
+      <td>R$ ${o.bid.toFixed(2)}</td>
+      <td>R$ ${o.ask.toFixed(2)}</td>
+      <td>${o.greeks.delta.toFixed(2)}</td>
+      <td>${o.greeks.gamma.toFixed(3)}</td>
+      <td>${o.greeks.theta.toFixed(2)}</td>
+      <td>${Math.round(o.iv * 100)}%</td>
+      <td>${formatDate(o.vencDate)}</td>
+    </tr>`;
+  }).join('');
+}
+
+
+// ===== UI HELPERS =====
+function switchTab(name) {
+  document.querySelectorAll('.tab').forEach((t, i) => {
+    const tabs = ['ranking','chain','history','variation','patterns','sequences','howto'];
+    t.classList.toggle('active', tabs[i] === name);
+  });
+  document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+  const el = document.getElementById(`tc-${name}`);
+  if (el) el.classList.add('active');
+}
+
+function selectTicker(t) {
+  state.activeTicker = t;
+  renderWatchlist();
+  renderChainTab();
+  renderHistoryTab();
+  renderVariationTab();
+  renderPatternsTab();
+  renderSequencesTab();
+  // Atualiza info do ranking
+  if (state.rankings.length) {
+    const info = document.getElementById('ranking-info');
+    const sd = state.prices[t] || {};
+    const count = state.rankings.filter(o => o.baseTicker === t).length;
+    info.textContent = `${t} — ${count} sinais | Gap: ${(sd.gapPct||0).toFixed(1)}% | IV: ${Math.round((state.rankings.find(o=>o.baseTicker===t)?.iv||0)*100)}%`;
+  }
+}
+
+function updateStatus() {
+  const pe = document.getElementById('profit-status');
+  const be = document.getElementById('brapi-status');
+  pe.innerHTML = state.wsConnected ? 
+    '<span class="dot on"></span> Profit: conectado' : 
+    '<span class="dot off"></span> Profit: offline';
+  be.innerHTML = state.brapiOk ? 
+    '<span class="dot on"></span> brapi' : 
+    '<span class="dot off"></span> brapi';
+}
+
+function showToast(title, body, type='info') {
+  const container = document.getElementById('toast-container');
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  toast.innerHTML = `<div class="toast-title">${title}</div><div class="toast-body">${body}</div>`;
+  container.appendChild(toast);
+  setTimeout(() => {
+    toast.style.animation = 'fadeOut .3s ease forwards';
+    setTimeout(() => toast.remove(), 300);
+  }, 6000);
+}
+
+// ===== INIT =====
+function startAutoScan() {
+  const interval = parseInt(document.getElementById('p-interval').value) || 60;
+  if (state.scanInterval) clearInterval(state.scanInterval);
+  state.scanInterval = setInterval(fullScan, interval * 1000);
+}
+
+// Boot
+renderWatchlist();
+connectProfit();
+fetchPricesFromBrapi().then(() => {
+  renderWatchlist();
+  // Auto-scan após carregar preços
+  setTimeout(fullScan, 2000);
+  startAutoScan();
+});
+
+// Re-configure auto-scan quando parâmetro mudar
+document.getElementById('p-interval').addEventListener('change', startAutoScan);
 </script>
 </body>
 </html>
