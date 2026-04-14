@@ -3,11 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Quest Options v6</title>
+<title>Quest Options v7</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 /* ─────────────────────────────────────────────
-   QUEST OPTIONS v6 · DESIGN SYSTEM
+   QUEST OPTIONS v7 · DESIGN SYSTEM
    Typography scale: 11 / 12 / 13 / 14 / 16 / 20 / 26 / 36
    Spacing: 4 / 8 / 12 / 16 / 20 / 24 / 32
 ───────────────────────────────────────────── */
@@ -204,7 +204,11 @@ button{font-family:inherit}
 .wl-px{font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:600}
 .wl-r2{display:flex;justify-content:space-between}
 .wl-nm{font-size:12px;color:var(--t3)}
-.wl-ch{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600}
+.wl-ch{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;
+  padding:2px 7px;border-radius:5px;
+}
+.wl-ch.up{background:rgba(59,223,138,.1)}
+.wl-ch.down{background:rgba(240,96,112,.08)}
 .wl-x{
   position:absolute;top:6px;right:6px;width:18px;height:18px;
   border:none;background:none;color:var(--t3);cursor:pointer;
@@ -298,8 +302,10 @@ button{font-family:inherit}
   background:var(--bg-2);border-radius:13px;padding:16px 18px;
   box-shadow:var(--sh1);border:1px solid var(--line);
   transition:box-shadow .2s,transform .2s,background var(--ease);
+  position:relative;overflow:hidden;
 }
 .sc:hover{transform:translateY(-2px);box-shadow:var(--sh2)}
+.sc:first-child{border-color:rgba(59,223,138,.2);background:var(--bg-2)}
 .sc-lbl{
   font-size:11px;text-transform:uppercase;letter-spacing:1.1px;
   color:var(--t3);font-weight:700;margin-bottom:6px;
@@ -362,12 +368,13 @@ tr.r-put:hover td {background:rgba(240,96,112,.05)}
 .score-wrap{display:flex;align-items:center;gap:10px}
 .score-pill{
   display:inline-flex;align-items:center;justify-content:center;
-  min-width:44px;height:28px;border-radius:7px;
-  font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:700;
-  padding:0 8px;
+  min-width:44px;height:30px;border-radius:8px;
+  font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:800;
+  padding:0 10px;letter-spacing:-.3px;
+  box-shadow:0 1px 6px rgba(0,0,0,.25);
 }
-.score-bar{flex:1;min-width:36px;height:5px;background:var(--bg-3);border-radius:3px;overflow:hidden}
-.score-fill{height:100%;border-radius:3px;transition:width .5s}
+.score-bar{flex:1;min-width:36px;height:6px;background:var(--bg-3);border-radius:3px;overflow:hidden}
+.score-fill{height:100%;border-radius:3px;transition:width .6s cubic-bezier(.4,0,.2,1)}
 
 /* rank num */
 .rn{
@@ -424,7 +431,7 @@ tr.r-put:hover td {background:rgba(240,96,112,.05)}
   display:flex;flex-direction:column;align-items:center;justify-content:center;
   padding:60px 32px;text-align:center;
 }
-.empty-ico{font-size:40px;margin-bottom:14px;opacity:.45}
+.empty-ico{font-size:44px;margin-bottom:16px;opacity:.5}
 .empty-ttl{font-size:16px;font-weight:700;color:var(--t1);margin-bottom:6px}
 .empty-txt{font-size:13px;color:var(--t2);line-height:1.65;max-width:420px}
 .empty-hint{font-size:12px;color:var(--t3);margin-top:8px}
@@ -503,7 +510,7 @@ code{
   <div class="logo">
     <div class="logo-mark">⚡</div>
     <span class="logo-text">QUEST OPTIONS</span>
-    <span class="logo-version">v6</span>
+    <span class="logo-version">v7</span>
   </div>
   <div class="hdr-r">
     <div class="status-chip">
@@ -774,6 +781,81 @@ async function fetchHist(ticker){
   if(h?.length>10){S.history[ticker]=h;return h}return null;
 }
 
+// ── BRAPI OPTIONS ──────────────────────────────────────────
+async function fetchOptions(ticker){
+  try{
+    // Try Brapi options module
+    const d=await bpGet(`/quote/${ticker}?modules=options`);
+    const opts=d?.results?.[0]?.options;
+    if(opts&&opts.length>0){
+      const stock=S.prices[ticker]||{};
+      const sp=stock.price||0;
+      const chain=[];
+      for(const o of opts){
+        if(!o.contractSymbol)continue;
+        const price=o.lastPrice||o.regularMarketPrice||0;
+        if(price<=0&&!o.strike)continue;
+        const K=o.strikePrice||o.strike||0;
+        const isCall=(o.type||o.optionType||'').toLowerCase().includes('call');
+        const T=Math.max(0,(o.daysToExpiration||30)/365);
+        const iv=o.impliedVolatility||0;
+        const greeks=sp>0&&K>0&&T>0&&iv>0?bsG(sp,K,T,0.135,iv,isCall):{delta:isCall?.5:-.5,gamma:0,theta:0,vega:0};
+        chain.push({
+          ticker:o.contractSymbol,type:isCall?'CALL':'PUT',
+          strike:K,price,bid:o.bid||price*.95,ask:o.ask||price*1.05,
+          volume:o.volume||o.regularMarketVolume||0,
+          delta:greeks.delta,gamma:greeks.gamma,theta:greeks.theta,vega:greeks.vega,
+          iv,expDate:o.expirationDate||'—',fromBrapi:true
+        });
+      }
+      if(chain.length>0){S.chains[ticker]=chain;if(ticker===S.active)renderChain();return;}
+    }
+  }catch(e){console.warn('fetchOptions brapi:',e);}
+  // Fallback: generate theoretical chain from Black-Scholes
+  genTheoChain(ticker);
+}
+
+function bsPrice(sp,K,T,r,σ,isCall){
+  if(T<=0||σ<=0||sp<=0||K<=0)return 0;
+  const sqT=Math.sqrt(T);
+  const d1=(Math.log(sp/K)+(r+σ*σ/2)*T)/(σ*sqT),d2=d1-σ*sqT;
+  const p=isCall?sp*ncdf(d1)-K*Math.exp(-r*T)*ncdf(d2):K*Math.exp(-r*T)*ncdf(-d2)-sp*ncdf(-d1);
+  return Math.max(0,Math.round(p*100)/100);
+}
+
+function genTheoChain(ticker){
+  const stock=S.prices[ticker];
+  if(!stock||!stock.price)return;
+  const sp=stock.price,hist=S.history[ticker];
+  const hv=hist&&hist.length>22?hvol(hist):0.35;
+  const chain=[];
+  const expiries=nextFridays(3);
+  const MONTHS_C='ABCDEFGHIJKL',MONTHS_P='MNOPQRSTUVWX';
+  for(const exp of expiries){
+    const T=Math.max(1,exp.dTo)/365;
+    const mc=MONTHS_C[exp.date.getMonth()],mp=MONTHS_P[exp.date.getMonth()];
+    const base=ticker.slice(0,4);
+    const min=Math.floor(sp*.85/2)*2,max=Math.ceil(sp*1.2/2)*2;
+    for(let strike=min;strike<=max;strike+=2){
+      for(const isCall of[true,false]){
+        const price=bsPrice(sp,strike,T,0.135,hv,isCall);
+        if(price<0.02)continue;
+        const greeks=bsG(sp,strike,T,0.135,hv,isCall);
+        const mc2=isCall?mc:mp;
+        chain.push({
+          ticker:`${base}${mc2}${strike}`,type:isCall?'CALL':'PUT',
+          strike,price,bid:+(price*.93).toFixed(2),ask:+(price*1.07).toFixed(2),
+          volume:Math.floor(Math.max(0,(1-Math.abs(greeks.delta))*8000+500)),
+          delta:greeks.delta,gamma:greeks.gamma,theta:greeks.theta,vega:greeks.vega,
+          iv:hv,expDate:exp.label,isTheo:true
+        });
+      }
+    }
+  }
+  S.chains[ticker]=chain;
+  if(ticker===S.active)renderChain();
+}
+
 // ── B3 VENCIMENTOS (toda sexta-feira) ──────────────────────
 // 3ª sexta = mensal | demais = semanal W1/W2/W4/W5
 function nextFridays(n=4){
@@ -947,12 +1029,24 @@ function connectWS(){
       try{
         const msg=JSON.parse(e.data);
         if(msg.type==='market_data'&&Array.isArray(msg.data)){
+          // New bridge format
           for(const d of msg.data){S.prices[d.ticker]=d;if(!S.tickers.includes(d.ticker))S.tickers.push(d.ticker);}
           renderWL();renderHero();
         }else if(msg.type==='chain'&&msg.options){
           S.chains[msg.ticker]=msg.options;if(msg.ticker===S.active)renderChain();
+          renderRanking();
+        }else if(msg.ticker&&msg.price!==undefined){
+          // Legacy bridge format: single ticker object
+          const t=msg.ticker,ex=S.prices[t]||{};
+          // Bridge sends changePct as decimal (0.005 = 0.5%), convert to pct
+          const cp=msg.changePct!==undefined?(Math.abs(msg.changePct)<1?msg.changePct*100:msg.changePct):ex.changePct||0;
+          const gp=msg.gapPct!==undefined?(Math.abs(msg.gapPct)<1?msg.gapPct*100:msg.gapPct):ex.gapPct||0;
+          S.prices[t]={...ex,ticker:t,price:msg.price,
+            changePct:Math.round(cp*100)/100,gapPct:Math.round(gp*100)/100};
+          if(!S.tickers.includes(t))S.tickers.push(t);
+          renderWL();if(t===S.active)renderHero();
         }
-      }catch(e){}
+      }catch(err){console.warn('WS parse error:',err)}
     };
     ws.onclose=()=>{S.wsOk=false;updStatus();setTimeout(connectWS,10000)};
     ws.onerror=()=>ws.close();
@@ -965,8 +1059,10 @@ async function fullScan(){
   const btn=document.getElementById('btn-scan');
   btn.disabled=true;btn.innerHTML='<span class="spin"></span>Escaneando...';
   await fetchQ();
-  for(const t of S.tickers)
+  for(const t of S.tickers){
     if(!S.history[t])try{await fetchHist(t)}catch(e){console.warn(`hist ${t}:`,e)};
+    if(!S.chains[t]||S.chains[t].length===0)try{await fetchOptions(t)}catch(e){console.warn(`opts ${t}:`,e)};
+  }
 
   const all=[];
   for(const t of S.tickers){
@@ -1052,8 +1148,8 @@ function renderRanking(){
     body.innerHTML='';empty.style.display='';info.textContent='';
     document.getElementById('rank-e-ttl').textContent=S.wsOk?'Profit conectado — sem opções':'Profit Pro offline';
     document.getElementById('rank-e-txt').textContent=S.wsOk?
-      'Aguardando dados de cadeia via WebSocket. Aguarde o próximo scan.':
-      'Execute profit_bridge.py para receber opções reais. Sem o bridge, o ranking permanece vazio.';
+      'Profit conectado. Clique em Escanear Tudo para gerar o ranking de oportunidades.':
+      'Clique em Escanear Tudo para gerar o ranking com dados reais (Brapi) ou teóricos (Black-Scholes).';
     return;
   }
   empty.style.display='none';
@@ -1061,14 +1157,15 @@ function renderRanking(){
   info.textContent=`${list.length} oportunidades reais · ${S.active}: Gap ${(sd.gapPct||0).toFixed(2)}%`;
   body.innerHTML=list.slice(0,30).map((o,i)=>{
     const sc=o.score;
-    const [col,bg]=sc>=65?['var(--green)','rgba(59,223,138,.12)']:
-                    sc>=45?['var(--warn)','rgba(245,197,66,.1)']:
-                           ['var(--t3)','var(--bg-3)'];
+    const [col,bg,bord]=sc>=70?['#3bdf8a','rgba(59,223,138,.15)','rgba(59,223,138,.3)']:
+                    sc>=55?['#f5c542','rgba(245,197,66,.14)','rgba(245,197,66,.3)']:
+                    sc>=40?['#5b9cf6','rgba(91,156,246,.12)','rgba(91,156,246,.25)']:
+                           ['var(--t3)','var(--bg-3)','var(--line)'];
     return `<tr class="r-${o.type.toLowerCase()}">
       <td><span class="rn ${i===0?'g':i<3?'s':''}">${i+1}</span></td>
       <td style="font-family:'Inter',sans-serif">
-        <strong style="font-size:14px">${o.ticker}</strong>
-        <div style="font-size:11px;color:var(--t3);font-family:'JetBrains Mono',monospace;margin-top:1px">${o.base} · R$ ${o.strike}</div>
+        <strong style="font-size:14px">${o.ticker}</strong>${o.isTheo?'<sup style="font-size:9px;color:var(--t3);margin-left:3px">T</sup>':''}
+        <div style="font-size:11px;color:var(--t3);font-family:'JetBrains Mono',monospace;margin-top:1px">${o.base} · R$ ${o.strike.toFixed(2)}</div>
       </td>
       <td><span class="badge b-${o.type.toLowerCase()}">${o.type}</span></td>
       <td>R$ ${o.price.toFixed(2)}</td>
@@ -1080,7 +1177,7 @@ function renderRanking(){
       <td style="font-size:12px;color:var(--t3)">${o.venc}</td>
       <td>
         <div class="score-wrap">
-          <span class="score-pill" style="background:${bg};color:${col}">${sc}</span>
+          <span class="score-pill" style="background:${bg};color:${col};border:1px solid ${bord}">${sc}</span>
           <div class="score-bar"><div class="score-fill" style="width:${sc}%;background:${col}"></div></div>
         </div>
       </td>
@@ -1099,10 +1196,11 @@ function renderChain(){
     guide.style.display=!S.wsOk?'':'none';return;
   }
   empty.style.display='none';guide.style.display='none';
-  info.textContent=`${S.active} — ${chain.length} opções via Profit Pro`;
+  const src=chain[0]?.isTheo?'BS Teórico':chain[0]?.fromBrapi?'Brapi':'Profit Pro';
+  info.textContent=`${S.active} — ${chain.length} opções via ${src}`;
   const sorted=[...chain].sort((a,b)=>a.strike-b.strike||(a.type==='CALL'?-1:1));
   body.innerHTML=sorted.map(o=>`<tr class="r-${o.type.toLowerCase()}">
-    <td style="font-family:'Inter',sans-serif;font-weight:700">${o.ticker}</td>
+    <td style="font-family:'Inter',sans-serif;font-weight:700">${o.ticker}${o.isTheo?'<sup style="font-size:9px;color:var(--t3);margin-left:2px">T</sup>':''}</td>
     <td><span class="badge b-${o.type.toLowerCase()}">${o.type}</span></td>
     <td>R$ ${o.strike}</td>
     <td>R$ ${o.price.toFixed(2)}</td>
@@ -1268,6 +1366,8 @@ function toast(title,body,type=''){
 function selTicker(t){
   S.active=t;renderWL();renderHero();renderChain();renderHistory();renderVar();renderPat();renderSeq();
   if(S.wsOk&&ws?.readyState===1)ws.send(JSON.stringify({action:'get_chain',ticker:t}));
+  // Fetch options if not cached yet
+  if(!S.chains[t]||S.chains[t].length===0)fetchOptions(t).then(()=>{renderChain();renderRanking();});
 }
 function addTicker(t){
   t=t.toUpperCase().trim();if(!t||t.length<4||S.tickers.includes(t))return;
@@ -1299,6 +1399,13 @@ document.getElementById('inp-tk').addEventListener('keydown',e=>{
   if(e.key==='Enter'){addTicker(e.target.value);e.target.value='';}
 });
 
+document.getElementById('btn-theme').addEventListener('click',()=>{
+  const d=document.documentElement;
+  const t=d.getAttribute('data-theme')==='dark'?'light':'dark';
+  d.setAttribute('data-theme',t);
+  document.getElementById('btn-theme').textContent=t==='dark'?'🌙':'☀️';
+});
+
 // clock
 setInterval(()=>{
   const n=new Date();
@@ -1317,6 +1424,8 @@ document.getElementById('p-int').addEventListener('change',setupScan);
 // ── BOOT ───────────────────────────────────────────────────
 renderWL();renderHero();renderExp();connectWS();
 fetchQ().then(()=>{renderWL();renderHero();setTimeout(fullScan,1500);setupScan();});
+// Lazy-load options for active ticker after initial render
+setTimeout(()=>{if(!S.chains[S.active]||!S.chains[S.active].length)fetchOptions(S.active);},3000);
 </script>
 </body>
 </html>
